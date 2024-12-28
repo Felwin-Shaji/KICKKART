@@ -1,0 +1,88 @@
+<%- include("../../views/partials/admin/header") %>
+
+    <body>
+        <div class="container table-wrapper">
+            <h2 class="text-center">Customer Management</h2>
+
+            <!-- Search Bar and Filter -->
+            <div class="row search-bar">
+                <div class="col-md-6">
+                    <input type="text" id="search" class="form-control" placeholder="Search customers...">
+                </div>
+                <div class="col-md-6">
+                    <select id="statusFilter" class="form-select">
+                        <option value="">Filter by Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Customer Table -->
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTable">
+                    <% for (let i=0; i < userData.length; i++) { %>
+                        <tr>
+                            <td>
+                                <%= userData[i].name %>
+                            </td>
+                            <td>
+                                <%= userData[i].email %>
+                            </td>
+                            <td>
+                                <%= userData[i].phone %>
+                            </td>
+                            <td>
+                                <% if(!userData[i].isBlocked){ %>
+                                    <span class="status-active">Active</span>
+                                    <% }else { %>
+                                        <span class="status-inactive"> Inactive</span>
+                                        <% } %>
+                            </td>
+                            <td>
+                                <% if (!userData[i].isBlocked) { %>
+                                    <button class="btn btn-primary btn-sm">
+                                        <a href="/admin/blockCustomer?id=<%= userData[i]._id %>"
+                                            style="color: white; text-decoration: none;">Block</a>
+                                    </button>
+                                    <% } else { %>
+                                        <button class="btn btn-danger btn-sm">
+                                            <a href="/admin/unBlockCustomer?id=<%= userData[i]._id %>"
+                                                style="color: white; text-decoration: none;">Unblock</a>
+                                        </button>
+                                        <% } %>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+
+
+
+
+            </table>
+
+            <!-- Pagination -->
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&search=<%= search %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                        <% } %>
+                </ul>
+            </nav>
+
+        </div>
+
+        <%- include("../../views/partials/admin/footer") %>

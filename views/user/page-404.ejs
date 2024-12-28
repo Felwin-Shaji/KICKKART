@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000000, #616161);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(97, 93, 93, 0.4);
+        }
+        p {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #000000;
+            background: #656464;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        a:hover {
+            background: #2a2a2a;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .image-container {
+            margin-top: 20px;
+        }
+        img {
+            width: 50%;
+            max-width: 300px;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        img:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>404</h1>
+        <p>Uh-oh! The page you're looking for is lost in space.</p>
+        <p><a href="/">Take me home</a></p>
+        <div class="image-container">
+            <img src="/images/error 404.webp" alt="Error 404 Illustration">
+        </div>
+    </div>
+</body>
+</html>

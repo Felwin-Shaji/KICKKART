@@ -1,0 +1,336 @@
+<%- include("../partials/user/header.ejs") -%>
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .breadcrumb-item+.breadcrumb-item::before {
+            content: ">";
+            color: #6c757d;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            /* Ensures consistent height */
+        }
+
+        .card-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+
+        .search-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .search-input {
+            padding-left: 2.5rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 100%;
+            height: 40px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hot-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #dc3545;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .product-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: white;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .price-filter {
+            background-color: #f8f9fa;
+            padding: 10px 16px;
+            margin: 8px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .price-filter:hover {
+            background-color: #e2e6ea;
+        }
+
+        .price-filter i {
+            margin-right: 10px;
+        }
+
+        .star-rating {
+            color: #ffcc00;
+        }
+
+        .cart-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .cart-button:hover {
+            background-color: #dee2e6;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .discount-badge {
+            background-color: #198754;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+
+        .sidebar {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar h5 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+
+        .sidebar ul {
+            padding-left: 0;
+        }
+
+        .sidebar ul li {
+            list-style: none;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #343a40;
+            transition: color 0.2s;
+        }
+
+        .sidebar ul li a:hover {
+            color: #007bff;
+        }
+
+        @media (min-width: 768px) {
+            .col-md-3 {
+                max-width: 20%;
+                /* Adjusted width for the sidebar */
+            }
+
+            .col-md-9 {
+                max-width: 80%;
+            }
+        }
+    </style>
+
+    <body>
+        <div class="container-fluid">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mt-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active">Shop</li>
+                </ol>
+            </nav>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="bi bi-search"></i>
+                <input type="text" class="search-input" placeholder="Search for items...">
+            </div>
+
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-12 col-md-2">
+                    <div class="sidebar">
+                        <!-- Categories -->
+                        <h5>Category</h5>
+                        <ul>
+                            <% for(let i=0;i<category.length;i++) {%>
+                                <li><a href="#">
+                                        <%= category[i].name %>
+                                    </a></li>
+                                <% } %>
+                        </ul>
+                        <br>
+                        <h5>Brands</h5>
+                        <ul>
+                            <% for(let i=0;i<brand.length;i++) {%>
+                                <li><a href="#">
+                                        <%= brand[i].brandName %>
+                                    </a></li>
+                                <% } %>
+                        </ul>
+                        <br>
+                        <!-- Price Filters -->
+                        <h5>Filter by Price</h5>
+                        <div class="price-filter">
+                            <i class="bi bi-chevron-down"></i> Below 20,000
+                        </div>
+                        <div class="price-filter">
+                            <i class="bi bi-chevron-down"></i> 20,000 - 25,000
+                        </div>
+                        <div class="price-filter">
+                            <i class="bi bi-chevron-down"></i> 25,000 - 30,000
+                        </div>
+                        <div class="price-filter">
+                            <i class="bi bi-chevron-down"></i> Above 30,000
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+
+                <div class="col-12 col-md-9">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <p class="mb-0">We found <strong>688</strong> items for you!</p>
+                        <div class="d-flex gap-3">
+                            <select class="form-select">
+                                <option>Show: 50</option>
+                                <option>Show: 100</option>
+                            </select>
+                            <select class="form-select">
+                                <option>Sort by: Featured</option>
+                                <option>Price: Low to High</option>
+                                <option>Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+
+
+                    <div class="row g-4">
+                        <!-- Product Card  -->
+                        <% for(let i=0;i<products.length;i++){ %>
+                            <div class="col-md-6 col-lg-4">
+                                <div class="product-card">
+                                    <div class="position-relative">
+                                        <span class="hot-badge"><i class="fa-regular fa-heart"></i></span>
+                                        <a href="/productDetails?id=<%=products[i]._id %>">
+
+                                        <img src="/uploads/re-image/<%= products[i].productImage[0]  %>"
+                                            class="card-img-top" alt="<%= products[i].productName  %>">
+                                        </a>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <%= products[i].brand %>
+                                        </h5>
+                                        <h6 class="card-title">
+                                            <%= products[i].productName %>
+                                        </h6>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="star-rating me-2">
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                            </div>
+                                            <span class="discount-badge">17% Off</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="h5 mb-0">
+                                                    <%= Number(products[i].salePrice).toLocaleString("en-IN") %>
+                                                </span>
+
+                                                <span class="original-price ms-2">
+                                                    <%= Number(products[i].regularPrice).toLocaleString("en-IN") %>
+                                                </span>
+                                            </div>
+                                            <button class="cart-button">
+                                                <i class="bi bi-cart-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                                <!-- Additional product cards would be repeated here -->
+
+                                <div class="pagination">
+                                    <% if (currentPage> 1) { %>
+                                        <a class="btn" href="/shope?page=<%= currentPage - 1 %>">Prev</a>
+                                        <% } %>
+
+
+                                            <% for (let i=1; i <=totalpages; i++) { %>
+                                                <a class="btn <%= currentPage === i ? 'active' : '' %>"
+                                                    href="/shope?page=<%= i %>">
+                                                    <%= i %>
+                                                </a>
+                                                <% } %>
+
+
+                                                    <% if (currentPage < totalpages) { %>
+                                                        <a class="btn"
+                                                            href="/shope?page=<%= currentPage + 1 %>">Next</a>
+                                                        <% } %>
+                                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+
+
+
+    <%- include("../partials/user/footer.ejs") -%>

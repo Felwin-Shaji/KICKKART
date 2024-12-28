@@ -1,0 +1,413 @@
+<%- include("../../views/partials/admin/header") %>
+
+    <div class="container-fluid">
+        <h1 class="text-center my-4">Category Management</h1>
+
+        <div class="search-container">
+            <div class="top-actions">
+                <input type="text" class="form-control w-50" placeholder="Search categories..." id="searchInput">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    Add Category
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Category Name</th>
+                            <th>Description</th>
+                            <!-- <th>Offer Price</th> -->
+                            <th>Offer</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% cat.reverse().forEach((category,index)=>{%>
+                            <tr>
+                                <td>
+                                    <%=category.name %>
+                                </td>
+                                <td>
+                                    <%=category.description %>
+                                </td>
+                                <!-- <td>$99.99</td> -->
+                                <td>
+                                    <button class="btn btn-success btn-sm">Add Offer</button>
+                                </td>
+                                <td>
+                                    <% if(category.isListed){ %>
+                                        <span class="status-active">Active</span>
+                                        <% }else { %>
+                                            <span class="status-inactive"> Inactive</span>
+                                            <% } %>
+                                </td>
+                                <td>
+                                    <% if(category.isListed){ %>
+                                        <a href="/admin/listCategory?_id=<%=category._id %>"
+                                            class="btn btn-primary btn-sm">Unlist</a>
+                                        <% }else { %>
+                                            <a href="/admin/unListCategory?_id=<%=category._id %>"
+                                                class="btn btn-danger btn-sm">List</a>
+                                            <% } %>
+
+                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#editCategoryModal"
+                                                    data-category-id="<%= category._id %>"
+                                                    data-category-name="<%= category.name %>"
+                                                    data-category-description="<%= category.description %>">
+                                                    Edit
+                                                </button>
+
+
+                                </td>
+                            </tr>
+
+                            <%})%>
+                    </tbody>
+                </table>
+
+
+            </div>
+
+        </div>
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <% if (currentPage> 1) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="pagination-link prev">&laquo; Previous</a>
+                <% } %>
+
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <% if (i===currentPage) { %>
+                            <span class="pagination-link current active">
+                                <%= i %>
+                            </span>
+                            <% } else { %>
+                                <a href="?page=<%= i %>" class="pagination-link">
+                                    <%= i %>
+                                </a>
+                                <% } %>
+                                    <% } %>
+
+                                        <% if (currentPage < totalPages) { %>
+                                            <a href="?page=<%= currentPage + 1 %>" class="pagination-link next">Next
+                                                &raquo;</a>
+                                            <% } %>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCategoryForm" action="/admin/addCategory">
+                        <!-- onsubmit=" return handleAddCategory(event)" -->
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Category Name</label>
+                            <input type="text" class="form-control" id="categoryName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="categoryDescription" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="handleAddCategory()">Add Category</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCategoryForm">
+                        <input type="hidden" id="modalCategoryId">
+                        <div class="mb-3">
+                            <input type="hidden" id="modalCategoryId">
+                            <label for="editCategoryName" class="form-label">Category Name</label>
+                            <input type="text" class="form-control" id="editCategoryName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoryDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="editCategoryDescription" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="handleEditCategory()">Save
+                        Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>  //category page script
+
+        // Search functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('searchInput').addEventListener('input', function (e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const tableRows = document.querySelectorAll('tbody tr');
+
+                tableRows.forEach(row => {
+                    const categoryName = row.cells[0].textContent.toLowerCase();
+                    const description = row.cells[1].textContent.toLowerCase();
+
+                    if (categoryName.includes(searchTerm) || description.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Add Category Modal
+        async function handleAddCategory(event) {
+            const name = document.getElementById('categoryName').value.trim();
+            const description = document.getElementById('categoryDescription').value.trim();
+
+            let isValid = true;
+
+            // Validation for name
+            if (name === '') {
+                displayErrorMessage("name-error", "Please enter a name");
+                isValid = false;
+            } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+                displayErrorMessage("name-error", "Category name should contain only alphabetic characters");
+                isValid = false;
+            } else {
+                clearErrorMessage("name-error"); // Clear error if valid
+            }
+
+
+            // Validation for description
+            if (description === '') {
+                displayErrorMessage("description-error", "Please enter a description");
+                isValid = false;
+            } else {
+                clearErrorMessage("description-error"); // Clear error if valid
+            }
+
+            // Stop execution if validation fails
+            if (!isValid) return;
+
+            // Prepare data for API call
+            const categoryData = {
+                name: name,
+                description: description
+            };
+
+            try {
+                // Fetch API call
+                const response = await fetch('/admin/addCategory', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(categoryData),
+                });
+
+                // Parse JSON response
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    console.log('Category added successfully:', result);
+
+                    // Display success Swal message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: result.message || 'Category added successfully',
+                        confirmButtonText: 'OK',
+                        timer: 1500 
+                    });
+
+                    // Close modal and reset form
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
+                    modal.hide();
+                    document.getElementById('addCategoryForm').reset();
+                } else {
+                    console.error('Error adding category:', result);
+
+                    // Display error Swal message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: result.message || 'An error occurred while adding the category.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+
+                // Display network error Swal message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Network Error!',
+                    text: 'Failed to add category due to a network error.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+
+        //Edit Category button clicked id/name/discription/ passed functionality 
+        document.addEventListener("DOMContentLoaded", function () {
+
+            document.querySelectorAll('[data-bs-target="#editCategoryModal"]').forEach(button => {
+                button.addEventListener('click', function () {
+                    const categoryId = this.getAttribute('data-category-id')
+                    const categoryName = this.getAttribute('data-category-name');
+                    const categoryDescription = this.getAttribute('data-category-description');
+
+                    document.getElementById('modalCategoryId').value = categoryId
+                    document.getElementById('editCategoryName').value = categoryName;
+                    document.getElementById('editCategoryDescription').value = categoryDescription;
+                })
+            })
+        })
+
+        // Edit Category
+        async function handleEditCategory() {
+            const categoryId = document.getElementById('modalCategoryId').value;
+            const categoryName = document.getElementById('editCategoryName').value;
+            const categoryDescription = document.getElementById('editCategoryDescription').value;
+
+            const categoryData = {
+                name: categoryName,
+                description: categoryDescription
+            };
+
+            try {
+                // Corrected template literal syntax
+                const response = await fetch(`/admin/editCategory/${categoryId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(categoryData),
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: result.message || 'Category updated successfully.',
+                        confirmButtonText: 'OK',
+                        
+                    });
+
+                    // Close modal and refresh page
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
+                    modal.hide();
+
+                    // Optionally reload the page to reflect the changes
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: result.error || 'Failed to update the category.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.error('Error updating category:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'An error occurred. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        // Utility function to display error messages
+        function displayErrorMessage(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+        }
+
+        // Utility function to clear error messages
+        function clearErrorMessage(elementId) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.textContent = '';
+                errorElement.style.display = 'none';
+            }
+        }
+
+        
+        // Handle Offer buttons
+        // document.addEventListener('click', function (e) {
+        //     if (e.target.classList.contains('btn-success') && e.target.textContent === 'Add Offer') {
+        //         e.target.classList.replace('btn-success', 'btn-danger');
+        //         e.target.textContent = 'Remove Offer';
+        //     } else if (e.target.classList.contains('btn-danger') && e.target.textContent === 'Remove Offer') {
+        //         e.target.classList.replace('btn-danger', 'btn-success');
+        //         e.target.textContent = 'Add Offer';
+        //     }
+        // });
+
+
+        //pagination //////////////////////////
+        document.addEventListener('DOMContentLoaded', () => {
+            const rowsPerPage = 5;
+            const tableBody = document.querySelector('tbody');
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+            function renderTable(page) {
+                tableBody.innerHTML = '';
+                const start = (page - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+                rows.slice(start, end).forEach(row => tableBody.appendChild(row));
+            }
+
+            function renderPagination() {
+                pagination.innerHTML = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement('li');
+                    li.className = 'page-item';
+                    li.innerHTML = `<button class="page-link">${i}</button>`;
+                    if (i === 1) li.classList.add('active');
+
+                    li.addEventListener('click', () => {
+                        document.querySelector('.page-item.active').classList.remove('active');
+                        li.classList.add('active');
+                        renderTable(i);
+                    });
+
+                    pagination.appendChild(li);
+                }
+            }
+
+            renderTable(1);
+            renderPagination();
+        });
+
+    </script>
+    <%- include("../../views/partials/admin/footer") %>

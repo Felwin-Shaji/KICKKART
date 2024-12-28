@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Login Page</title>
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  <link rel="stylesheet" href="/css/userSignUp.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+  <div class="container">
+    <div class="login-box">
+      <h1>Log In</h1>
+
+      <form action="/login" method="POST" id="loginForm">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Log In</button>
+      </form>
+
+      <a href="/google">
+        <button type="button">
+          <i class="bi bi-google"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
+            <path d="M15.545 6.558a9.4 9.4 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.7 7.7 0 0 1 5.352 2.082l-2.284 2.284A4.35 4.35 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.8 4.8 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.7 3.7 0 0 0 1.599-2.431H8v-3.08z"/>
+          </svg>
+          Log In With Google
+        </button>
+      </a>
+
+      <p class="signup-link">Don't have an account? <a href="/signup">Sign Up</a></p>
+      <p class="forgot-password"><a href="/forgot-password">Forgot Password?</a></p>
+    </div>
+  </div>
+</body>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit',async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Please enter a valid email address.');
+      e.preventDefault();
+      return;
+    }
+
+    // Check if password is entered
+    if (!password) {
+      alert('Please enter your password.');
+      e.preventDefault();
+      return;
+    }
+
+    try {
+      const response = await fetch('/login',{
+        method:'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({email,password})
+      })
+
+      const result = await response.json();
+
+      if(result.success){
+                    await Swal.fire({
+                icon: 'success',
+                title: 'Login Successful!',
+                text: result.message,
+                timer: 1500,
+                showConfirmButton: false
+            });
+            window.location.href = result.redirectUrl;
+      }else{
+        await Swal.fire({
+          icon: 'error',
+                title: 'Login Failed',
+                text: result.message
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Something went wrong. Please try again later.'
+        });
+    }
+  });
+</script>
+
+</html>
