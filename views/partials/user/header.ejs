@@ -1,268 +1,221 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-	<title>Footwear - Free Bootstrap 4 Template by Colorlib</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KICKKART</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 
-	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-	<link rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-	<!-- Animate.css -->
-	<link rel="stylesheet" href="/css/animate.css">
-	<!-- Icomoon Icon Fonts-->
-	<link rel="stylesheet" href="/css/icomoon.css">
-	<!-- Ion Icon Fonts-->
-	<link rel="stylesheet" href="/css/ionicons.min.css">
-	<!-- Bootstrap  -->
-	<link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"> -->
 
-	<!-- Magnific Popup -->
-	<link rel="stylesheet" href="/css/magnific-popup.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="/css/animate.css">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="/css/icomoon.css">
+    <!-- Ion Icon Fonts-->
+    <link rel="stylesheet" href="/css/ionicons.min.css">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 
-	<!-- Flexslider  -->
-	<link rel="stylesheet" href="/css/flexslider.css">
+    <!-- Magnific Popup -->
+    <link rel="stylesheet" href="/css/magnific-popup.css">
 
-	<!-- Owl Carousel -->
-	<link rel="stylesheet" href="/css/owl.carousel.min.css">
-	<link rel="stylesheet" href="/css/owl.theme.default.min.css">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="/css/flexslider.css">
 
-	<!-- Date Picker -->
-	<link rel="stylesheet" href="/css/bootstrap-datepicker.css">
-	<!-- Flaticons  -->
-	<link rel="stylesheet" href="/fonts/flaticon/font/flaticon.css">
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/owl.theme.default.min.css">
 
-	<!-- Theme style  -->
-	<link rel="stylesheet" href="/css/style.css">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="/css/bootstrap-datepicker.css">
+    <!-- Flaticons  -->
+    <link rel="stylesheet" href="/fonts/flaticon/font/flaticon.css">
 
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body{
+            background: #ebeaea;
+        }
+
+        input{
+            color: #000000;
+        }
+        /* Custom styles for dark navbar */
+        .navbar {
+            background-color: #333;
+            /* Dark background */
+            box-shadow: 0 2px 4px rgba(161, 161, 161, 0.5);
+            /* Slight shadow for depth */
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #dfefff;
+            /* Light text for the brand */
+        }
+
+        .navbar-brand:hover {
+            color: #007bff;
+            /* Highlight color for the brand on hover */
+        }
+
+        .nav-link {
+            color: #f8f9fa;
+            /* Light text for navigation links */
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #007bff;
+            /* Highlight color on hover */
+        }
+
+        .form-control {
+            background-color: #444;
+            /* Dark background for input */
+            color: #000000;
+            /* Light text for input */
+            border: 1px solid #555;
+            /* Subtle border */
+        }
+
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #007bff;
+            /* Highlight border on focus */
+            background-color: #555;
+            /* Slightly lighter background on focus */
+            color: #000000;
+        }
+
+        .btn-outline-primary {
+            border-color: #000000;
+            /* Border color for buttons */
+            color: #000000;
+            /* Text color for buttons */
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            /* Button background on hover */
+            color: #fff;
+            /* Text color on hover */
+        }
+
+        .dropdown-menu {
+            background-color: #444;
+            /* Dark background for dropdown */
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+            /* Shadow for depth */
+        }
+
+        .dropdown-item {
+            color: #f8f9fa;
+            /* Light text for dropdown items */
+        }
+
+        .dropdown-item:hover {
+            background-color: #007bff;
+            /* Highlight background on hover */
+            color: #fff;
+            /* Light text on hover */
+        }
+
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            background-color: #333;
+            /* Ensures consistent dark background */
+        }
+    </style>
 </head>
-<style>
-	/* Dropdown styling */
-	.dropdown {
-		position: relative;
-		display: inline-block;
-	}
-
-	.dropdown .dropdown-toggle {
-		color: white;
-		font-size: 14px;
-		font-weight: bold;
-		background-color: #007bff;
-		/* Bootstrap info color */
-		border: none;
-		padding: 8px 16px;
-		border-radius: 4px;
-		text-transform: capitalize;
-		cursor: pointer;
-		transition: background-color 0.3s ease;
-	}
-
-	.dropdown .dropdown-toggle:hover {
-		background-color: #0056b3;
-		/* Darker shade for hover effect */
-	}
-
-	.dropdown-content {
-		display: none;
-		position: absolute;
-		background-color: #2690fa;
-		min-width: 180px;
-		box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-		border-radius: 4px;
-		overflow: hidden;
-		right: 0;
-		z-index: 1000;
-	}
-
-	.dropdown-content a,
-	.dropdown-content button {
-		color: #ffffff;
-		padding: 12px 16px;
-		text-decoration: none;
-		display: block;
-		font-size: 14px;
-		transition: background-color 0.2s ease, color 0.2s ease;
-		width: 100%;
-		text-align: left;
-		border: none;
-		background: none;
-		cursor: pointer;
-	}
-
-	.dropdown-content a:hover,
-	.dropdown-content button:hover {
-		background-color: #7abcff;
-		/* Light gray hover effect */
-		color: #ffffff;
-	}
-
-	.dropdown:hover .dropdown-content {
-		display: block;
-	}
-
-	/* Logout button alignment */
-	.dropdown-content form {
-		margin: 0;
-		padding: 0;
-	}
-
-	/* Auth buttons styling */
-	.auth-buttons a button {
-		font-size: 14px;
-		font-weight: bold;
-		color: white;
-		background-color: #007bff;
-		/* Bootstrap info color */
-		border: none;
-		padding: 8px 16px;
-		border-radius: 4px;
-		cursor: pointer;
-		margin-right: 8px;
-		transition: background-color 0.3s ease, box-shadow 0.2s ease;
-	}
-
-	.auth-buttons a button:hover {
-		background-color: #0056b3;
-		box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-	}
-
-	.dropdown-toggle {
-		display: inline-flex;
-		align-items: center;
-		color: white;
-		font-size: 14px;
-		font-weight: bold;
-		background-color: #007bff;
-		border: none;
-		padding: 8px 16px;
-		border-radius: 4px;
-		text-transform: capitalize;
-		cursor: pointer;
-		transition: background-color 0.3s ease;
-	}
-
-	.dropdown-toggle svg {
-		margin-left: 8px;
-		/* Add some space between the text and the icon */
-		fill: white;
-		/* Match icon color with the button text */
-	}
-
-	.menu-1 {
-	  display: flex;
-	  justify-content: space-between;
-	  align-items: center;
-	  position: -webkit-sticky;
-	  position: sticky;
-	  top: 0;
-	  background-color: white;
-	  z-index: 1000;
-	  padding: 10px 0;
-	}
-  
-	.menu-1 ul {
-	  display: flex;
-	  list-style: none;
-	  padding-left: 0;
-	  margin: 0;
-	}
-  
-	.menu-1 ul li {
-	  margin-right: 15px;
-	}
-  
-	.search-wrap {
-	  display: flex;
-	  align-items: center;
-	}
-  
-	.search-wrap .form-group {
-	  display: flex;
-	  align-items: center;
-	}
-  
-	.cart {
-	  display: flex;
-	  align-items: center;
-	  margin-left: 10px;
-	}
-  </style>
-  
 
 <body>
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
+            <div class="container">
+                <a class="navbar-brand" href="/">KICKKART</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link " aria-current="page" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/shope">Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/contact">Contact</a>
+                        </li>
+                    </ul>
+                    <!-- <form class="d-flex me-3 mb-2 mb-lg-0">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form> -->
+                    <div class="d-flex align-items-center mb-2 mb-lg-0">
+                        <a href="/cart" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-cart"></i>
+                        </a>
+                        <a href="/wishlist" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-heart"></i>
+                        </a>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <% if (!locals.user) { %>
+                                    <i class="bi bi-person-circle"></i>
+                                    <% }else{ %>
+                                        <i class="bi bi-person-circle">
+                                            <%= locals.user.name%>
+                                        </i>
+                                        <% } %>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <% if (!locals.user) { %>
+                                    <li><a class="dropdown-item" href="/login">Login</a></li>
+                                    <li><a class="dropdown-item" href="/signup">Sign Up</a></li>
+                                    <% }else{ %>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item" href="/userProfile">Profile</a></li>
+                                        <li><a class="dropdown-item" id="logout" href="/logout">Logout</a></li>
+                                        <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-	<div class="colorlib-loader"></div>
-
-	<div id="page">
-		<nav class="colorlib-nav" role="navigation">
-			<div class="top-menu">
-				<div class="container">
-					<div class="row">
-						<div class="col-sm-7 col-md-9">
-							<div id="colorlib-logo"><a href="index.html">KICKKART</a></div>
-						</div>
-						<div class="col-sm-5 col-md-3">
-							<% if (locals.user) { %>
-								<div class="dropdown">
-									<a href="#" class="dropdown-toggle">
-										<%= locals.user.name %>
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-												fill="currentColor" class="bi bi-person-circle ml-2"
-												viewBox="0 0 16 16">
-												<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-												<path fill-rule="evenodd"
-													d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
-											</svg>
-									</a>
-									<div class="dropdown-content">
-										<a href="/userProfile">Profile</a>
-										<a href="/logout">Logout</a>
-									</div>
-								</div>
-								<% } else { %>
-									<div class="auth-buttons">
-										<a href="/signup"><button type="button" class="btn btn-info">Sign
-												Up</button></a>
-										<a href="/login"><button type="button" class="btn btn-info">Login</button></a>
-									</div>
-									<% } %>
-
-
-
-
-						</div>
-
-					</div>
-					<div class="row">
-						<div class="col-sm-12 text-left menu-1 sticky-top">
-							<ul >
-								<li class="active"><a href="/">Home</a></li>
-								<li><a href="/shope">Shop</a></li>
-								<li><a href="about.html">About</a></li>
-								<li><a href="contact.html">Contact</a></li>
-
-								<form action="#" class="search-wrap">
-									<div class="form-group">
-										<input type="search" class="form-control search" placeholder="Search">
-										<button class="btn btn-primary submit-search text-center" type="submit"><i
-												class="icon-search"></i></button>
-									</div>
-								</form>
-
-
-								<!-- cart icon -->
-								<li class="cart"><a href="cart.html"><i class="icon-shopping-cart"></i>cart</a></li>
-								<!-- Wishlist icon -->
-								<li class="cart"><a href="cart.html"><i class="bi bi-suit-heart"></i>wishlist</a></li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
+    
+    <!-- </body>
+</html> -->

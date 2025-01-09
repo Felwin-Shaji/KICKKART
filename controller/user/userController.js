@@ -6,6 +6,7 @@ const Product = require("../../models/productSchema")
 const nodemailer = require('nodemailer')
 const env = require('dotenv').config
 const bcrypt = require("bcrypt");
+const validator = require("validator")
 const { login } = require("../admin/adminController");
 const { EventEmitterAsyncResource } = require("nodemailer/lib/xoauth2");
 
@@ -23,48 +24,132 @@ const pageNotFound = async (req, res) => {
     }
 }
 
-const loadShopPage = async (req,res) => {
+const loadShopPage = async (req, res) => {
     try {
         const user = req.session.user;
-        const userData = await User.findOne({_id:user});
-        const categories = await Category.find({isListed:true});
-        const categoryIds = categories.map((category)=>category._id.toString());
+        const userData = await User.findOne({ _id: user });
+        const categories = await Category.find({ isListed: true });
+        const categoryIds = categories.map((category) => category._id.toString());
         const page = parseInt(req.query.page) || 1;
         const limit = 9;
-        const skip = (page-1)*limit;
-        const products = await Product.find({
-            isBlocked:false,
-            category:{$in:categoryIds},
-            variants: {$elemMatch: { quantity: { $gt: 0 } }}
-        }).sort({createdAt:-1}).skip(skip).limit(limit);
+        const skip = (page - 1) * limit;
 
-        const totalProducts =await Product.countDocuments({
-            isBlocked:false,
-            category:{$in:categoryIds},
-            quantity:{$gt:0},
+        const brands = await Brand.find({ isBlocked: false });
+
+        const products = await Product.find({
+            isBlocked: false,
+            category: { $in: categoryIds },
+            variants: { $elemMatch: { quantity: { $gt: 0 } } }
+        }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    
+
+        const totalProducts = await Product.countDocuments({
+            isBlocked: false,
+            category: { $in: categoryIds },
+            quantity: { $gt: 0 },
         });
 
-        const totalpages = Math.ceil(totalProducts/limit);
+        const totalpages = Math.ceil(totalProducts / limit);
 
-        const brands = await Brand.find({isBlocked:false});
-
-        const categoriesWidthIds = categories.map(category=>({_id:category._id,name:category.name}));
-
-        console.log("|||||||||||",page,totalpages)
         
 
-        res.render("shop",{
-            user:userData,
-            products:products,
-            category:categoriesWidthIds,
-            brand:brands,
-            totalProducts:totalProducts,
-            currentPage:page,
-            totalpages:totalpages,
+        const categoriesWidthIds = categories.map(category => ({ _id: category._id, name: category.name }));
+
+        res.render("shop", {
+            user: userData,
+            products: products,
+            category: categoriesWidthIds,
+            brand: brands,
+            totalProducts: totalProducts,
+            currentPage: page,
+            totalpages: totalpages,
         })
 
     } catch (error) {
         res.redirect("/pageNotFound");
+    }
+}
+
+const filterProduct = async (req, res) => {
+    try {
+        const user = req.session.user;
+
+        const category = req.query.category
+        req.session.category = category
+
+        const brand = req.query.brand;
+        req.session.brand = brand
+
+        const findCategory = category ? await Category.findOne({ _id: category }) : null;
+
+        const findBrand = brand ? await Brand.findOne({ _id: brand }) : null;
+
+        const brands = await Brand.find({}).lean(); //The .lean() method tells Mongoose to return plain JavaScript objects instead of Mongoose documents.
+
+        console.log("brands",brands)
+
+        const query = {
+            isBlocked: false,
+            variants: {
+                $elemMatch: { quantity: { $gt: 0 } }
+            }
+        };
+
+
+        if ( req.session.category) {
+            query.category = findCategory._id;
+        }
+
+        if (req.session.brand) {
+            query.brand = findBrand.brandName
+        }
+
+        let findProductes = await Product.find(query).lean();
+
+        findProductes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+        const categories = await Category.find({ isListed: true });
+
+
+        let itemsPerPage = 6;
+
+        let currentPage = parseInt(req.query.page) || 1;
+        let startIndex = (currentPage - 1) * itemsPerPage;
+        let endIndex = startIndex + itemsPerPage;
+        let totalpages = Math.ceil(findProductes.length / itemsPerPage);
+
+        const currentProduct = findProductes.slice(startIndex, endIndex);
+
+        let userData = null;
+        if (user) {
+            userData = await User.findOne({ _is: user });
+            if (userData) {
+                const searchEntry = {
+                    category: findCategory ? findCategory._id : null,
+                    brand: findBrand ? findBrand.brandName : null,
+                    searchedOn: new Date(),
+                }
+                userData.searchHistory.push(searchEntry);
+                await userData.save();
+            }
+        }
+
+        req.session.filteredProducts = currentProduct;
+
+        res.render("shop", {
+            user: userData,
+            products: currentProduct,
+            category: categories,
+            brand: brands,
+            totalpages,
+            currentPage,
+            selectedCategory: category || null,
+            selectedBrand: brand || null,
+
+        })
+
+    } catch (error) {
+        res.redirect("/pageNotFound")
     }
 }
 
@@ -73,30 +158,39 @@ const loadHomePage = async (req, res) => {
         const user = req.session.user;
 
         const categories = await Category.find({ isListed: true })
+
         let productData = await Product.find({
             isBlocked: false,
             category: { $in: categories.map(category => category._id) },
-            variants: {$elemMatch: { quantity: { $gt: 0 } }}
+            variants: { $elemMatch: { quantity: { $gt: 0 } } }
         })
+            .sort({ createdAt: -1 }) // Sort by creation date in descending order
+            .limit(4); // Limit to 4 products
 
-        console.log('111111111111',productData);
-
-        productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        productData = productData.slice(0, 4);
-
-        
-        
+        const varientSize = productData.flatMap(product => product.variants.map(variant => variant.size));
+        const varientColor = productData.flatMap(product => product.variants.map(variant => variant.color));
+        const varientQuantity = productData.flatMap(product => product.variants.map(variant => variant.quantity));
 
         if (user) {
             const userData = await User.findById(user)
-            console.log('user DAta', userData)
-            res.render('index', { user: userData, products: productData });
+            res.render('index', {
+                user: userData,
+                products: productData,
+                varientSize: varientSize,
+                varientColor: varientColor,
+                varientQuantity: varientQuantity,
+            });
         } else {
-            return res.render('index',{products:productData});
+            return res.render('index', {
+                products: productData,
+                varientSize: varientSize,
+                varientColor: varientColor,
+                varientQuantity: varientQuantity,
+            });
         }
     } catch (error) {
-        console.log('login error');
-        res.status(500).send('server error')
+        console.error('Error loading home page:', error.message);
+        res.status(500).send('Server error');
     }
 }
 
@@ -142,46 +236,55 @@ async function sendVerificationEmail(email, otp) {    ////nodemailer
 
 const signup = async (req, res) => {
     try {
-
-
         const { name, phone, email, password, confirmPassword } = req.body;
-        console.log('.....................................', email);
 
+        console.log("req.body", req.body);
 
+        // Check if all fields are filled
+        if (!name || !phone || !email || !password || !confirmPassword) {
+            return res.status(400).json({ success: false, message: 'All fields are required' });
+        }
+
+        // Check if passwords match
         if (password !== confirmPassword) {
-            return res.render('signup', { message: 'Password do not match' });
+            return res.status(400).json({ success: false, message: 'Passwords do not match' });
         }
 
-        const findUser = await User.findOne({ email })
+        // Validate email format
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ success: false, message: 'Invalid email format' });
+        }
+
+        // Check if user already exists
+        const findUser = await User.findOne({ email });
         if (findUser) {
-            return res.render('signup', { message: 'user with this email already exists ' });
+            return res.status(400).json({ success: false, message: 'Email already in use' });
         }
 
+        // Generate OTP
         const otp = generateOtp();
+        console.log('Signup successful, OTP sent',otp);
 
+        // Send OTP to email
         const emailSent = await sendVerificationEmail(email, otp);
-
         if (!emailSent) {
-            return res.json('email-error')
+            return res.status(500).json({ success: false, message: 'Failed to send OTP. Please try again.' });
         }
 
+        // Store OTP and user data in session
         req.session.userOtp = otp;
         req.session.userData = { name, phone, email, password };
+        req.session.otpExpiry = Date.now() + 60000; // OTP valid for 1 minute
 
-        console.log('signup .....- ', req.session.user)
+        console.log('Signup successful, OTP sent',req.session.userOtp);
 
-        console.log('Otp Sent ', otp);
-
-        res.render('Verify-Otp')
-
-
-
+        // Response
+        return res.status(200).json({ success: true, message: 'OTP sent successfully', redirectTo: '/verify-otp' });
     } catch (error) {
-        console.log("Signup  error")
-        res.redirect('/pageNotFound')
+        console.error('Signup error:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
-
-}
+};
 
 const securePassword = async (password) => {
     try {
@@ -192,42 +295,81 @@ const securePassword = async (password) => {
     }
 }
 
-const verifyOtp = async (req, res) => {
+const getVerifyOTP = async (req, res) => {
     try {
+        const otp = req.session.userOtp;
 
-        const user = req.session.user
-
-        if (!user) {
-
-            const { otp } = req.body;
-            console.log({ otp })
-
-            if (otp === req.session.userOtp) {
-                const user = req.session.userData;
-                const passwordHash = await securePassword(user.password);
-
-                const saveUserData = new User({
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone,
-                    password: passwordHash,
-                })
-
-                await saveUserData.save();
-                // req.session.user = saveUserData._id
-                res.json({ success: true, redirectUrl: '/login' })
-
-                req.session.user = saveUserData;
-
-            } else {
-                res.status(400).json({ success: false, message: 'Invalid OTP , please try again' })
-            }
+        if (!otp) {
+            console.error("OTP expired or not found in session.");
+            return res.redirect("/pageNotFound");
         }
 
+        res.render("Verify-Otp");
     } catch (error) {
-        res.status(500).json({ success: false, message: "an error occured" })
+        console.error("Error at getVerifyOTP:", error.message || error);
+        res.redirect("/pageNotFound");
     }
-}
+};
+
+const verifyOtp = async (req, res) => {
+    try {
+        const user = req.session.userData;
+        const { otp } = req.body;
+
+        console.log("ooooo",req.body)
+
+        if (!otp || !user) {
+            console.error("Missing OTP or user data in session.");
+            return res.status(400).json({
+                success: false,
+                message: "Session expired or invalid data. Please try again.",
+            });
+        }
+
+        console.log("Received OTP:", otp);
+
+        // Compare the entered OTP with the session-stored OTP
+        if (otp === req.session.userOtp) {
+            // Hash the user's password
+            const passwordHash = await securePassword(user.password);
+
+            // Save user data in the database
+            const saveUserData = new User({
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                password: passwordHash,
+            });
+
+            await saveUserData.save();
+
+            // Update session with the saved user data
+            req.session.user = saveUserData;
+
+            // Clear OTP from session after successful verification
+            delete req.session.userOtp;
+            delete req.session.userData;
+
+            res.json({
+                success: true,
+                message: "OTP verified successfully.",
+                redirectUrl: "/login",
+            });
+        } else {
+            console.error("Invalid OTP entered.");
+            res.status(400).json({
+                success: false,
+                message: "Invalid OTP. Please try again.",
+            });
+        }
+    } catch (error) {
+        console.error("Error at verifyOtp:", error.message || error);
+        res.status(500).json({
+            success: false,
+            message: "An internal error occurred. Please try again later.",
+        });
+    }
+};
 
 const resendOtp = async (req, res) => {
     try {
@@ -323,31 +465,28 @@ const logout = async (req, res) => {
     try {
         req.session.destroy((err) => {
             if (err) {
-                console.log('session destruction error ', err.message);
-                return res.redirect('/pageNotFound');
+                console.log('Session destruction error:', err.message);
+                return res.redirect('/pageNotFound'); // Redirect to an error page
             }
-            return res.redirect('/');
-        })
+            res.clearCookie('connect.sid'); // Clear session cookie
+            res.redirect('/'); // Redirect to the login page or home page
+        });
     } catch (error) {
-        console.log("logout error ", error);
-        res.redirect('/pageNotFound');
+        console.log("Logout error:", error);
+        res.redirect('/pageNotFound'); // Handle unexpected errors
     }
-}
+};
 
 const googleVerification = async (req, res) => {
     res.redirect('/')
 }
-
-// const productDetails = async (req,res) => {
-//     res.render("Show-product")
-// }
-
 
 module.exports = {
     loadHomePage,
     pageNotFound,
     loadSignup,
     signup,
+    getVerifyOTP,
     verifyOtp,
     googleVerification,
     resendOtp,
@@ -355,4 +494,5 @@ module.exports = {
     Login,
     logout,
     loadShopPage,
+    filterProduct,
 }

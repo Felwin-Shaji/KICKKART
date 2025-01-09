@@ -121,6 +121,20 @@
             z-index: 10;
             /* Ensure it appears above other elements */
         }
+
+        .variant-option {
+            cursor: pointer;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 3px;
+        }
+
+        .variant-option.selected {
+            background-color: #2a2a2a;
+            color: #fff;
+            font-weight: bold;
+        }
     </style>
 
     <div class="colorlib-product">
@@ -209,37 +223,35 @@
                                 <h4>Size</h4>
                                 <ul>
                                     <% for(let i=0;i<varientSize.length;i++) {%>
-                                    <li><a href="#"><%= varientSize[i] %></a></li>
-                                    <% } %>
-                                </ul>
-                            </div>
-                            <div class="block-26 mb-4">
-                                <h4>Color</h4>
-                                <ul>
-                                    <% for(let i=0;i<varientColor.length;i++) {%>
-                                    <li><a href="#"><%= varientColor[i]  %></a></li>
-                                    <% } %>
+                                        <li class="variant-option" data-size="<%=varientSize[i] %>">
+                                            <%= varientSize[i] %>
+                                        </li>
+                                        <% } %>
                                 </ul>
                             </div>
                         </div>
                         <div class="input-group mb-4">
+                            <h5>Quantity :</h5>
                             <span class="input-group-btn">
-                                <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
-                                    <i class="icon-minus2"></i>
+                                <button type="button" class="quantity-left-minus btn" data-type="minus"
+                                    data-field="quantity">-
                                 </button>
                             </span>
-                            <input type="text" id="quantity" name="quantity" class="form-control input-number"
-                                value="<%=product.quantity%>" min="1" max="100">
+                            <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1"
+                                min="1" max="7" readonly>
                             <span class="input-group-btn ml-1">
-                                <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
-                                    <i class="icon-plus2"></i>
+                                <button type="button" class="quantity-right-plus btn" data-type="plus"
+                                    data-field="quantity">+
                                 </button>
                             </span>
                         </div>
-                        <div class="row">
+
+                        <div>
                             <div class="col-sm-12 text-center">
-                                <p class="addtocart"><a href="cart.html" class="btn btn-primary btn-addtocart"><i
-                                            class="icon-shopping-cart"></i> Add to Cart</a></p>
+                                <p class="addtocart"><a class="btn btn-primary btn-addtocart"
+                                        data-product-id="<%=product._id %>"><i class="icon-shopping-cart"></i> Add to
+                                        Cart</a></p>
+                                <!-- <p class="addtocart"><a href="/cart" class="btn btn-primary btn-addtocart"> Order Nowwwww</a></p> -->
                             </div>
                         </div>
                     </div>
@@ -454,6 +466,107 @@
 
     <script>
 
+        document.addEventListener("DOMContentLoaded", () => {
+            // DOM Elements
+            const sizeList = document.querySelectorAll(".variant-option");
+            const addToCartButton = document.querySelector(".btn-addtocart");
+            const quantityInput = document.getElementById("quantity");
+
+
+            let selectedSize = null; // To store the selected size
+
+            const handleQuantity = () => {
+                const btnDecrease = document.querySelector(".quantity-left-minus");
+                const btnIncrease = document.querySelector(".quantity-right-plus");
+                const minQuantity = parseInt(quantityInput.getAttribute("min")) || 1;
+                const maxQuantity = parseInt(quantityInput.getAttribute("max")) || 10;
+
+                btnDecrease.addEventListener("click", () => {
+                    let currentValue = parseInt(quantityInput.value) || minQuantity;
+                    if (currentValue > minQuantity) {
+                        quantityInput.value = currentValue - 1;
+                    } else {
+                        alert(`Minimum quantity is ${minQuantity}`);
+                    }
+                });
+
+                btnIncrease.addEventListener("click", () => {
+                    let currentValue = parseInt(quantityInput.value) || minQuantity;
+                    if (currentValue < maxQuantity) {
+                        quantityInput.value = currentValue + 1;
+                    } else {
+                        alert(`Maximum quantity is ${maxQuantity}`);
+                    }
+                });
+
+            }
+
+            //Initialize the quantity handlers
+            handleQuantity();
+
+            // Function to handle size selection
+            const handleSizeSelection = (event) => {
+                selectedSize = event.target.getAttribute("data-size");
+                console.log("Selected Size:", selectedSize);
+
+                // Highlight the selected size
+                sizeList.forEach(sizeElement => sizeElement.classList.remove("selected"));
+                event.target.classList.add("selected");
+            };
+
+            // Attach click event listeners to all size options
+            sizeList.forEach(sizeElement => {
+                sizeElement.addEventListener("click", handleSizeSelection);
+            });
+
+            // Function to handle Add to Cart click
+            const handleAddToCart = async () => {
+                if (!selectedSize) {
+                    console.error("No size selected! Please select a size.");
+                    alert("Please select a size before adding to cart.");
+                    return;
+                }
+
+                const productId = addToCartButton.getAttribute("data-product-id");
+                const quantity = parseInt(quantityInput.value) || 1;
+                console.log("Product ID:", productId);
+                console.log("Quantity: ", quantity)
+
+                try {
+                    const response = await fetch("/cart", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ productId, selectedSize, quantity }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    console.log("response:", response);
+
+                    const result = await response.json();
+                    console.log("Result:", result);
+
+                    if (result.success) {
+                        alert(result.message || "Item added to your cart!");
+                        window.location.href = "/cart";
+                    } else {
+                           console.error("Error adding to cart:", result.message);
+                            alert(result.message || "Failed to add item to cart.");
+                    }
+                } catch (error) {
+                    console.log("Error at Add to Cart:", error);
+                    alert("An error occurred. Please try again.");
+                }
+            };
+
+            // Attach click event listener to Add to Cart button
+            addToCartButton.addEventListener("click", handleAddToCart);
+        });
+
+
+
+
 
         $(document).ready(function () {
             const owl = $('.owl-carousel');
@@ -532,6 +645,32 @@
                 });
             });
         });
+
+        // $(document).ready(function () {
+        //     // When the "+" button is clicked
+        //     $(".quantity-right-plus").click(function (e) {
+        //         e.preventDefault();
+        //         var quantity = parseInt($("#quantity").val()); // Get current quantity
+        //         var maxQuantity = $("#quantity").attr("max"); // Get max quantity
+
+        //         // Check if quantity is less than max
+        //         if (quantity < maxQuantity) {
+        //             $("#quantity").val(quantity + 1); // Increment the quantity
+        //         }
+        //     });
+
+            // When the "-" button is clicked
+            // $(".quantity-left-minus").click(function (e) {
+            //     e.preventDefault();
+            //     var quantity = parseInt($("#quantity").val()); // Get current quantity
+            //     var minQuantity = $("#quantity").attr("min"); // Get min quantity
+
+            //     // Check if quantity is greater than min
+            //     if (quantity > minQuantity) {
+            //         $("#quantity").val(quantity - 1); // Decrement the quantity
+            //     }
+            // });
+        // });
 
 
 

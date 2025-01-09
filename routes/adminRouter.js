@@ -17,7 +17,7 @@ const coustomerController = require('../controller/admin/coustomerController')
 const categoryController = require('../controller/admin/categoryController')
 const brandController = require('../controller/admin/brandController')
 const productController = require("../controller/admin/productController")
-
+const orderController = require("../controller/admin/orderController")
 
 
 
@@ -51,8 +51,14 @@ router.post("/addProducts",adminAuth,uploads.array('images',4),productController
 router.get("/products",adminAuth,productController.getAllProducts)
 router.get("/blockProduct",adminAuth,productController.blockProduct)
 router.get("/unBlockProduct",adminAuth,productController.unBlockProduct)
-router.get("/editProduct",adminAuth,productController.getEditProduct)
+router.get("/editProduct",adminAuth,productController.getEditProduct);
+router.post("/editProduct/:id",adminAuth,uploads.array("images",4),productController.editProduct);
+router.post("/daleteImages",adminAuth,productController.deleteSingleImage);
 
+//order managenent
+router.get("/orders",adminAuth,orderController.getOrder);
+router.get("/orders/:id",adminAuth,orderController.orderDetails)
+router.post("/orders/:id/status",adminAuth,orderController.apdateStatus)
 
 
 module.exports = router;

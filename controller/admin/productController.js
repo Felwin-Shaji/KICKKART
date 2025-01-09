@@ -28,7 +28,7 @@ const getAddProduct = async (req, res) => {
 const addProducts = async (req, res) => {
     try {
         //const products = req.body;
-        const { productName, brand, description, regularPrice, salePrice, category, variantSize, variantColor, variantQuantity } = req.body;
+        const { productName, brand, description, regularPrice, salePrice, category, variantSize,  variantQuantity } = req.body;
         console.log("Request Body: 11111111111111111", req.body);
         //console.log('2222222222222222',products);
         
@@ -65,7 +65,6 @@ const addProducts = async (req, res) => {
             for (let i = 0; i < variantSize.length; i++) {
               variants.push({
                 size: variantSize[i],
-                color: variantColor[i],
                 quantity: variantQuantity[i]
               });
             }
@@ -91,10 +90,9 @@ const addProducts = async (req, res) => {
         }
     } catch (error) {
         console.error("Error saving product:", error);
-        return res.redirect("/pageNotFound");
+       // return res.redirect("/pageNotFound");
     }
 };
-
 
 const getAllProducts = async (req, res) => {
     try {
@@ -175,7 +173,7 @@ const getEditProduct = async (req,res) => {
         const product = await Product.findOne({_id:_id});
         const category = await Category.find({})
         const brand = await Brand.find({});
-        console.log("lllllllllllllllllllll",category)
+
         res.render("edit-product",{
             product:product,
             cat:category,
@@ -187,60 +185,98 @@ const getEditProduct = async (req,res) => {
     }
 }
 
-const updateProduct=async (req,res)=>{
+const editProduct = async (req,res) => {
     try {
+        
         const id = req.params.id;
-        console.log("id",id)
-        const product = await Product.findOne({_id:id});
-        console.log("product")
+        const product = await Product.find({_id:id});
+
+        // console.log("product",product);
 
         const data = req.body;
-        console.log(data)
-        const existingProduct= await Product.findOne({
+        console.log("req.body",req.body)
+        const existingProduct = await Product.findOne({
             productName:data.productName,
             _id:{$ne:id}
         })
-        console.log(existingProduct)
+
+        const category = await Category.find({name:data.category})
+
+        console.log("category",category[0]._id)
 
         if(existingProduct){
-            return res.status(400).json({error:"Product is allready exist, Please try again with another name "})
+            return res.status(400).json({error:"product with this name already exists. please try another name."});
         }
 
-        console.log("exist")
-
-        const image=[];
-        console.log("image")
+        const images = [];
 
         if(req.files && req.files.length>0){
             for(let i=0;i<req.files.length;i++){
-                image.push(req.files[i].filename)
+                images.push(req.files[i].filename);
             }
-
         }
 
-        const updateFields={
+    
+
+        const variants = [];
+        for (let i = 0; i < data.variantSize.length; i++) {
+          variants.push({
+            size: data.variantSize[i],
+            quantity: data.variantQuantity[i]
+          });
+        }
+
+        const updateFields = {
             productName:data.productName,
             description:data.description,
             brand:data.brand,
-            category:product.category,
-            regularPrice:product.regularPrice,
+            category:category[0]._id,
+            regularPrice:data.regularPrice,
             salePrice:data.salePrice,
-            quantity:data.quantity,
-            size:data.size,
-            color:data.color
+            variants:variants
+        } 
+
+        console.log("req.files.length",req.files)
+
+        // if(req.files.length>0){
+        //     updateFields.$push = {productImage:{$each:req.files.filename}};
+        // }
+
+        if (req.files.length > 0) {
+            const fileNames = req.files.map(file => file.filename); // Extract an array of filenames
+            console.log("fileNames",fileNames)
+            updateFields.$push = { productImage: { $each: fileNames } }; // Use the array with $each
         }
-        console.log("hai")
-        if(req.files.length>0){
-            updateFields.$push={productImage:{$each:image}}
-        }
-        console.log("hello")
+
+        console.log("updateFields",updateFields)
+
         await Product.findByIdAndUpdate(id,updateFields,{new:true});
-        res.redirect('/admin/products')
+        res.redirect("/admin/products");
+
 
     } catch (error) {
-        // console.error(error);
-        res.redirect('/pagenotfound')
+        console.error(error);
+        res.redirect("/pageNotFound")
+    }
+}
 
+const deleteSingleImage = async (req,res) => {
+    try {
+        console.log("req.body",req.body);
+
+        const {imageId,productId} = req.body;
+        const product = await Product.findByIdAndUpdate(productId,{$pull:{productImage:imageId}});
+        const imagePath = path.join("public","uploads","re-image",imageId);
+        console.log("imagePath",imagePath)
+        if(fs.existsSync(imagePath)){
+            await fs.unlinkSync({imagePath});
+            console.log(`image ${imageId} deleted successfully`);
+            res.status(200).json({sucess:true,message:"image deleted successfully"})
+        }else{
+            console.log(`image ${imageId} not found`);
+        }
+    } catch (error) {
+        res.redirect("/pageNotFound")
     }
 }
 
@@ -250,6 +286,7 @@ module.exports = {
     getAllProducts,
     blockProduct,
     unBlockProduct,
-    updateProduct,
-    getEditProduct
+    getEditProduct,
+    editProduct,
+    deleteSingleImage
 }

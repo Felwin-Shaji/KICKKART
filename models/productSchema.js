@@ -6,10 +6,6 @@ const variantSchema = new Schema({
         type: String,
         required: false,
     },
-    color: {
-        type: String,
-        required: false,
-    },
     quantity: {
         type: Number,
         required: true,

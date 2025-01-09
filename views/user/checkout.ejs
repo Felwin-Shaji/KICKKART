@@ -1,0 +1,160 @@
+<%- include("../partials/user/header.ejs") -%>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <p class="bread"><span><a href="/">Home</a></span> / <span>Checkout</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="colorlib-product">
+        <div class="container">
+            <div class="row row-pb-lg">
+                <div class="col-sm-10 offset-md-1">
+                    <div class="process-wrap">
+                        <div class="process text-center active">
+                            <p><span>01</span></p>
+                            <h3>Shopping Cart</h3>
+                        </div>
+                        <div class="process text-center active">
+                            <p><span>02</span></p>
+                            <h3>Checkout</h3>
+                        </div>
+                        <div class="process text-center">
+                            <p><span>03</span></p>
+                            <h3>Order Complete</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <form id="orderForm" class="colorlib-form">
+                        <h2>Billing Details</h2>
+                        <div class="form-group">
+                            <label for="savedAddresses">Select a Saved Address</label>
+                            <select name="selectedAddress" id="savedAddresses" class="form-control">
+                                <% userAddress.forEach((addresses)=> { %>
+                                    <option value="<%= addresses._id %>">
+                                        <%= `${addresses.name} - ${addresses.addressType}, ${addresses.city},
+                                            ${addresses.landMark}, ${addresses.state}, ${addresses.pincode}` %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                        </div>
+                        <div>
+                            <a href="/addAddress">
+                                <p class="btn btn-primary w-70">Add address</p>
+                            </a>
+                        </div>
+
+                        <div class="cart-detail">
+                            <h2>Cart Total</h2>
+                            <ul>
+                                <li>
+                                    <span>Subtotal</span>
+                                    ₹<%= cart.items.reduce((total, item)=> total + (item.product.salePrice *
+                                        item.quantity), 0).toFixed(2) %>
+                                        <ul>
+                                            <% cart.items.forEach((item)=> { %>
+                                                <li>
+                                                    <span>
+                                                        <%= item.quantity %> x <%= item.product.productName %> (size:
+                                                                <%= item.size %>)
+                                                    </span>
+                                                    <span>
+                                                        ₹<%= (item.product.salePrice * item.quantity).toFixed(2) %>
+                                                    </span>
+                                                </li>
+                                                <% }); %>
+                                        </ul>
+                                </li>
+                                <li><span>Shipping</span> <span>₹50.00</span></li>
+                                <li>
+                                    <span>Order Total</span>
+                                    <span>
+                                        ₹<%= (cart.items.reduce((total, item)=> total + (item.product.salePrice *
+                                            item.quantity), 0) + 50).toFixed(2) %>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="cart-detail">
+                            <h2>Payment Method</h2>
+                            <div class="form-group">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="paymentMethod" value="COD" required> COD
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="paymentMethod" value="paypal" required> Paypal
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="terms" required> I have read and accept the terms and
+                                    conditions
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Place an order</button>
+                        </div>
+                    </form>
+
+                </div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        document.getElementById("orderForm").addEventListener("submit", async function (event) {
+                            event.preventDefault();
+
+                            // Collect form data
+                            const formData = new FormData(this);
+
+                            // Convert form data to JSON
+                            const data = {};
+                            formData.forEach((value, key) => {
+                                data[key] = value;
+                            });
+
+                            try {
+                                // Send POST request using fetch
+                                const response = await fetch("/place-order", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(data),
+                                });
+
+                                const responseText = await response.text(); // Read as text to debug
+
+                                if (response.ok) {
+                                    const result = JSON.parse(responseText); // Attempt to parse JSON
+                                    alert("Order placed successfully!");
+                                    window.location.href = "/order-success"; // Redirect on success
+                                } else {
+                                    const error = JSON.parse(responseText); // Parse the response as error message
+                                    alert(`Error: ${error.message}`);
+                                }
+                            } catch (error) {
+                                console.error("Error placing order:", error);
+                                alert("An error occurred while placing your order. Please try again.");
+                            }
+                        });
+                    });
+
+                </script>
+
+                <%- include("../partials/user/footer.ejs") -%>

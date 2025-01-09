@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,7 +41,7 @@
       <p class="instructions">Please enter the 6-digit OTP sent to your registered email or phone number.</p>
 
       <form id="otpForm">
-        <form action="/forgotPassword-email-varification" method="POST" id="otpForm">
+        <form action="/forgotPass-verify-OTP" method="POST" id="otpForm">
         <div class="input-group">
           <label for="otp">Enter OTP</label>
           <input type="text" id="otp" name="otp" maxlength="6" pattern="^[0-9]{6}$" title="Enter a valid 6-digit OTP"
@@ -71,17 +72,17 @@
       timerInterval = setInterval(() => {
         if (timer > 0) {
           timer--;
-          localStorage.setItem('otpTimer', timer); // Save timer in localStorage
+          localStorage.setItem('otpTimer', timer);  
           const minutes = Math.floor(timer / 60);
           const seconds = timer % 60;
           document.getElementById("otpTimer").textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
         } else {
           clearInterval(timerInterval);
-          localStorage.removeItem('otpTimer'); // Clear timer when expired
+          localStorage.removeItem('otpTimer'); 
           document.getElementById("otpTimer").textContent = "Expired";
           document.getElementById("otpTimer").classList.add("expired");
           document.getElementById("otp").disabled = true;
-          resendButton.disabled = false; // Enable resend button when timer expires
+          resendButton.disabled = false; 
         }
       }, 1000);
     }
@@ -97,7 +98,7 @@
       // Simulate resend OTP AJAX
       $.ajax({
         type: "POST",
-        url: "/resend-otp",
+        url: "/forgot-resend-OTP",
         success: function (response) {
           if (response.success) {
             Swal.fire({
@@ -135,7 +136,7 @@
       // Simulate OTP form submission with AJAX
       $.ajax({
         type: "POST",
-        url: "/verify-otp",
+        url: "/forgotPass-verify-OTP",
         data: { otp },
         success: function (response) {
           if (response.success) {
@@ -145,7 +146,8 @@
               text: "You have successfully verified the OTP.",
             }).then(() => {
               // Redirect to login page
-              window.location.href = "/login";
+              //window.location.href = "/login";
+              window.location.href = response.redirectUrl
             });
           } else {
             Swal.fire({
@@ -176,5 +178,5 @@
     });
   </script>
 </body>
-
 </html>
+

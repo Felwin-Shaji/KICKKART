@@ -19,7 +19,7 @@ const brandSchema = new Schema ({
         default: false,
     },
     createdAt: {
-        type: Date,
+        type: Date, 
         default: Date.now
     }
 }) 

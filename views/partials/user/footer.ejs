@@ -3,40 +3,41 @@
         <div class="row row-pb-md">
             <div class="col footer-col colorlib-widget">
                 <h4>About Footwear</h4>
-                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life</p>
+                <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic
+                    life</p>
                 <p>
-                    <ul class="colorlib-social-icons">
-                        <li><a href="#"><i class="icon-twitter"></i></a></li>
-                        <li><a href="#"><i class="icon-facebook"></i></a></li>
-                        <li><a href="#"><i class="icon-linkedin"></i></a></li>
-                        <li><a href="#"><i class="icon-dribbble"></i></a></li>
-                    </ul>
+                <ul class="colorlib-social-icons">
+                    <li><a href="#"><i class="icon-twitter"></i></a></li>
+                    <li><a href="#"><i class="icon-facebook"></i></a></li>
+                    <li><a href="#"><i class="icon-linkedin"></i></a></li>
+                    <li><a href="#"><i class="icon-dribbble"></i></a></li>
+                </ul>
                 </p>
             </div>
             <div class="col footer-col colorlib-widget">
                 <h4>Customer Care</h4>
                 <p>
-                    <ul class="colorlib-footer-links">
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Returns/Exchange</a></li>
-                        <li><a href="#">Gift Voucher</a></li>
-                        <li><a href="#">Wishlist</a></li>
-                        <li><a href="#">Special</a></li>
-                        <li><a href="#">Customer Services</a></li>
-                        <li><a href="#">Site maps</a></li>
-                    </ul>
+                <ul class="colorlib-footer-links">
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Returns/Exchange</a></li>
+                    <li><a href="#">Gift Voucher</a></li>
+                    <li><a href="#">Wishlist</a></li>
+                    <li><a href="#">Special</a></li>
+                    <li><a href="#">Customer Services</a></li>
+                    <li><a href="#">Site maps</a></li>
+                </ul>
                 </p>
             </div>
             <div class="col footer-col colorlib-widget">
                 <h4>Information</h4>
                 <p>
-                    <ul class="colorlib-footer-links">
-                        <li><a href="#">About us</a></li>
-                        <li><a href="#">Delivery Information</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Support</a></li>
-                        <li><a href="#">Order Tracking</a></li>
-                    </ul>
+                <ul class="colorlib-footer-links">
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Delivery Information</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Order Tracking</a></li>
+                </ul>
                 </p>
             </div>
 
@@ -65,9 +66,14 @@
             <div class="col-sm-12 text-center">
                 <p>
                     <span><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></span> 
-                    <span class="block">Demo Images: <a href="http://unsplash.co/" target="_blank">Unsplash</a> , <a href="http://pexels.com/" target="_blank">Pexels.com</a></span>
+                        Copyright &copy;
+                        <script>document.write(new Date().getFullYear());</script> All rights reserved | This template
+                        is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com"
+                            target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    </span>
+                    <span class="block">Demo Images: <a href="http://unsplash.co/" target="_blank">Unsplash</a> , <a
+                            href="http://pexels.com/" target="_blank">Pexels.com</a></span>
                 </p>
             </div>
         </div>
@@ -76,9 +82,12 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 </div>
 
 <div class="gototop js-top">
-<a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
+    <a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
 </div>
 
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 <!-- jQuery -->
 <script src="/js/jquery.min.js"></script>
 <!-- popper -->
@@ -103,6 +112,67 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <!-- Main -->
 <script src="/js/main.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Page content goes here -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    document.getElementById("logout").addEventListener('click', async (e) => {
+        e.preventDefault(); // Prevent default behavior if this is a link or button
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You will be logged out of your account!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, log out',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            // Perform the logout action
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST', // Use POST for logout if supported
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    // Logout successful
+                    Swal.fire(
+                        'Logged Out!',
+                        'You have been successfully logged out.',
+                        'success'
+                    ).then(() => {
+                        // Redirect to the login page or home after the confirmation
+                        window.location.href = '/';
+                    });
+                } else {
+                    // Handle errors if logout fails
+                    Swal.fire(
+                        'Error!',
+                        'Logout failed. Please try again later.',
+                        'error'
+                    );
+                }
+            } catch (error) {
+                Swal.fire(
+                    'Error!',
+                    'An unexpected error occurred. Please try again later.',
+                    'error'
+                );
+            }
+        }
+    });
+
+
+</script>
 
 </body>
+
 </html>

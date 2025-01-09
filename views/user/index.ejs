@@ -1,56 +1,259 @@
-
 <%- include("../partials/user/header.ejs") -%>
 
-<style>
-    .product-action-1 {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      background-color: #d3edff;
-      border: 1px solid #d3edff;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      transition: all 0.3s ease;
-    }
-    
-    .product-action-1 a {
-      color: #272727; /* Wishlist icon color */
-      font-size: 16px;
-      text-decoration: none;
-    }
-    
-    .product-action-1 a:hover {
-      color: #000000; /* Change icon color on hover */
-    }
-    
-    .product-action-1:hover {
-      transform: scale(1.1); /* Slight zoom effect on hover */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
+    <style>
+        .product-action-1 {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background-color: #d3edff;
+            border: 1px solid #d3edff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .product-action-1 a {
+            color: #272727;
+            /* Wishlist icon color */
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .product-action-1 a:hover {
+            color: #000000;
+            /* Change icon color on hover */
+        }
+
+        .product-action-1:hover {
+            transform: scale(1.1);
+            /* Slight zoom effect on hover */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* General Reset */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .product-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .position-relative {
+            position: relative;
+        }
+
+        .hot-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff6b6b;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-title+.card-title {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .star-rating {
+            color: #f5c518;
+            font-size: 14px;
+        }
+
+        .discount-badge {
+            background-color: #28a745;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .cart-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cart-button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .col-md-6.col-lg-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .col-md-6.col-lg-3 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .product-card {
+                margin: 0 auto 20px;
+            }
+        }
+
+        .parent-container {
+            overflow: visible;
+            /* Ensure modal is fully visible */
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            background: transparent;
+            /* Fully transparent background */
+            color: #ffffff;
+            border-radius: 8px;
+            box-shadow: none;
+            /* Remove shadow */
+            text-align: center;
+        }
+
+        .variant-option {
+            cursor: pointer;
+            padding: 10px 15px;
+            /* Adjust padding for better touch targets */
+            border: 1px solid transparent;
+            display: inline-block;
+            margin: 5px;
+            border-radius: 4px;
+            font-size: 14px;
+            /* Consistent font size */
+            transition: all 0.3s ease;
+            /* Smooth hover/selection transitions */
+        }
+
+        .variant-option:hover {
+            border-color: #007bff;
+            /* Highlight on hover */
+            background-color: rgba(0, 123, 255, 0.1);
+            /* Subtle background color */
+        }
+
+        .variant-option.selected {
+            background-color: #007bff;
+            /* Highlight selected option */
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        /* Modal transparency adjustments */
+        .modal {
+            background: rgba(0, 0, 0, 0);
+            /* Transparent background with a subtle black overlay */
+        }
+
+        .modal-dialog {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            /* Center vertically */
+        }
+
+        .modal-header,
+        .modal-footer {
+            background: rgba(0, 0, 0, 0.356);
+
+            border: none;
+            /* Remove default borders */
+        }
+
+        .modal-title {
+            color: #ffffff;
+            /* Ensure title is visible on transparent background */
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+        }
+
+        /* For smaller screens */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .variant-option {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
     </style>
-    
 
-
-<div class="sale">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-8 offset-sm-2 text-center">
-                        <div class="row">
-                            <div class="owl-carousel">
-                                <div class="item">
-                                    <div class="col">
-                                        <h3><a href="#">25% off (Almost) Everything! Use Code: Summer Sale</a></h3>
-                                    </div>
+    <div class="sale">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 offset-sm-2 text-center">
+                    <div class="row">
+                        <div class="owl-carousel">
+                            <div class="item">
+                                <div class="col">
+                                    <h3><a href="#">25% off (Almost) Everything! Use Code: Summer Sale</a></h3>
                                 </div>
-                                <div class="item">
-                                    <div class="col">
-                                        <h3><a href="#">Our biggest sale yet 50% off all summer shoes</a></h3>
-                                    </div>
+                            </div>
+                            <div class="item">
+                                <div class="col">
+                                    <h3><a href="#">Our biggest sale yet 50% off all summer shoes</a></h3>
                                 </div>
                             </div>
                         </div>
@@ -58,72 +261,74 @@
                 </div>
             </div>
         </div>
+    </div>
     </nav>
     <aside id="colorlib-hero">
         <div class="flexslider">
             <ul class="slides">
-               <li style="background-image: url(/images/img_bg_1.jpg);">
-                   <div class="overlay"></div>
-                   <div class="container-fluid">
-                       <div class="row">
-                           <div class="col-sm-6 offset-sm-3 text-center slider-text">
-                               <div class="slider-text-inner">
-                                   <div class="desc">
-                                       <h1 class="head-1">Men's</h1>
-                                       <h2 class="head-2">Shoes</h2>
-                                       <h2 class="head-3">Collection</h2>
-                                       <p class="category"><span>New trending shoes</span></p>
-                                       <p><a href="#" class="btn btn-primary">Shop Collection</a></p>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </li>
-               <li style="background-image: url(/images/img_bg_2.jpg);">
-                   <div class="overlay"></div>
-                   <div class="container-fluid">
-                       <div class="row">
-                           <div class="col-sm-6 offset-sm-3 text-center slider-text">
-                               <div class="slider-text-inner">
-                                   <div class="desc">
-                                       <h1 class="head-1">Huge</h1>
-                                       <h2 class="head-2">Sale</h2>
-                                       <h2 class="head-3"><strong class="font-weight-bold">50%</strong> Off</h2>
-                                       <p class="category"><span>Big sale sandals</span></p>
-                                       <p><a href="#" class="btn btn-primary">Shop Collection</a></p>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </li>
-               <li style="background-image: url(/images/img_bg_3.jpg);">
-                   <div class="overlay"></div>
-                   <div class="container-fluid">
-                       <div class="row">
-                           <div class="col-sm-6 offset-sm-3 text-center slider-text">
-                               <div class="slider-text-inner">
-                                   <div class="desc">
-                                       <h1 class="head-1">New</h1>
-                                       <h2 class="head-2">Arrival</h2>
-                                       <h2 class="head-3">up to <strong class="font-weight-bold">30%</strong> off</h2>
-                                       <p class="category"><span>New stylish shoes for men</span></p>
-                                       <p><a href="#" class="btn btn-primary">Shop Collection</a></p>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </li>
-              </ul>
-          </div>
+                <li style="background-image: url(/images/img_bg_1.jpg);">
+                    <div class="overlay"></div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6 offset-sm-3 text-center slider-text">
+                                <div class="slider-text-inner">
+                                    <div class="desc">
+                                        <h1 class="head-1">Men's</h1>
+                                        <h2 class="head-2">Shoes</h2>
+                                        <h2 class="head-3">Collection</h2>
+                                        <p class="category"><span>New trending shoes</span></p>
+                                        <p><a href="#" class="btn btn-primary">Shop Collection</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li style="background-image: url(/images/img_bg_2.jpg);">
+                    <div class="overlay"></div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6 offset-sm-3 text-center slider-text">
+                                <div class="slider-text-inner">
+                                    <div class="desc">
+                                        <h1 class="head-1">Huge</h1>
+                                        <h2 class="head-2">Sale</h2>
+                                        <h2 class="head-3"><strong class="font-weight-bold">50%</strong> Off</h2>
+                                        <p class="category"><span>Big sale sandals</span></p>
+                                        <p><a href="#" class="btn btn-primary">Shop Collection</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li style="background-image: url(/images/img_bg_3.jpg);">
+                    <div class="overlay"></div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6 offset-sm-3 text-center slider-text">
+                                <div class="slider-text-inner">
+                                    <div class="desc">
+                                        <h1 class="head-1">New</h1>
+                                        <h2 class="head-2">Arrival</h2>
+                                        <h2 class="head-3">up to <strong class="font-weight-bold">30%</strong> off</h2>
+                                        <p class="category"><span>New stylish shoes for men</span></p>
+                                        <p><a href="#" class="btn btn-primary">Shop Collection</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </aside>
     <div class="colorlib-intro">
         <div class="container">
             <div class="row">
                 <div class="col-sm-12 text-center">
-                    <h2 class="intro">It started with a simple idea: Create quality, well-designed products that I wanted myself.</h2>
+                    <h2 class="intro">It started with a simple idea: Create quality, well-designed products that I
+                        wanted myself.</h2>
                 </div>
             </div>
         </div>
@@ -160,30 +365,94 @@
             </div>
 
             <div class="row row-pb-md">
-                <% for(let i=0;i<products.length;i++){ %>
-                <div class="col-lg-3 mb-4 text-center">
-                    <div class="product-entry border">
-                        <div class="product-img -action-wrap">
-                            <div class="product-img product-img-zoom">
-                                <a href="/productDetails?id=<%=products[i]._id%>" class="prod-img">
-                                    <img src="/uploads/re-image/<%=products[i].productImage[0]  %>" class="img-fluid" alt="<%= products[i].productName  %>">
+                <% for(let i=0; i<products.length; i++) { %>
+                    <div class="col-md-4 col-lg-3">
+                        <div class="product-card">
+                            <div class="position-relative">
+                                <span class="hot-badge"><i class="fa-regular fa-heart"></i></span>
+                                <a href="/productDetails?id=<%= products[i]._id %>">
+                                    <img src="/uploads/re-image/<%= products[i].productImage[0] %>" class="card-img-top"
+                                        alt="<%= products[i].productName %>">
                                 </a>
                             </div>
-                        </div>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%= products[i].brand %>
+                                </h5>
+                                <h6 class="card-title">
+                                    <%= products[i].productName %>
+                                </h6>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="star-rating me-2">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <span class="discount-badge">17% Off</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="h5 mb-0">
+                                            <%= Number(products[i].salePrice).toLocaleString("en-IN") %>
+                                        </span>
+                                        <span class="original-price ms-2">
+                                            <%= Number(products[i].regularPrice).toLocaleString("en-IN") %>
+                                        </span>
+                                    </div>
 
-                        <div class="product-action-1">
-                            <a aria-label="Add to Wishlist" class="action-btn hover-up" href="/addToWishlist?id=<%= products[i]._id  %>">
-                                <i class="fa-regular fa-heart"></i>
-                            </a>
-                        </div>
-
-                        <div class="desc">
-                            <h2><a href="/productDetails"><%= products[i].productName %></a></h2>
-                            <span class="price"><%= products[i].salePrice %></span>
+                                    <!-- Cart Button -->
+                                    <% if (!locals.user) { %>
+                                        <a href="/login">
+                                            <button class="cart-button">
+                                                <i class="bi bi-cart-plus"></i>
+                                            </button>
+                                        </a>
+                                        <%}else{ %>
+                                            <button class="cart-button" data-product-id="<%= products[i]._id %>"
+                                                data-bs-toggle="modal" data-bs-target="#sizeModal-<%= i %>">
+                                                <i class="bi bi-cart-plus"></i>
+                                            </button>
+                                            <% } %>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <% } %>
+
+                    <!-- Modal Structure -->
+                    <div id="sizeModal-<%= i %>" class="modal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Select Size</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="size-wrap">
+                                        <div class="block-26 mb-2">
+                                            <h5>Available Sizes</h5>
+                                            <ul class="size-options">
+                                                <% products[i].variants.forEach(({ size })=> { %>
+                                                    <li class="variant-option" data-size="<%= size %>">
+                                                        <%= size %>
+                                                    </li>
+                                                    <% }); %>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="modalOkButton-<%= i %>" class="btn btn-primary modal-ok"
+                                        data-product-id="<%= products[i]._id %>">OK</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
             </div>
             <div class="row">
                 <div class="col-md-12 text-center">
@@ -192,6 +461,10 @@
             </div>
         </div>
     </div>
+
+
+
+
 
     <div class="colorlib-partner">
         <div class="container">
@@ -220,9 +493,90 @@
         </div>
     </div>
 
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            document.querySelectorAll('.cart-button').forEach((button, index) => {
+                button.addEventListener('click', function () {
+                    const productId = this.dataset.productId;
+                    const modal = document.getElementById(`sizeModal-${index}`);
+                    const okButton = modal.querySelector(`#modalOkButton-${index}`);
+                    const closeButton = modal.querySelector('.btn-close');
+                    let selectedSize = null;
+
+                    // Show modal using Bootstrap
+                    const bootstrapModal = new bootstrap.Modal(modal);
+                    bootstrapModal.show();
+
+                    // Handle size selection
+                    modal.querySelectorAll('.variant-option').forEach(option => {
+                        option.addEventListener('click', function () {
+                            modal.querySelectorAll('.variant-option').forEach(opt => opt.classList.remove('selected'));
+                            this.classList.add('selected');
+                            selectedSize = this.dataset.size;
+                        });
+                    });
+
+                    // OK button logic
+                    okButton.addEventListener('click', async () => {
+                        if (selectedSize) {
+                            try {
+                                const response = await fetch('/cart', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ productId, selectedSize, quantity: 1 }),
+                                });
+                                if (response.ok) {
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: 'Item added to cart successfully!',
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                    }).then(() => {
+
+                                        location.reload();
+                                    });
+                                    bootstrapModal.hide();
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: 'Failed to add item to cart.',
+                                    });
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: 'An unexpected error occurred.',
+                                });
+                            }
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Oops...',
+                                text: 'Please select a size before proceeding!',
+                            });
+                        }
+                    });
+
+                    // Close button logic
+                    closeButton.addEventListener('click', () => {
+                        bootstrapModal.hide();
+                    });
+                });
+            });
+
+
+        });
+    </script>
+
+
+
+
+
     <%- include("../partials/user/footer.ejs") -%>
-
-
-
-
-

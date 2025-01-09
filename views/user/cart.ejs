@@ -1,0 +1,450 @@
+<%- include("../partials/user/header.ejs") -%>
+    <style>
+        /* Quantity Control Container */
+        .one-eight.text-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Quantity Input Field */
+        .quantity-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+
+        /* Alignment for Buttons and Input */
+        .input-group-btn {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Adjust Spacing */
+        .ml-1 {
+            margin-left: 5px;
+        }
+
+        .quantity-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            /* Reduced gap between buttons and input */
+        }
+
+        .quantity-input {
+            margin: 0;
+            width: 50px;
+            /* Adjusted width of input */
+            text-align: center;
+        }
+
+        .increment-btn,
+        .decrement-btn,
+        .ok-btn {
+            width: 14px;
+            /* Smaller width */
+            height: 14px;
+            /* Smaller height */
+            line-height: 1;
+            padding: 0;
+            /* Removes extra padding */
+            font-size: 10px;
+            /* Smaller font size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ok-btn {
+            width: 24px;
+            /* Smaller width */
+            height: 14px;
+            /* Smaller height */
+            line-height: 1;
+            padding: 0;
+            /* Removes extra padding */
+            font-size: 10px;
+            /* Smaller font size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <p class="bread"><span><a href="index.html">Home</a></span> / <span>Shopping Cart</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="colorlib-product">
+        <div class="container">
+            <!-- <div class="row row-pb-lg">
+                <div class="col-md-10 offset-md-1">
+                    <div class="process-wrap">
+                        <div class="process text-center active">
+                            <p><span>01</span></p>
+                            <h3>Shopping Cart</h3>
+                        </div>
+                        <div class="process text-center">
+                            <p><span>02</span></p>
+                            <h3>Checkout</h3>
+                        </div>
+                        <div class="process text-center">
+                            <p><span>03</span></p>
+                            <h3>Order Complete</h3>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <div class="row row-pb-lg">
+                <% if(cart.items.length>0){ %>
+                <div class="col-md-12">
+                    <div class="product-name d-flex">
+                        <div class="one-forth text-left px-4">
+                            <span>Product Details</span>
+                        </div>
+                        <div class="one-eight text-center">
+                            <span>Size</span>
+                        </div>
+                        <div class="one-eight text-center">
+                            <span>Price</span>
+                        </div>
+                        <div class="one-eight text-center">
+                            <span>Quantity</span>
+                        </div>
+                        <div class="one-eight text-center">
+                            <span>Total</span>
+                        </div>
+
+                        <div class="one-eight text-center px-4">
+                            <span>Remove</span>
+                        </div>
+                    </div>
+
+                    
+                    <% cart.items.forEach(item=> { %>
+                        <div class="product-cart d-flex">
+                            <!-- Product Image -->
+                            <div class="one-forth">
+                                <a href="/productDetails?id=<%=item.product._id%>">
+                                    <div class="product-img"
+                                        style="background-image: url(/uploads/re-image/<%=item.product.productImage[0]%>)">
+                                    </div>
+                                </a>
+                                <div class="display-tc">
+                                    <h3>
+                                        <%= item.product.productName %>
+                                    </h3> <!-- Product Name -->
+                                </div>
+                            </div>
+
+                            <!-- Product Variant Size -->
+                            <div class="one-eight text-center">
+                                <div class="display-tc">
+                                    <span class="size">
+                                        <% const selectedVariant=item.product.variants.find(variant=> variant.size ===
+                                            item.size);
+                                            %>
+                                            <%= selectedVariant ? selectedVariant.size : 'N/A' %> <!-- Display size -->
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Product Price -->
+                            <div class="one-eight text-center">
+                                <div class="display-tc">
+                                    <span class="price">₹ <%= item.product.salePrice %></span>
+                                </div>
+                            </div>
+
+                            <!-- Quantity Input -->
+                            <div class="one-eight text-center">
+                                <!-- Quantity Input and Update Form -->
+                                <div class="display-tc">
+                                    <button type="button" class="decrement-btn btn btn-sm btn-outline-secondary"
+                                        data-id="<%= item.product._id %>" data-size="<%= item.size%>">-</button>
+                                    <input type="hidden" name="salePrice" value="<%= item.product.salePrice %>">
+                                    <input type="number" class="quantity-input form-control input-number text-center"
+                                        name="quantity" data-price="<%= item.product.salePrice %>"
+                                        value="<%= item.quantity %>" min="1" max="10"
+                                        data-subtotal-id="subtotal-<%= item.product._id %>" readonly>
+                                    <button type="button" class="increment-btn btn btn-sm btn-outline-secondary"
+                                        data-id="<%= item.product._id %>" data-size="<%= item.size%>">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Subtotal -->
+                            <div class="one-eight text-center">
+                                <div class="display-tc">
+                                        <!-- Display the price of the selected variant if available -->
+                                        <span class="variant-price">₹ <%= item.price %></span>
+                                </div>
+                            </div>
+
+                            <!-- Remove Button -->
+                            <div class="one-eight text-center">
+                                <div class="display-tc">
+                                    <button class="closed remove-item" data-id="<%= item.product._id %>"
+                                        data-size="<%= selectedVariant ? selectedVariant.size : '' %>"></button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <% }) %>
+
+                </div>
+                <div class="row row-pb-lg">
+                    <div class="col-md-12">
+                        <div class="total-wrap">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <form action="#">
+                                        <div class="row form-group">
+                                            <div class="col-sm-9">
+                                                <input type="text" name="quantity" class="form-control input-number"
+                                                    placeholder="Your Coupon Number...">
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <button type="submit" class="btn btn-primary">Apply Coupon</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <div class="total">
+                                        <!-- Subtotal and Charges Section -->
+                                        <div class="sub">
+                                            <p><span>Subtotal:</span> <span id="totalPrice"
+                                                    data-total="<%= cart.totalPrice %>">₹ <%= cart.totalPrice %></span>
+                                            </p>
+                                            <p><span>Delivery:</span> <span id="delivery-charge">₹ 0.00</span></p>
+                                            <!-- Uncomment this line if discounts are added in future -->
+                                            <!-- <p><span>Discount:</span> <span id="discount">₹ 0.00</span></p> -->
+                                        </div>
+                                        <!-- Grand Total Section -->
+                                        <div class="grand-total text-center">
+                                            <p>
+                                                <span><strong>Total:</strong></span>
+                                                <span id="grand-total">₹ 0.00</span>
+                                            </p>
+                                        </div>
+                                        <!-- Checkout Button -->
+                                        <div class="checkout-btn">
+                                            <a href="/checkout">
+                                                <button type="submit" class="btn btn-primary">Checkout</button>
+                                            </a>
+                                           
+                                        </div>
+                                        <% } else { %>
+                                            <div style="text-align: center; margin: 50px 0;">
+                                                <h2 style="display: flex; justify-content: center; align-items: center; font-size: 24px; color: #555;">
+                                                    Your cart is empty 🛒
+                                                </h2>
+                                                <p style="color: #777; font-size: 16px;">
+                                                    Looks like you haven't added anything to your cart yet.
+                                                </p>
+                                                <a href="/shope" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                                                    Continue Shopping
+                                                </a>
+                                            </div>
+                                        <% } %>
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-8 offset-sm-2 text-center colorlib-heading colorlib-heading-sm">
+                        <h2>Related Products</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-lg-3 mb-4 text-center">
+                        <div class="product-entry border">
+                            <a href="#" class="prod-img">
+                                <img src="images/item-1.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
+                            </a>
+                            <div class="desc">
+                                <h2><a href="#">Women's Boots Shoes Maca</a></h2>
+                                <span class="price">$139.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-lg-3 mb-4 text-center">
+                        <div class="product-entry border">
+                            <a href="#" class="prod-img">
+                                <img src="images/item-2.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
+                            </a>
+                            <div class="desc">
+                                <h2><a href="#">Women's Minam Meaghan</a></h2>
+                                <span class="price">$139.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-lg-3 mb-4 text-center">
+                        <div class="product-entry border">
+                            <a href="#" class="prod-img">
+                                <img src="images/item-3.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
+                            </a>
+                            <div class="desc">
+                                <h2><a href="#">Men's Taja Commissioner</a></h2>
+                                <span class="price">$139.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-lg-3 mb-4 text-center">
+                        <div class="product-entry border">
+                            <a href="#" class="prod-img">
+                                <img src="images/item-4.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
+                            </a>
+                            <div class="desc">
+                                <h2><a href="#">Russ Men's Sneakers</a></h2>
+                                <span class="price">$139.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const quantityInputs = document.querySelectorAll(".quantity-input");
+                const incrementButtons = document.querySelectorAll(".increment-btn");
+                const decrementButtons = document.querySelectorAll(".decrement-btn");
+                const removeButtons = document.querySelectorAll(".remove-item");
+
+                const totalPriceElement = document.querySelector("#totalPrice");
+                const deliveryCharge = 50; // Example delivery charge
+                const grandTotal = parseFloat(totalPriceElement.dataset.total);
+
+                // Set delivery charge and grand total on page load
+                document.getElementById("delivery-charge").textContent = `₹ ${deliveryCharge.toFixed(2)}`;
+                document.getElementById("grand-total").textContent = `₹ ${(grandTotal + deliveryCharge).toFixed(2)}`;
+
+
+                async function updateQuantity(productId, size, newQuantity) {
+                    try {
+                        const response = await fetch(`/cartQuantity`, {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ productId, selectedSize: size, quantity: newQuantity }),
+                        });
+                        const result = await response.json();
+                        if (!response.ok) {
+                            throw new Error(result.message || "Failed to update quantity.");
+                        }
+                        return result;
+                    } catch (error) {
+                        console.error("Error updating quantity:", error);
+                        Swal.fire("Error", error.message || "An unexpected error occurred.", "error");
+                        return null;
+                    }
+                }
+
+                function updateTotals() {
+                    let subtotal = 0;
+                    quantityInputs.forEach(input => {
+                        const price = parseFloat(input.dataset.price);
+                        const quantity = parseInt(input.value, 10);
+                        subtotal += price * quantity;
+
+                        const subtotalElement = document.getElementById(input.dataset.subtotalId);
+                        subtotalElement.textContent = `₹ ${(price * quantity).toFixed(2)}`;
+                    });
+
+                   
+                    totalPriceElement.textContent = `₹ ${subtotal.toFixed(2)}`;
+                    const grandTotalElement = document.getElementById("grand-total");
+                    grandTotalElement.textContent = `₹ ${(subtotal + deliveryCharge).toFixed(2)}`;
+                }
+
+                // Increment Button Logic
+                incrementButtons.forEach(button => {
+                    button.addEventListener("click", async () => {
+                        const input = button.parentElement.querySelector(".quantity-input");
+                        const productId = button.dataset.id;
+                        const size = button.dataset.size;
+                        const max = parseInt(input.getAttribute("max"), 10);
+                        const value = parseInt(input.value, 10);
+
+                        if (value < max) {
+                            const newQuantity = value + 1;
+                            const result = await updateQuantity(productId, size, newQuantity);
+                            if (result) {
+                                input.value = newQuantity;
+                                updateTotals();
+                            }
+                        }
+                    });
+                });
+
+                // Decrement Button Logic
+                decrementButtons.forEach(button => {
+                    button.addEventListener("click", async () => {
+                        const input = button.parentElement.querySelector(".quantity-input");
+                        const productId = button.dataset.id;
+                        const size = button.dataset.size;
+                        const min = parseInt(input.getAttribute("min"), 10);
+                        const value = parseInt(input.value, 10);
+
+                        if (value > min) {
+                            const newQuantity = value - 1;
+                            const result = await updateQuantity(productId, size, newQuantity);
+                            if (result) {
+                                input.value = newQuantity;
+                                updateTotals();
+                            }
+                        }
+                    });
+                });
+
+                // Remove Button Logic
+                removeButtons.forEach(button => {
+                    button.addEventListener("click", async () => {
+                        const productId = button.dataset.id;
+                        const size = button.dataset.size;
+                        try {
+                            const response = await fetch(`/removeFromCart/${productId}/${size}`, {
+                                method: "DELETE",
+                                headers: { "Content-Type": "application/json" },
+                            });
+                            const result = await response.json();
+                            if (response.ok) {
+                                Swal.fire("Removed!", "Item removed from cart.", "success").then(() => location.reload());
+                            } else {
+                                Swal.fire("Error", result.message || "Failed to remove item.", "error");
+                            }
+                        } catch (error) {
+                            Swal.fire("Error", "An unexpected error occurred.", "error");
+                        }
+                    });
+                });
+
+                // Initialize totals on page load
+                updateTotals();
+            });
+
+
+        </script>
+
+        <%- include("../partials/user/footer.ejs") -%>
