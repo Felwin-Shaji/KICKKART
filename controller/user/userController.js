@@ -31,7 +31,7 @@ const loadShopPage = async (req, res) => {
         const categories = await Category.find({ isListed: true });
         const categoryIds = categories.map((category) => category._id.toString());
         const page = parseInt(req.query.page) || 1;
-        const limit = 9;
+        const limit = 8;
         const skip = (page - 1) * limit;
 
         const brands = await Brand.find({ isBlocked: false });
@@ -41,17 +41,18 @@ const loadShopPage = async (req, res) => {
             category: { $in: categoryIds },
             variants: { $elemMatch: { quantity: { $gt: 0 } } }
         }).sort({ createdAt: -1 }).skip(skip).limit(limit);
-    
+
 
         const totalProducts = await Product.countDocuments({
             isBlocked: false,
             category: { $in: categoryIds },
-            quantity: { $gt: 0 },
+            variants: { $elemMatch: { quantity: { $gt: 0 } } },
         });
+
 
         const totalpages = Math.ceil(totalProducts / limit);
 
-        
+
 
         const categoriesWidthIds = categories.map(category => ({ _id: category._id, name: category.name }));
 
@@ -74,19 +75,14 @@ const filterProduct = async (req, res) => {
     try {
         const user = req.session.user;
 
-        const category = req.query.category
-        req.session.category = category
+        const category = req.query.category || req.session.category || null;
+        const brand = req.query.brand || req.session.brand || null;
 
-        const brand = req.query.brand;
-        req.session.brand = brand
+        req.session.category = category;
+        req.session.brand = brand;
 
-        const findCategory = category ? await Category.findOne({ _id: category }) : null;
-
-        const findBrand = brand ? await Brand.findOne({ _id: brand }) : null;
-
-        const brands = await Brand.find({}).lean(); //The .lean() method tells Mongoose to return plain JavaScript objects instead of Mongoose documents.
-
-        console.log("brands",brands)
+        const brands = await Brand.find({}).lean();
+        const categories = await Category.find({ isListed: true }).lean();
 
         const query = {
             isBlocked: false,
@@ -95,63 +91,159 @@ const filterProduct = async (req, res) => {
             }
         };
 
-
-        if ( req.session.category) {
-            query.category = findCategory._id;
+        if (category) {
+            const findCategory = await Category.findOne({ _id: category });
+            if (findCategory) {
+                query.category = findCategory._id;
+            }
         }
 
-        if (req.session.brand) {
-            query.brand = findBrand.brandName
+        if (brand) {
+            const findBrand = await Brand.findOne({ _id: brand });
+            if (findBrand) {
+                query.brand = findBrand.brandName;
+            }
         }
 
-        let findProductes = await Product.find(query).lean();
+        let findProducts = await Product.find(query).lean();
 
-        findProductes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        findProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-        const categories = await Category.find({ isListed: true });
-
-
-        let itemsPerPage = 6;
-
-        let currentPage = parseInt(req.query.page) || 1;
-        let startIndex = (currentPage - 1) * itemsPerPage;
-        let endIndex = startIndex + itemsPerPage;
-        let totalpages = Math.ceil(findProductes.length / itemsPerPage);
-
-        const currentProduct = findProductes.slice(startIndex, endIndex);
+        const itemsPerPage = 8;
+        const currentPage = parseInt(req.query.page) || 1;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const totalPages = Math.ceil(findProducts.length / itemsPerPage);
+        const currentProducts = findProducts.slice(startIndex, startIndex + itemsPerPage);
 
         let userData = null;
         if (user) {
-            userData = await User.findOne({ _is: user });
+            userData = await User.findOne({ _id: user });
             if (userData) {
                 const searchEntry = {
-                    category: findCategory ? findCategory._id : null,
-                    brand: findBrand ? findBrand.brandName : null,
+                    category: category ? category : null,
+                    brand: brand ? brand : null,
                     searchedOn: new Date(),
-                }
+                };
                 userData.searchHistory.push(searchEntry);
                 await userData.save();
             }
         }
 
-        req.session.filteredProducts = currentProduct;
+        req.session.filteredProducts = currentProducts;
 
         res.render("shop", {
             user: userData,
-            products: currentProduct,
+            products: currentProducts,
             category: categories,
             brand: brands,
-            totalpages,
+            totalpages: totalPages,
             currentPage,
             selectedCategory: category || null,
             selectedBrand: brand || null,
+        });
+    } catch (error) {
+        console.error("Error filtering products:", error);
+        res.redirect("/pageNotFound");
+    }
+};
 
+const filterPrice = async (req, res) => {
+    try {
+        const user = req.session.user;
+        const userData = await User.findOne({ _id: user });
+        const brand = await Brand.find({}).lean();
+        const category = await Category.find({ isListed: true });
+        const totalProducts = await Product.countDocuments({
+            isBlocked: false,
+            // category:{$in:categoryIds},
+            quantity: { $gt: 0 },
         })
 
+        const findProduct = await Product.find({
+            salePrice: { $gt: req.query.gt, $lt: req.query.lt },
+            isBlocked: false,
+            variants: { $elemMatch: { quantity: { $gt: 0 } } }
+        }).lean();
+
+
+        findProduct.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+        let ipage = 6
+        let currentPage = parseInt(req.query.page) || 1
+        let startIndex = (currentPage - 1) * ipage
+        let endIndex = startIndex + ipage
+        let totalPages = Math.ceil(findProduct.length / ipage)
+        const currentProduct = findProduct.slice(startIndex, endIndex)
+        req.session.filteredProducts = findProduct
+
+        res.render('shop', {
+            user: userData,
+            products: currentProduct,
+            category: category,
+            totalProducts: totalProducts,
+            brand: brand,
+            totalpages: totalPages,
+            currentPage
+        })
     } catch (error) {
-        res.redirect("/pageNotFound")
+        console.error(error);
+        res.redirect('/pagenotfound');
     }
 }
+
+const searchProduct = async (req, res) => {
+//     try {
+//         const userId = req.session.user;
+//         if(userId){
+//         const userData = await User.findOne({ _id: userId });
+//         }
+
+//         let search = req.body
+//         console.log("req.body",req.body)
+
+//         const brands = await Brand.find({}).lean();
+//         const categories = await Category.find({isListed:true}).lean()
+//         const categoryId = categories.map(catrgory=> catrgory._id.toString());
+        
+//         let searchResult = [];
+//         if(req.session.filteredProducts && req.session.filteredProducts>0){
+//             searchResult = req.session.filteredProducts.filter(product => 
+//                 product.productName.toLowerCase().includes(search.toLowerCase())
+//             );            
+//         }else {
+//             searchResult =  await Product.find({
+//                 productName : {$regex:".*"+search+".*",$opctions:"i"},
+//                 isBlocked:false, 
+//                 variants: { $elemMatch: { quantity: { $gt: 0 } } },
+//                 category:{$in:categoryId}
+//             })
+//         }
+
+//         searchResult.sort((a,b)=>new Date(b.createdOn)-new Date(a.createdOn));
+//         findProduct.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+//         let ipage = 6;
+//         let currentPage = parseInt(req.query.page) || 1
+//         let startIndex = (currentPage - 1) * ipage
+//         let endIndex = startIndex + ipage
+//         let totalPages = Math.ceil(findProduct.length / ipage)
+//         const currentProduct = searchResult.slice(startIndex, endIndex)
+//         req.session.filteredProducts = searchResult;
+
+//         res.render('shop', {
+//             user: userData,
+//             products: currentProduct,
+//             category: categories,
+//             totalProducts: totalProducts,
+//             brand: brands,
+//             totalpages: totalPages,
+//             currentPage,
+//             count:searchResult.length,
+//         })  
+
+
+//     } catch (error) {
+
+//     }
+ }
 
 const loadHomePage = async (req, res) => {
     try {
@@ -263,7 +355,7 @@ const signup = async (req, res) => {
 
         // Generate OTP
         const otp = generateOtp();
-        console.log('Signup successful, OTP sent',otp);
+        console.log('Signup successful, OTP sent', otp);
 
         // Send OTP to email
         const emailSent = await sendVerificationEmail(email, otp);
@@ -276,7 +368,7 @@ const signup = async (req, res) => {
         req.session.userData = { name, phone, email, password };
         req.session.otpExpiry = Date.now() + 60000; // OTP valid for 1 minute
 
-        console.log('Signup successful, OTP sent',req.session.userOtp);
+        console.log('Signup successful, OTP sent', req.session.userOtp);
 
         // Response
         return res.status(200).json({ success: true, message: 'OTP sent successfully', redirectTo: '/verify-otp' });
@@ -316,7 +408,7 @@ const verifyOtp = async (req, res) => {
         const user = req.session.userData;
         const { otp } = req.body;
 
-        console.log("ooooo",req.body)
+        console.log("ooooo", req.body)
 
         if (!otp || !user) {
             console.error("Missing OTP or user data in session.");
@@ -495,4 +587,6 @@ module.exports = {
     logout,
     loadShopPage,
     filterProduct,
+    filterPrice,
+    searchProduct,
 }

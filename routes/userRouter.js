@@ -6,10 +6,11 @@ const { userAuth, adminAuth } = require("../middlewares/auth")
 const userController = require('../controller/user/userController');
 const productController = require("../controller/user/productController")
 const profileController = require("../controller/user/profileController")
-const cartController = require("../controller/user/cartController")
+const cartController = require("../controller/user/cartController");
+const wishlistController = require('../controller/user/wishlistController');
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), userController.googleVerification);
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), userController.googleVerification);
 
 router.get('/pageNotFound', userController.pageNotFound);
 
@@ -27,7 +28,9 @@ router.post('/logout', userController.logout)
 
 router.get('/',userController.loadHomePage);
 router.get('/shope',userController.loadShopPage);
-router.get("/filter",userController.filterProduct)
+router.get("/filter",userController.filterProduct);
+router.get("/filterPrice",userController.filterPrice)
+router.post("/search",userController.searchProduct)
 
 
 // product mangemtne
@@ -58,13 +61,22 @@ router.patch("/cartQuantity",userAuth,cartController.cartQuantity)
 router.delete("/removeFromCart/:id/:size",userAuth,cartController.remove);
 router.get("/checkout",userAuth,cartController.checkout)
 
-//order
-router.post("/place-order",userAuth,cartController.placeOrder)
-router.get("/viewOrderDetails/:id",userAuth,cartController.viewOrderDetails)
-router.patch("/cancel-order/:id",userAuth,cartController.cancelOrder)
-
 //orderController
+router.post("/place-order",userAuth,cartController.placeOrder)
+router.get("/order-success",userAuth,cartController.getOrderSuccessPage)
+router.get("/viewOrderDetails/:orderId/:productId",userAuth,cartController.viewOrderDetails)
+//router.patch("/cancel-order/:id",userAuth,cartController.cancelOrderAllCart)
+router.patch("/cancel-order/:orderId/:productId",userAuth,cartController.cancelSingleItem)
 
-router.get("/order-success",)
+//wishlistControlle
+router.get("/wishlist",userAuth,wishlistController.getWishlist)
+router.post("/wishlist",userAuth,wishlistController.addToWishlist)
+
+
+
+
+
+
+
 
 module.exports = router;

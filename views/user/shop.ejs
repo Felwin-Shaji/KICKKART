@@ -10,38 +10,12 @@
         }
 
         .sidebar {
-            width: 100%;
-            max-width: 300px;
-            background-color: #f8f9fa;
+            max-width: 100%;
+            /* Ensure sidebar stays responsive */
+        }
+
+        .container-fluid {
             padding: 20px;
-            border: 1px solid #ddd;
-        }
-
-        .sidebar h5 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding-left: 0;
-            display: none;
-            /* Hide dropdown by default */
-        }
-
-        .sidebar ul li {
-            margin: 5px 0;
-        }
-
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .sidebar .price-filter {
-            cursor: pointer;
-            padding: 5px 0;
         }
 
         .breadcrumb {
@@ -50,6 +24,7 @@
         }
 
         .search-container {
+            top: 72px;
             display: flex;
             align-items: center;
             margin-bottom: 20px;
@@ -57,69 +32,64 @@
 
         .search-container i {
             margin-right: 10px;
+            font-size: 1.2rem;
         }
 
         .search-input {
             width: 100%;
-            padding: 10px;
+
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            font-size: 1rem;
         }
 
-        .product-card {
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 100%;
+            max-width: 300px;
+            background-color: #f8f9fa;
+            padding: 20px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h5 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
             margin-bottom: 20px;
         }
 
-        .product-card img {
-            width: 100%;
-            height: auto;
+        .sidebar ul li {
+            margin: 10px 0;
         }
 
-        .product-card .card-body {
-            padding: 15px;
-        }
-
-        .star-rating i {
-            color: #ffc107;
-        }
-
-        .discount-badge {
-            background-color: #28a745;
-            color: #fff;
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            display: block;
             padding: 5px;
-            border-radius: 5px;
-            font-size: 14px;
+            transition: background-color 0.3s ease;
         }
 
-        .original-price {
-            text-decoration: line-through;
-            color: #6c757d;
-        }
-
-        .cart-button {
+        .sidebar ul li a:hover {
             background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px;
+            color: white;
             border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .cart-button i {
-            margin-right: 5px;
-        }
-
-        .pagination .btn {
-            margin: 0 5px;
-        }
-
-        .pagination .btn.active {
-            background-color: #007bff;
-            color: #fff;
         }
 
         .product-card {
@@ -143,16 +113,13 @@
 
         .product-card .card-body {
             padding: 15px;
+            text-align: center;
         }
 
         .product-card .card-title {
             font-size: 16px;
             margin-bottom: 5px;
-        }
-
-        .product-card .card-title+.card-title {
-            font-size: 14px;
-            color: #6c757d;
+            font-weight: bold;
         }
 
         .star-rating i {
@@ -162,9 +129,9 @@
         .discount-badge {
             background-color: #28a745;
             color: #fff;
-            padding: 3px 7px;
+            padding: 5px 10px;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         .original-price {
@@ -173,84 +140,90 @@
             font-size: 14px;
         }
 
-        .cart-button {
+        .cart-button,
+        .wish-button {
             background-color: #007bff;
             color: #fff;
             border: none;
-            padding: 8px 12px;
+            padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            display: inline-block;
+            margin-top: 10px;
         }
 
-        .cart-button:hover {
+        .cart-button:hover,
+        .wish-button:hover {
             background-color: #0056b3;
         }
 
         .wish-button {
             background-color: #fa2157;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
 
         .wish-button:hover {
             background-color: #fa3465;
         }
 
-        .parent-container {
-            overflow: visible;
-            /* Ensure modal is fully visible */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination .btn {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .pagination .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .pagination .btn.active {
+            background-color: #28a745;
         }
 
         .modal-content {
             width: 90%;
             max-width: 400px;
             padding: 20px;
-            background: transparent;
-            /* Fully transparent background */
-            color: #ffffff;
+            background-color: #fff;
+            color: #333;
             border-radius: 8px;
-            box-shadow: none;
-            /* Remove shadow */
-            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .variant-option {
             cursor: pointer;
             padding: 10px 15px;
-            /* Adjust padding for better touch targets */
             border: 1px solid transparent;
             display: inline-block;
             margin: 5px;
             border-radius: 4px;
             font-size: 14px;
-            /* Consistent font size */
             transition: all 0.3s ease;
-            /* Smooth hover/selection transitions */
         }
 
         .variant-option:hover {
             border-color: #007bff;
-            /* Highlight on hover */
             background-color: rgba(0, 123, 255, 0.1);
-            /* Subtle background color */
         }
 
         .variant-option.selected {
             background-color: #007bff;
-            /* Highlight selected option */
             color: #fff;
             border-color: #007bff;
         }
 
-        /* Modal transparency adjustments */
         .modal {
             background: rgba(0, 0, 0, 0.5);
-            /* Transparent background with a subtle black overlay */
         }
 
         .modal-dialog {
@@ -258,28 +231,33 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            /* Center vertically */
         }
 
         .modal-header,
         .modal-footer {
             background: rgba(0, 0, 0, 0.8);
-            /* Slightly darkened background for header and footer */
+            color: #fff;
             border: none;
-            /* Remove default borders */
         }
 
         .modal-title {
-            color: #ffffff;
-            /* Ensure title is visible on transparent background */
+            font-weight: bold;
         }
 
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
             }
+
+            .product-card {
+                margin-bottom: 20px;
+            }
         }
     </style>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JavaScript -->
+
 
     <body>
         <div class="container-fluid"> <!-- Breadcrumb -->
@@ -288,95 +266,141 @@
                     <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Home</a></li>
                     <li class="breadcrumb-item active">Shop</li>
                 </ol>
-            </nav> <!-- Search Bar -->
-            <div class="search-container"> <i class="bi bi-search"></i> <input type="text" class="search-input"
-                    placeholder="Search for items..."> </div>
-            <div class="row"> <!-- Sidebar -->
-                <div class="col-12 col-md-2">
-                    <div class="sidebar"> <!-- Categories -->
-                        <h5 id="category-heading">Category</h5>
-                        <ul id="category-list">
+            </nav>
+            <div class="row">
+                <!-- Search Bar -->
+                <div class="search-container sticky-top bg-light p-3">
+                    <form action="/search" method="post" class="search-form">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                class="form-control search-input" 
+                                name="search" 
+                                placeholder="Search for items..." 
+                                aria-label="Search for items">
+                            <button type="submit" class="input-group-text bg-primary text-white">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+
+                <!-- Sidebar -->
+                <div class="col-12 col-lg-2">
+                    <div class="sidebar border rounded p-3 shadow-sm bg-white ">
+                        <!-- Categories -->
+                        <h5 id="category-heading" class="text-primary border-bottom pb-2">Category</h5>
+                        <ul id="category-list" class="list-unstyled">
                             <% for(let i=0; i < category.length; i++) { %>
-                                <li><a href="/filter?category=<%= category[i]._id %>">
+                                <li class="mb-2">
+                                    <a href="/filter?category=<%= category[i]._id %>"
+                                        class="text-decoration-none text-dark">
                                         <%= category[i].name %>
-                                    </a></li>
+                                    </a>
+                                </li>
                                 <% } %>
-                        </ul> <br> <!-- Brands -->
-                        <h5 id="brand-heading">Brands</h5>
-                        <ul id="brand-list">
+                        </ul>
+
+                        <!-- Brands -->
+                        <h5 id="brand-heading" class="text-primary border-bottom pb-2">Brands</h5>
+                        <ul id="brand-list" class="list-unstyled">
                             <% for(let i=0; i < brand.length; i++) { %>
-                                <li><a href="/filter?brand=<%= brand[i]._id %>">
+                                <li class="mb-2">
+                                    <a href="/filter?brand=<%= brand[i]._id %>" class="text-decoration-none text-dark">
                                         <%= brand[i].brandName %>
-                                    </a></li>
+                                    </a>
+                                </li>
                                 <% } %>
-                        </ul> <br> <!-- Price Filters -->
-                        <h5 id="price-heading">Filter by Price</h5>
-                        <ul id="price-list">
-                            <li><a href="#">Below 20,000</a></li>
-                            <li><a href="#">20,000 - 25,000</a></li>
-                            <li><a href="#">25,000 - 30,000</a></li>
-                            <li><a href="#">Above 30,000</a></li>
+                        </ul>
+
+                        <!-- Price Filters -->
+                        <h5 id="price-heading" class="text-primary border-bottom pb-2">Filter by Price</h5>
+                        <ul id="price-list" class="list-unstyled">
+                            <li class="mb-2"><a href="/filterPrice?gt=0&lt=2000"
+                                    class="text-decoration-none text-dark">Below 2000</a></li>
+                            <li class="mb-2"><a href="/filterPrice?gt=2000&lt=2500"
+                                    class="text-decoration-none text-dark">2000 - 2500</a></li>
+                            <li class="mb-2"><a href="/filterPrice?gt=2500&lt=3000"
+                                    class="text-decoration-none text-dark">2500 - 3000</a></li>
+                            <li class="mb-2"><a href="/filterPrice?gt=3000&lt=2000000"
+                                    class="text-decoration-none text-dark">Above 3000</a></li>
                         </ul>
                     </div>
                 </div>
+
                 <!-- Main Content -->
-                <div class="col-12 col-md-10"> <!-- Products Grid -->
+                <div class="col-12 col-md-8" style="margin-left: 10%;"> <!-- Products Grid -->
+                    <h1>Shop</h1>
                     <div class="row g-4"> <!-- Product Card -->
-                        <% for(let i=0;i<products.length;i++){ %>
+                        <% for(let i=0; i<products.length; i++) { %>
                             <div class="col-md-6 col-lg-3">
-                                <div class="product-card">
-                                    <div class="position-relative"> <span class="hot-badge"></span> <a
-                                            href="/productDetails?id=<%=products[i]._id %>"> <img
-                                                src="/uploads/re-image/<%= products[i].productImage[0] %>"
-                                                class="card-img-top" alt="<%= products[i].productName %>"> </a> </div>
-                                    <div class="card-body">
-                                        <h5 class="card-title">
+                                <div class="product-card shadow-sm border rounded">
+                                    <div class="position-relative">
+                                        <!-- <span class="hot-badge">Hot</span> -->
+                                        <a href="/productDetails?id=<%=products[i]._id %>">
+                                            <img src="/uploads/re-image/<%= products[i].productImage[0] %>"
+                                                class="card-img-top" alt="<%= products[i].productName %>">
+                                        </a>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-primary">
                                             <%= products[i].brand %>
                                         </h5>
                                         <h6 class="card-title">
                                             <%= products[i].productName %>
                                         </h6>
-                                        <div class="d-flex align-items-center mb-2">
-                                            <div class="star-rating me-2"> <i class="bi bi-star-fill"></i> <i
-                                                    class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i> <i
-                                                    class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i> </div>
-                                            <span class="discount-badge">17% Off</span>
+                                        <div class="d-flex align-items-center justify-content-center mb-2">
+                                            <div class="star-rating me-2">
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                                <i class="bi bi-star text-secondary"></i>
+                                            </div>
+                                            <span class="discount-badge bg-success text-white px-2 py-1 rounded"><%=products[i].isOfferActive %>%
+                                                Off</span>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <div> <span class="h5 mb-0">
-                                                    <%= Number(products[i].salePrice).toLocaleString("en-IN") %>
-                                                </span> <span class="original-price ms-2">
-                                                    <%= Number(products[i].regularPrice).toLocaleString("en-IN") %>
+                                            <div>
+                                                <span class="h5 text-primary mb-0">
+                                                    ₹<%= Number(products[i].salePrice).toLocaleString("en-IN") %>
+                                                </span>
+                                                <span
+                                                    class="original-price ms-2 text-muted text-decoration-line-through">
+                                                    ₹<%= Number(products[i].regularPrice).toLocaleString("en-IN") %>
                                                 </span>
                                             </div>
-
-                                            <!-- <button class="cart-button"><i
-                                                    class="bi bi-cart-plus"></i></button> -->
-
-                                            <!-- Cart Button -->
                                             <% if (!locals.user) { %>
                                                 <a href="/login">
-                                                    <button class="cart-button">
+                                                    <button class="btn btn-outline-primary cart-button">
                                                         <i class="bi bi-cart-plus"></i>
                                                     </button>
                                                 </a>
-                                                <%}else{ %>
-                                                    <button class="cart-button" data-product-id="<%= products[i]._id %>"
-                                                        data-bs-toggle="modal" data-bs-target="#sizeModal-<%= i %>">
+                                                <a href="/login">
+                                                    <button class="btn btn-outline-secondary wish-button">
+                                                        <i class="fa-regular fa-heart"></i>
+                                                    </button></a>
+                                                <% } else { %>
+                                                    <button class="btn btn-outline-primary cart-button"
+                                                        data-product-id="<%= products[i]._id %>" data-bs-toggle="modal"
+                                                        data-bs-target="#sizeModal-<%= i %>">
                                                         <i class="bi bi-cart-plus"></i>
                                                     </button>
+
+                                                    <button class="btn btn-outline-secondary wish-button"
+                                                        data-product-wish-id="<%= products[i]._id %>">
+                                                        <i class="fa-regular fa-heart"></i>
+                                                    </button>
+
                                                     <% } %>
-
-                                                        <button class="wish-button"><i
-                                                                class="fa-regular fa-heart"></i></button>
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Modal Structure -->
-                            <div id="sizeModal-<%= i %>" class="modal" tabindex="-1">
+                            <div id="sizeModal-<%= i %>" class="modal fade" tabindex="-1">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -388,9 +412,10 @@
                                             <div class="size-wrap">
                                                 <div class="block-26 mb-2">
                                                     <h5>Available Sizes</h5>
-                                                    <ul class="size-options">
+                                                    <ul class="size-options list-unstyled d-flex flex-wrap">
                                                         <% products[i].variants.forEach(({ size })=> { %>
-                                                            <li class="variant-option" data-size="<%= size %>">
+                                                            <li class="variant-option px-2 py-1 border rounded me-2 mb-2"
+                                                                data-size="<%= size %>">
                                                                 <%= size %>
                                                             </li>
                                                             <% }); %>
@@ -401,126 +426,168 @@
                                         <div class="modal-footer">
                                             <button id="modalOkButton-<%= i %>" class="btn btn-primary modal-ok"
                                                 data-product-id="<%= products[i]._id %>">OK</button>
-                                            <button type="button" class="btn btn-secondary"
+                                            <button type="button" class="btn-cancle btn-secondary"
                                                 data-bs-dismiss="modal">Cancel</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                             <% } %>
                     </div> <!-- Pagination -->
-                    <div class="pagination">
-                        <% if (currentPage> 1) { %> <a class="btn" href="/shope?page=<%= currentPage - 1 %>">Prev</a>
+                    <div class="pagination d-flex justify-content-center mt-4">
+                        <% if (currentPage> 1) { %>
+                            <a class="btn btn-outline-primary mx-1" href="/shope?page=<%= currentPage - 1 %>">Prev</a>
                             <% } %>
-                                <% for (let i=1; i <=totalpages; i++) { %> <a
-                                        class="btn <%= currentPage === i ? 'active' : '' %>"
+                                <% for (let i=1; i <=totalpages; i++) { %>
+                                    <a class="btn <%= currentPage === i ? 'btn-primary' : 'btn-outline-primary' %> mx-1"
                                         href="/shope?page=<%= i %>">
                                         <%= i %>
                                     </a>
                                     <% } %>
-                                        <% if (currentPage < totalpages) { %> <a class="btn"
+                                        <% if (currentPage < totalpages) { %>
+                                            <a class="btn btn-outline-primary mx-1"
                                                 href="/shope?page=<%= currentPage + 1 %>">Next</a>
                                             <% } %>
                     </div>
                 </div>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            document.getElementById('category-heading').onclick = function () {
-                var categoryList = document.getElementById('category-list');
-                categoryList.style.display = categoryList.style.display === 'none' ? 'block' : 'none';
-            };
-            document.getElementById('brand-heading').onclick = function () {
-                var brandList = document.getElementById('brand-list');
-                brandList.style.display = brandList.style.display === 'none' ? 'block' : 'none';
-            };
-            document.getElementById('price-heading').onclick = function () {
-                var priceList = document.getElementById('price-list');
-                priceList.style.display = priceList.style.display === 'none' ? 'block' : 'none';
-            };
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('category-heading').onclick = function () {
+            var categoryList = document.getElementById('category-list');
+            categoryList.style.display = categoryList.style.display === 'none' ? 'block' : 'none';
+        };
+        document.getElementById('brand-heading').onclick = function () {
+            var brandList = document.getElementById('brand-list');
+            brandList.style.display = brandList.style.display === 'none' ? 'block' : 'none';
+        };
+        document.getElementById('price-heading').onclick = function () {
+            var priceList = document.getElementById('price-list');
+            priceList.style.display = priceList.style.display === 'none' ? 'block' : 'none';
+        };
 
-            document.addEventListener("DOMContentLoaded", () => {
+        //wishlist
+        document.addEventListener("DOMContentLoaded", () => {
 
-                document.querySelectorAll('.cart-button').forEach((button, index) => {
-                    button.addEventListener('click', function () {
-                        const productId = this.dataset.productId;
-                        const modal = document.getElementById(`sizeModal-${index}`);
-                        const okButton = modal.querySelector(`#modalOkButton-${index}`);
-                        const closeButton = modal.querySelector('.btn-close');
-                        let selectedSize = null;
+            const wishButtons = document.querySelectorAll(".wish-button");
 
-                        // Show modal using Bootstrap
-                        const bootstrapModal = new bootstrap.Modal(modal);
-                        bootstrapModal.show();
 
-                        // Handle size selection
-                        modal.querySelectorAll('.variant-option').forEach(option => {
-                            option.addEventListener('click', function () {
-                                modal.querySelectorAll('.variant-option').forEach(opt => opt.classList.remove('selected'));
-                                this.classList.add('selected');
-                                selectedSize = this.dataset.size;
-                            });
+            wishButtons.forEach(button => {
+                button.addEventListener("click", async (event) => {
+
+                    const productId = button.getAttribute("data-product-wish-id");
+
+                    try {
+                        const response = await fetch("/wishlist", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ productId })
                         });
 
-                        // OK button logic
-                        okButton.addEventListener('click', async () => {
-                            if (selectedSize) {
-                                try {
-                                    const response = await fetch('/cart', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ productId, selectedSize, quantity: 1 }),
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log(result.message);
+                        } else {
+                            console.error("Failed to add to wishlist");
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.cart-button').forEach((button, index) => {
+                button.addEventListener('click', function () {
+                    const productId = this.dataset.productId;
+                    const modal = document.getElementById(`sizeModal-${index}`);
+                    const okButton = modal.querySelector(`#modalOkButton-${index}`);
+                    const closeButton = modal.querySelector('.btn-close');
+                    const cancelButton = modal.querySelector('.btn-cancle');
+                    let selectedSize = null;
+
+                    // Show modal using Bootstrap
+                    const bootstrapModal = new bootstrap.Modal(modal);
+                    bootstrapModal.show();
+
+                    // Handle size selection
+                    modal.querySelectorAll('.variant-option').forEach(option => {
+                        option.addEventListener('click', function () {
+                            modal.querySelectorAll('.variant-option').forEach(opt => opt.classList.remove('selected'));
+                            this.classList.add('selected');
+                            selectedSize = this.dataset.size;
+                        });
+                    });
+
+                    // OK button logic
+                    okButton.addEventListener('click', async () => {
+                        if (selectedSize) {
+                            try {
+                                const response = await fetch('/cart', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ productId, selectedSize, quantity: 1 }),
+                                });
+                                if (response.ok) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: 'Item added to cart successfully!',
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                    }).then(() => {
+                                        location.reload();
                                     });
-                                    if (response.ok) {
-
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Success!',
-                                            text: 'Item added to cart successfully!',
-                                            showConfirmButton: false,
-                                            timer: 1500,
-                                        }).then(() => {
-
-                                            location.reload();
-                                        });
-                                        bootstrapModal.hide();
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Error!',
-                                            text: 'Failed to add item to cart.',
-                                        });
-                                    }
-                                } catch (error) {
-                                    console.error('Error:', error);
+                                    bootstrapModal.hide();
+                                } else {
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error!',
-                                        text: 'An unexpected error occurred.',
+                                        text: 'Failed to add item to cart.',
                                     });
                                 }
-                            } else {
+                            } catch (error) {
+                                console.error('Error:', error);
                                 Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Oops...',
-                                    text: 'Please select a size before proceeding!',
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: 'An unexpected error occurred.',
                                 });
                             }
-                        });
-
-                        // Close button logic
-                        closeButton.addEventListener('click', () => {
-                            bootstrapModal.hide();
-                        });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Oops...',
+                                text: 'Please select a size before proceeding!',
+                            });
+                        }
                     });
+
+                    // Close button logic
+                    closeButton.addEventListener('click', () => {
+                        bootstrapModal.hide();
+                        location.reload();
+                    });
+
+                    // Cancel button logic
+                    if (cancelButton) {
+                        cancelButton.addEventListener('click', () => {
+                            bootstrapModal.hide();
+                            location.reload();
+                        });
+                    }
                 });
-
-
             });
-        </script>
+        });
+
+    </script>
 
 
 
-        <%- include("../partials/user/footer.ejs") -%>
+    <%- include("../partials/user/footer.ejs") -%>

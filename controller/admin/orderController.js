@@ -40,10 +40,10 @@ const orderDetails = async (req, res) => {
             return res.status(404).json({ error: "Order not found" });
         }
 
-        res.render("view-orderFull-DetailsPage",{
+        res.render("view-orderFull-DetailsPage", {
             order
         })
-        
+
     } catch (error) {
         console.error("Error fetching order:", error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -52,27 +52,41 @@ const orderDetails = async (req, res) => {
 
 const apdateStatus = async (req, res) => {
     try {
-      const orderId = req.params.id; // Order ID from the route
-      const newStatus = req.body.status; // New status from the form
-  
-      // Update the order's status
-      const updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        { status: newStatus },
-        { new: true }
-      );
-  
-      if (!updatedOrder) {
-        return res.status(404).send("Order not found.");
-      }
-  
-      res.redirect("/admin/orders"); // Redirect to the orders page
+        const { orderId, productId} = req.params;
+        const newStatus = req.body.status; 
+
+        console.log("req.params",req.params);
+         console.log("newStatus",newStatus)
+        
+        
+
+        // Update the order's status
+        const updatedOrder = await Order.findOneAndUpdate(
+            {
+                _id: orderId,
+                "items._id": productId,
+            },
+            {
+                $set: { "items.$.status": newStatus }, 
+            },
+            { new: true } 
+        );
+
+        console.log("updatedOrder",updatedOrder);
+        
+
+
+        if (!updatedOrder) {
+            return res.status(404).send("Order not found.");
+        }
+
+        res.redirect(`/admin/orders/${orderId}`);
     } catch (error) {
-      console.error("Error updating order status:", error);
-      res.status(500).send("Internal Server Error");
+        console.error("Error updating order status:", error);
+        res.status(500).send("Internal Server Error");
     }
-  };
-  
+};
+
 
 module.exports = {
     getOrder,

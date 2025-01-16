@@ -1,192 +1,387 @@
 <%- include("../../views/partials/admin/header") %>
 
-<head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <style>
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 0; /* Reset padding */
-    height: 100vh; /* Set height to 100% of the viewport */
-    width: 100vw; /* Set width to 100% of the viewport */
-    box-sizing: border-box; /* Ensure padding and borders are included in dimensions */
-}
-
-
-        .content-title {
-            font-size: 2rem;
-            color: #333;
-            text-transform: uppercase;
-        }
-
-        .table {
-            background-color: #fff;
-            border-collapse: collapse;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .table thead {
-            background-color: #4CAF50;
-            color: #fff;
-        }
-
-        .table th,
-        .table td {
-            text-align: center;
-            padding: 10px;
-        }
-
-        .btn {
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-        }
-
-        .btn-info a,
-        .btn-danger a,
-        .btn-success a {
-            color: #fff;
-            text-decoration: none;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #4CAF50;
-            border-color: #4CAF50;
-        }
-
-        @media (max-width: 768px) {
-            .content-title {
-                font-size: 1.5rem;
-                text-align: center;
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 0;
+                /* Reset padding */
+                height: 100vh;
+                /* Set height to 100% of the viewport */
+                width: 100vw;
+                /* Set width to 100% of the viewport */
+                box-sizing: border-box;
+                /* Ensure padding and borders are included in dimensions */
             }
 
-            .input-group {
-                width: 100%;
-                max-width: 100%;
+
+            .content-title {
+                font-size: 2rem;
+                color: #333;
+                text-transform: uppercase;
+            }
+
+            .table {
+                background-color: #fff;
+                border-collapse: collapse;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .table thead {
+                background-color: #4CAF50;
+                color: #fff;
             }
 
             .table th,
             .table td {
-                font-size: 0.9rem;
-                padding: 8px;
-            }
-
-            .btn {
-                font-size: 0.8rem;
-                padding: 3px 7px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .content-header {
-                flex-direction: column;
                 text-align: center;
-            }
-
-            .table {
-                font-size: 0.8rem;
+                padding: 10px;
             }
 
             .btn {
-                display: block;
-                width: 100%;
-                margin: 5px 0;
+                text-transform: uppercase;
+                font-size: 0.9rem;
+                padding: 5px 10px;
             }
-        }
-    </style>
-</head>
 
-<body>
-    <div class="container">
-        <!-- Header Section -->
-        <div class="text-center mb-4">
-            <h2 class="content-title">Products</h2>
-        </div>
+            .btn-info a,
+            .btn-danger a,
+            .btn-success a {
+                color: #fff;
+                text-decoration: none;
+            }
 
-        <!-- Search Bar -->
-        <div class="d-flex justify-content-center mb-4">
-            <form action="" method="get" class="w-100" style="max-width: 600px;">
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control border-0" placeholder="Search products or brands" name="search">
-                    <button class="btn btn-success" type="submit">Search</button>
-                </div>
-            </form>
-        </div>
+            .pagination .page-item.active .page-link {
+                background-color: #4CAF50;
+                border-color: #4CAF50;
+            }
 
-        <!-- Products Table -->
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Brand</th>
-                        <th>Category</th>
-                        <th>Sale Price</th>
-                        <th>Offer Price</th>
-                        <th>Offer</th>
-                        <th>Quantity</th>
-                        <th>Action</th>
-                        <th>Edit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% for (let i = data.length - 1; i >= 0; i--) { %>
+            @media (max-width: 768px) {
+                .content-title {
+                    font-size: 1.5rem;
+                    text-align: center;
+                }
+
+                .input-group {
+                    width: 100%;
+                    max-width: 100%;
+                }
+
+                .table th,
+                .table td {
+                    font-size: 0.9rem;
+                    padding: 8px;
+                }
+
+                .btn {
+                    font-size: 0.8rem;
+                    padding: 3px 7px;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .content-header {
+                    flex-direction: column;
+                    text-align: center;
+                }
+
+                .table {
+                    font-size: 0.8rem;
+                }
+
+                .btn {
+                    display: block;
+                    width: 100%;
+                    margin: 5px 0;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <!-- Header Section -->
+            <div class="text-center mb-4">
+                <h2 class="content-title">Products</h2>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="d-flex justify-content-center mb-4">
+                <form action="" method="get" class="w-100" style="max-width: 600px;">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control border-0" placeholder="Search products or brands"
+                            name="search">
+                        <button class="btn btn-success" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Products Table -->
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
                         <tr>
-                            <td><%= data[i].productName %></td>
-                            <td><%= data[i].brand %></td>
-                            <td><%= data[i].category.name %></td>
-                            <td><%= data[i].salePrice %></td>
-                            <td><%= data[i].offerPrice %></td>
-                            <td>
-                                <% if(!data[i].productOffer) {%>
-                                <button class="btn btn-info">
-                                    <a href="#" class="text-white">Add Offer</a>
-                                </button>
-                                <% }else{  %>
-                                <button class="btn btn-info">
-                                    <a href="#" class="text-white">Remove</a>
-                                </button>
-                                <% } %>
-                            </td>
-                            <td><%= data[i].quantity %></td>
-                            <td>
-                                <% if(!data[i].isBlocked) {%>
-                                <button class="btn btn-danger">
-                                    <a href="/admin/blockProduct?_id=<%=data[i]._id %>" class="text-white">Block</a>
-                                </button>
-                                <% }else{  %>
-                                <button class="btn btn-success">
-                                    <a href="/admin/unBlockProduct?_id=<%=data[i]._id %>" class="text-white">Unblock</a>
-                                </button>
-                                <% } %>
-                            </td>
-                            <td>
-                                <button class="btn btn-info">
-                                    <a href="/admin/editProduct?_id=<%=data[i]._id %>" class="text-white">Edit</a>
-                                </button>
-                            </td>
+                            <th>Product Name</th>
+                            <th>Brand</th>
+                            <th>Category</th>
+                            <th>Sale Price</th>
+                            <th>Offer Price</th>
+                            <th>Offer</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                            <th>Edit</th>
                         </tr>
-                    <% } %>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <% for (let i=0; i < data.length; i++) { %>
+                            <tr>
+                                <td>
+                                    <%= data[i].productName %>
+                                </td>
+                                <td>
+                                    <%= data[i].brand %>
+                                </td>
+                                <td>
+                                    <%= data[i].category.name %>
+                                </td>
+                                <td>
+                                    ₹<%= data[i].salePrice %>
+                                </td>
+                                <td>
+                                    <%= data[i].isOfferActive%>%
+                                </td>
+                                <td>
+
+                                        <!-- Add Offer Button -->
+                                        <button class="btn btn-info" data-bs-toggle="modal"
+                                            data-bs-target="#addOfferModal<%= data[i]._id %>">
+                                            Add Offer
+                                        </button>
+
+                                </td>
+
+                                <td>
+                                    <%= data[i].variants.reduce((acc,num)=>{return acc+=num.quantity},0)%>
+                                </td>
+                                <td>
+                                    <% if(!data[i].isBlocked) {%>
+                                        <button class="btn btn-danger">
+                                            <a href="/admin/blockProduct?_id=<%=data[i]._id %>"
+                                                class="text-white">Block</a>
+                                        </button>
+                                        <% }else{ %>
+                                            <button class="btn btn-success">
+                                                <a href="/admin/unBlockProduct?_id=<%=data[i]._id %>"
+                                                    class="text-white">Unblock</a>
+                                            </button>
+                                            <% } %>
+                                </td>
+                                <td>
+                                    <button class="btn btn-info">
+                                        <a href="/admin/editProduct?_id=<%=data[i]._id %>" class="text-white">Edit</a>
+                                    </button>
+                                </td>
+                            </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <% for (let i=0; i < data.length; i++) { %>
+                <!-- Add Offer Modal -->
+                <div class="modal fade" id="addOfferModal<%= data[i]._id %>" tabindex="-1"
+                    aria-labelledby="addOfferLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addOfferLabel">Add Offer for <%= data[i].productName %>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="offerForm<%= data[i]._id %>">
+                                    <div class="mb-3">
+                                        <label for="offerInput<%= data[i]._id %>" class="form-label">Enter Offer
+                                            (%)</label>
+                                        <input type="number" class="form-control" id="offerInput<%= data[i]._id %>"
+                                            min="0" max="100" step="1" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary"
+                                    onclick="submitOffer('<%= data[i]._id %>')">Save Offer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <% for (let i=1; i <=totalPages; i++) { %>
+                                <li class="page-item <%=(i === currentPage) ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                                <% } %>
+                        </ul>
+                    </nav>
         </div>
 
-        <!-- Pagination -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <% for (let i = 1; i <= totalPages; i++) { %>
-                    <li class="page-item <%=(i === currentPage) ? 'active' : '' %>">
-                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
-                    </li>
-                <% } %>
-            </ul>
-        </nav>
-    </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script>
+            async function submitOffer(productId) {
+                // Get the input field value
+                const offerInput = document.getElementById(`offerInput${productId}`);
+                const offerValue = offerInput.value;
 
-    <%- include("../../views/partials/admin/footer") %>
-</body>
+                // Validate the input
+                if (offerValue < 0 || offerValue > 100) {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Offer',
+                        text: 'Please enter a valid offer percentage between 0 and 100.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                }
+
+                try {
+                    // Send the offer to the backend
+                    const response = await fetch(`/admin/add-offer/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ offer: offerValue }),
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: result.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true,
+                        });
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                        // // Clear the input field
+                        // offerInput.value = '';
+
+                        // // Close the modal
+                        // const modal = bootstrap.Modal.getInstance(
+                        //     document.getElementById(`addOfferModal${productId}`)
+                        // );
+                        // modal.hide();
+
+                        // // Optionally, reload the UI dynamically
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: result.message || 'Something went wrong!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error adding/removing offer:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred. Please try again later.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                }
+            }
+
+            async function removeOffer(productId) {
+                try {
+                    const response = await fetch(`/admin/remove-offer/${productId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Offer Removed!',
+                            text: 'The offer has been successfully removed from the product.',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true,
+                        })
+
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: result.message || 'Something went wrong!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error removing offer:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while removing the offer. Please try again later.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                }
+            }
+
+
+
+        </script>
+
+
+        <%- include("../../views/partials/admin/footer") %>
+    </body>

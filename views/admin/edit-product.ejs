@@ -324,15 +324,15 @@
                     <div id="regularPrice-error" class="error-message"></div>
                   </div>
                 </div>
-                <div class="col-lg-4">
+                <!-- <div class="col-lg-4">
                   <div class="mb-4">
                     <label class="form-label">Sale price</label>
                     <input placeholder="₹" name="salePrice" type="text" class="form-control border"
-                      value="<%=product.salePrice %>">
+                      value="">
 
                   </div>
                   <div id="salePrice-error" class="error-message"></div>
-                </div>
+                </div> -->
               </div>
               <div class="card mb-4">
                 <div class="card-body">
@@ -360,8 +360,6 @@
                       <div class="col-lg-4">
                         <label class="form-label">Size</label>
                         <input name="variantSize[]" type="text" class="border" value="<%= ver.size %>">
-                        <input type="hidden" id="variant-count" value="<%= product.variants.length %>">
-
                       </div>
                       <div class="col-lg-4">
                         <label class="form-label">Quantity</label>
@@ -375,6 +373,7 @@
                   </div>
                   <% }) %>
               </div>
+
 
               <!-- Button to Add Variants -->
               <button type="button" class="btn btn-primary mt-3" onclick="addVariant()">Add Variant</button>
@@ -537,60 +536,66 @@
     // Initialize the variant counter based on existing variants
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Fetch the variant count from the data attribute
-      const variantCountElement = document.getElementById('variant-data');
-      console.log("variantCountElement", variantCountElement);
+      const variantCountElement = document.getElementById('variant-count'); // Hidden input to track count
+      let variantCount = variantCountElement ? parseInt(variantCountElement.value, 10) : 0;
 
-      // Ensure the element exists before accessing its attribute
-      if (variantCountElement) {
-        let variantCount = parseInt(variantCountElement.getAttribute('data-variant-count'), 10);
-        console.log("variantCount", variantCount);
+      const variantSection = document.getElementById('variant-section'); // Parent container for variants
 
-        // Define the addVariant function inside the event listener to use the properly initialized variable
-        addVariant = function () {
-          variantCount++; // Increment the counter for a unique ID
+      // Function to renumber the variants
+      function renumberVariants() {
+        const variants = document.querySelectorAll('.variant-group'); // All variant groups
+        variants.forEach((variant, index) => {
+          const variantNumber = index + 1;
+          variant.id = `variant-${variantNumber}`;
+          variant.querySelector('h4').textContent = `Variant ${variantNumber}`;
+          const removeButton = variant.querySelector('button');
+          removeButton.setAttribute('onclick', `removeVariant('variant-${variantNumber}')`);
+        });
 
-          // Get the variant section
-          const variantSection = document.getElementById('variant-section');
-
-          // Create a new variant group
-          const newVariant = document.createElement('div');
-          newVariant.className = 'variant-group mb-3';
-          newVariant.id = `variant-${variantCount}`;
-
-          // Add the new variant HTML
-          newVariant.innerHTML = `
-        <h4>Variant ${variantCount}</h4>
-        <div class="row">
-          <div class="col-lg-4">
-            <label class="form-label">Size</label>
-            <input name="variantSize[]" type="text" class="border">
-          </div>
-          <div class="col-lg-4">
-            <label class="form-label">Quantity</label>
-            <input name="variantQuantity[]" type="number" class="border">
-          </div>
-          <div class="col-lg-4">
-            <button type="button" class="btn btn-danger mt-3" onclick="removeVariant('variant-${variantCount}')">Remove</button>
-          </div>
-        </div>
-      `;
-
-          // Append the new variant group to the section
-          variantSection.appendChild(newVariant);
-        };
-
-        // Define the removeVariant function globally
-        window.removeVariant = function (variantId) {
-          const variantToRemove = document.getElementById(variantId);
-          if (variantToRemove) {
-            variantToRemove.remove(); // Remove the variant element
-          }
-        };
+        // Update variant count in the hidden input
+        variantCount = variants.length;
+        if (variantCountElement) {
+          variantCountElement.value = variantCount;
+        }
       }
 
-      window.addVariant = addVariant;
+      // Function to add a new variant
+      window.addVariant = function () {
+        variantCount++;
+        const newVariant = document.createElement('div');
+        newVariant.className = 'variant-group mb-3';
+        newVariant.id = `variant-${variantCount}`;
+        newVariant.innerHTML = `
+      <h4>Variant ${variantCount}</h4>
+      <div class="row">
+        <div class="col-lg-4">
+          <label class="form-label">Size</label>
+          <input name="variantSize[]" type="text" class="border">
+        </div>
+        <div class="col-lg-4">
+          <label class="form-label">Quantity</label>
+          <input name="variantQuantity[]" type="number" class="border">
+        </div>
+        <div class="col-lg-4">
+          <button type="button" class="btn btn-danger mt-3" onclick="removeVariant('variant-${variantCount}')">Remove</button>
+        </div>
+      </div>
+    `;
+        variantSection.appendChild(newVariant);
+        renumberVariants(); // Renumber variants after adding
+      };
+
+      // Function to remove a variant
+      window.removeVariant = function (variantId) {
+        const variantToRemove = document.getElementById(variantId);
+        if (variantToRemove) {
+          variantToRemove.remove();
+          renumberVariants(); // Renumber variants after removing
+        }
+      };
     });
+
+
 
 
 
@@ -600,9 +605,6 @@
       }
     }
 
-
-
-
     function validateForm() {
       let imageDatas = false
       console.log("validate form");
@@ -611,7 +613,7 @@
       const description = document.getElementsByName('descriptionData')[0].value;
       const brand = document.getElementsByName('brand')[0].value;
       const price = document.getElementsByName('regularPrice')[0].value;
-      const saleprice = document.getElementsByName('salePrice')[0].value;
+      //const saleprice = document.getElementsByName('salePrice')[0].value;
       const color = document.getElementsByName('color')[0].value;
       const category = document.getElementsByName('category')[0].value;
       const images = document.getElementById('input1')
@@ -635,16 +637,14 @@
       }
 
 
-
-
       if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
         displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
         isValid = false;
       }
-      if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-        isValid = false;
-      }
+      // if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+      //   displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+      //   isValid = false;
+      // }
 
       if (color.trim() === "") {
         displayErrorMessage('color-error', 'Please enter a color.');
@@ -654,6 +654,26 @@
         displayErrorMessage("images-error", 'Please select an image.');
         isValid = false;
       }
+
+      if (quantity.length > 0 && parseInt(quantity[0].value) < 0) {
+        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        isValid = false;
+      }
+
+      const allowedImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (images.files.length > 0) {
+        Array.from(images.files).forEach(file => {
+          if (!allowedImageTypes.includes(file.type)) {
+            displayErrorMessage('images-error', 'Invalid file type. Only JPEG, PNG, and JPG are allowed.');
+            isValid = false;
+          }
+          if (file.size > 2 * 1024 * 1024) { // 2MB limit
+            displayErrorMessage('images-error', 'File size must be less than 2MB.');
+            isValid = false;
+          }
+        });
+      }
+
       return isValid;
     }
 

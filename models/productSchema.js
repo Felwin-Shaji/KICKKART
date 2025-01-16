@@ -11,8 +11,7 @@ const variantSchema = new Schema({
         required: true,
         default: 0,
     },
-},{_id:false})
-
+}, { _id: false });
 
 const productSchema = new Schema({
     productName: {
@@ -38,7 +37,7 @@ const productSchema = new Schema({
     },
     salePrice: {
         type: Number,
-        required: true,
+        required: false,
     },
     productImage: {
         type: [String],
@@ -48,19 +47,26 @@ const productSchema = new Schema({
         type: Number,
         default: 0,
     },
+    isOfferActive: {
+        type: Number,
+        default: 0,
+    },
     isBlocked: {
         type: Boolean,
         default: false,
     },
-    status: {
-        type: String,
-        enum: ["Available", "Out of Stock", "Discontinued"],
-        default: "Available",
-        required: true,
-    },
-    variants :[variantSchema],
+    variants: [variantSchema],
 }, { timestamps: true });
 
 
-const Product = mongoose.model("Product", productSchema)
-module.exports = Product
+productSchema.pre('save', function (next) {
+    if (this.isOfferActive) {
+        this.salePrice = this.regularPrice - (this.regularPrice * this.isOfferActive / 100);
+    } else {
+        this.salePrice = this.regularPrice; 
+    }
+    next();
+});
+
+const Product = mongoose.model("Product", productSchema);
+module.exports = Product;

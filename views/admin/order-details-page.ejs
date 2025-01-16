@@ -88,7 +88,7 @@
                             <th>Date/Time</th>
                             <th>User</th>
                             <th>Total Amount</th>
-                            <th>Status</th>
+                            <!-- <th>Status</th> -->
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -101,9 +101,9 @@
                               </td>
                               
 
-                                <td><%= order.userId.name %></td>
+                                <td><%= order.userId?.name %></td>
                                 <td>₹<%= order.totalAmount.toFixed(2) %></td>
-                                <td>
+                                <!-- <td>
                                     <span class="badge 
                                         <%= order.status === 'Pending' ? 'bg-warning' : 
                                             order.status === 'Shipped' ? 'bg-info' : 
@@ -111,7 +111,7 @@
                                             'bg-danger' %>">
                                         <%= order.status %>
                                     </span>
-                                </td>
+                                </td> -->
                                 <td>
                                     <!-- View Details Button -->
                                     <a href="/admin/orders/<%=order._id %>" 
@@ -121,8 +121,8 @@
                                  
 
                                     <!-- Status Update Form -->
-                                    <form action="/admin/orders/<%= order._id %>/status" method="POST" class="d-inline">
-                                        <input type="hidden" name="itemId" value="<%= order._id %>"> <!-- Item ID -->
+                                    <!-- <form action="/admin/orders/<%= order._id %>/status" method="POST" class="d-inline">
+                                        <input type="hidden" name="itemId" value="<%= order._id %>"> <!-- Item ID --
                                         <select name="status" class="form-select form-select-sm d-inline w-auto">
                                             <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
                                             <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
@@ -130,7 +130,7 @@
                                             <option value="Canceled" <%= order.status === 'Canceled' ? 'selected' : '' %>>Canceled</option>
                                         </select>
                                         <button type="submit" class="btn btn-primary btn-sm">Update</button>
-                                    </form>
+                                    </form> -->
                                       
 
                                 </td>

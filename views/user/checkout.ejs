@@ -3,19 +3,16 @@
     <div class="breadcrumbs">
         <div class="container">
             <div class="row">
-                <div class="col">
+                <!-- <div class="col"> -->
                     <p class="bread"><span><a href="/">Home</a></span> / <span>Checkout</span></p>
-                </div>
+                <!-- </div> -->
             </div>
         </div>
     </div>
 
-
-
-
     <div class="colorlib-product">
         <div class="container">
-            <div class="row row-pb-lg">
+            <!-- <div class="row row-pb-lg">
                 <div class="col-sm-10 offset-md-1">
                     <div class="process-wrap">
                         <div class="process text-center active">
@@ -32,7 +29,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="row">
                 <div class="col-lg-6">
                     <form id="orderForm" class="colorlib-form">
@@ -100,12 +97,12 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="checkbox">
+                            <!-- <div class="checkbox">
                                 <label>
                                     <input type="checkbox" name="terms" required> I have read and accept the terms and
                                     conditions
                                 </label>
-                            </div>
+                            </div> -->
                         </div>
 
                         <div class="text-center">
@@ -119,17 +116,13 @@
                         document.getElementById("orderForm").addEventListener("submit", async function (event) {
                             event.preventDefault();
 
-                            // Collect form data
                             const formData = new FormData(this);
-
-                            // Convert form data to JSON
                             const data = {};
                             formData.forEach((value, key) => {
                                 data[key] = value;
                             });
 
                             try {
-                                // Send POST request using fetch
                                 const response = await fetch("/place-order", {
                                     method: "POST",
                                     headers: {
@@ -138,19 +131,38 @@
                                     body: JSON.stringify(data),
                                 });
 
-                                const responseText = await response.text(); // Read as text to debug
+                                const responseText = await response.text();
 
                                 if (response.ok) {
-                                    const result = JSON.parse(responseText); // Attempt to parse JSON
-                                    alert("Order placed successfully!");
-                                    window.location.href = "/order-success"; // Redirect on success
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Order Placed!",
+                                        text: "Your order has been placed successfully!",
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                    });
+
+                                    setTimeout(() => {
+                                        window.location.href = "/order-success";
+                                    }, 3000);
                                 } else {
-                                    const error = JSON.parse(responseText); // Parse the response as error message
-                                    alert(`Error: ${error.message}`);
+                                    const error = JSON.parse(responseText);
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Oops!",
+                                        text: `Error: ${error.message}`,
+                                        showConfirmButton: true,
+                                    });
                                 }
                             } catch (error) {
                                 console.error("Error placing order:", error);
-                                alert("An error occurred while placing your order. Please try again.");
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Oops!",
+                                    text: "An error occurred while placing your order. Please try again.",
+                                    showConfirmButton: true,
+                                });
                             }
                         });
                     });

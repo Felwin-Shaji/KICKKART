@@ -110,217 +110,227 @@
             </div> -->
             <div class="row row-pb-lg">
                 <% if(cart.items.length>0){ %>
-                <div class="col-md-12">
-                    <div class="product-name d-flex">
-                        <div class="one-forth text-left px-4">
-                            <span>Product Details</span>
-                        </div>
-                        <div class="one-eight text-center">
-                            <span>Size</span>
-                        </div>
-                        <div class="one-eight text-center">
-                            <span>Price</span>
-                        </div>
-                        <div class="one-eight text-center">
-                            <span>Quantity</span>
-                        </div>
-                        <div class="one-eight text-center">
-                            <span>Total</span>
+                    <div class="col-md-12">
+                        <div class="product-name d-flex">
+                            <div class="one-forth text-left px-4">
+                                <span>Product Details</span>
+                            </div>
+                            <div class="one-eight text-center">
+                                <span>Size</span>
+                            </div>
+                            <div class="one-eight text-center">
+                                <span>Price</span>
+                            </div>
+                            <div class="one-eight text-center">
+                                <span>Quantity</span>
+                            </div>
+                            <div class="one-eight text-center">
+                                <span>Total</span>
+                            </div>
+
+                            <div class="one-eight text-center px-4">
+                                <span>Remove</span>
+                            </div>
                         </div>
 
-                        <div class="one-eight text-center px-4">
-                            <span>Remove</span>
-                        </div>
-                    </div>
 
-                    
-                    <% cart.items.forEach(item=> { %>
-                        <div class="product-cart d-flex">
-                            <!-- Product Image -->
-                            <div class="one-forth">
-                                <a href="/productDetails?id=<%=item.product._id%>">
-                                    <div class="product-img"
-                                        style="background-image: url(/uploads/re-image/<%=item.product.productImage[0]%>)">
+                        <% cart.items.forEach(item=> { %>
+                            <div class="product-cart d-flex">
+                                <!-- Product Image -->
+                                <div class="one-forth">
+                                    <a href="/productDetails?id=<%=item.product._id%>">
+                                        <div class="product-img"
+                                            style="background-image: url(/uploads/re-image/<%=item.product.productImage[0]%>)">
+                                        </div>
+                                    </a>
+                                    <div class="display-tc">
+                                        <h3>
+                                            <%= item.product.productName %>
+                                        </h3> <!-- Product Name -->
                                     </div>
-                                </a>
-                                <div class="display-tc">
-                                    <h3>
-                                        <%= item.product.productName %>
-                                    </h3> <!-- Product Name -->
                                 </div>
-                            </div>
 
-                            <!-- Product Variant Size -->
-                            <div class="one-eight text-center">
-                                <div class="display-tc">
-                                    <span class="size">
-                                        <% const selectedVariant=item.product.variants.find(variant=> variant.size ===
-                                            item.size);
-                                            %>
-                                            <%= selectedVariant ? selectedVariant.size : 'N/A' %> <!-- Display size -->
-                                    </span>
+                                <!-- Product Variant Size -->
+                                <div class="one-eight text-center">
+                                    <div class="display-tc">
+                                        <span class="size">
+                                            <% const selectedVariant=item.product.variants.find(variant=> variant.size
+                                                ===
+                                                item.size);
+                                                %>
+                                                <%= selectedVariant ? selectedVariant.size : 'N/A' %>
+                                                    <!-- Display size -->
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Product Price -->
-                            <div class="one-eight text-center">
-                                <div class="display-tc">
-                                    <span class="price">₹ <%= item.product.salePrice %></span>
+                                <!-- Product Price -->
+                                <div class="one-eight text-center">
+                                    <div class="display-tc">
+                                        <span class="price">₹ <%= item.product.salePrice %></span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Quantity Input -->
-                            <div class="one-eight text-center">
-                                <!-- Quantity Input and Update Form -->
-                                <div class="display-tc">
-                                    <button type="button" class="decrement-btn btn btn-sm btn-outline-secondary"
-                                        data-id="<%= item.product._id %>" data-size="<%= item.size%>">-</button>
-                                    <input type="hidden" name="salePrice" value="<%= item.product.salePrice %>">
-                                    <input type="number" class="quantity-input form-control input-number text-center"
-                                        name="quantity" data-price="<%= item.product.salePrice %>"
-                                        value="<%= item.quantity %>" min="1" max="10"
-                                        data-subtotal-id="subtotal-<%= item.product._id %>" readonly>
-                                    <button type="button" class="increment-btn btn btn-sm btn-outline-secondary"
-                                        data-id="<%= item.product._id %>" data-size="<%= item.size%>">+</button>
+                                <!-- Quantity Input -->
+                                <div class="one-eight text-center">
+                                    <!-- Quantity Input and Update Form -->
+                                    <div class="display-tc">
+                                        <button type="button" class="decrement-btn btn btn-sm btn-outline-secondary"
+                                            data-id="<%= item.product._id %>" data-size="<%= item.size%>">-</button>
+                                        <input type="hidden" name="salePrice" value="<%= item.product.salePrice %>">
+                                        <input type="number"
+                                            class="quantity-input form-control input-number text-center" name="quantity"
+                                            data-price="<%= item.product.salePrice %>" value="<%= item.quantity %>"
+                                            min="1" max="10" data-subtotal-id="subtotal-<%= item.product._id %>"
+                                            readonly>
+                                        <button type="button" class="increment-btn btn btn-sm btn-outline-secondary"
+                                            data-id="<%= item.product._id %>" data-size="<%= item.size%>">+</button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Subtotal -->
-                            <div class="one-eight text-center">
-                                <div class="display-tc">
+                                <!-- Subtotal -->
+                                <div class="one-eight text-center">
+                                    <div class="display-tc">
                                         <!-- Display the price of the selected variant if available -->
                                         <span class="variant-price">₹ <%= item.price %></span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Remove Button -->
-                            <div class="one-eight text-center">
-                                <div class="display-tc">
-                                    <button class="closed remove-item" data-id="<%= item.product._id %>"
-                                        data-size="<%= selectedVariant ? selectedVariant.size : '' %>"></button>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <% }) %>
-
-                </div>
-                <div class="row row-pb-lg">
-                    <div class="col-md-12">
-                        <div class="total-wrap">
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <form action="#">
-                                        <div class="row form-group">
-                                            <div class="col-sm-9">
-                                                <input type="text" name="quantity" class="form-control input-number"
-                                                    placeholder="Your Coupon Number...">
-                                            </div>
-                                            <div class="col-sm-3">
-                                                <button type="submit" class="btn btn-primary">Apply Coupon</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-sm-4 text-center">
-                                    <div class="total">
-                                        <!-- Subtotal and Charges Section -->
-                                        <div class="sub">
-                                            <p><span>Subtotal:</span> <span id="totalPrice"
-                                                    data-total="<%= cart.totalPrice %>">₹ <%= cart.totalPrice %></span>
-                                            </p>
-                                            <p><span>Delivery:</span> <span id="delivery-charge">₹ 0.00</span></p>
-                                            <!-- Uncomment this line if discounts are added in future -->
-                                            <!-- <p><span>Discount:</span> <span id="discount">₹ 0.00</span></p> -->
-                                        </div>
-                                        <!-- Grand Total Section -->
-                                        <div class="grand-total text-center">
-                                            <p>
-                                                <span><strong>Total:</strong></span>
-                                                <span id="grand-total">₹ 0.00</span>
-                                            </p>
-                                        </div>
-                                        <!-- Checkout Button -->
-                                        <div class="checkout-btn">
-                                            <a href="/checkout">
-                                                <button type="submit" class="btn btn-primary">Checkout</button>
-                                            </a>
-                                           
-                                        </div>
-                                        <% } else { %>
-                                            <div style="text-align: center; margin: 50px 0;">
-                                                <h2 style="display: flex; justify-content: center; align-items: center; font-size: 24px; color: #555;">
-                                                    Your cart is empty 🛒
-                                                </h2>
-                                                <p style="color: #777; font-size: 16px;">
-                                                    Looks like you haven't added anything to your cart yet.
-                                                </p>
-                                                <a href="/shope" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;">
-                                                    Continue Shopping
-                                                </a>
-                                            </div>
-                                        <% } %>
-                                        
+                                <!-- Remove Button -->
+                                <div class="one-eight text-center">
+                                    <div class="display-tc">
+                                        <button class="closed remove-item" data-id="<%= item.product._id %>"
+                                            data-size="<%= selectedVariant ? selectedVariant.size : '' %>"></button>
                                     </div>
                                 </div>
 
                             </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-sm-8 offset-sm-2 text-center colorlib-heading colorlib-heading-sm">
-                        <h2>Related Products</h2>
+                            <% }) %>
+
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 col-lg-3 mb-4 text-center">
-                        <div class="product-entry border">
-                            <a href="#" class="prod-img">
-                                <img src="images/item-1.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
-                            </a>
-                            <div class="desc">
-                                <h2><a href="#">Women's Boots Shoes Maca</a></h2>
-                                <span class="price">$139.00</span>
+                    <div class="row row-pb-lg">
+                        <div class="col-md-12">
+                            <div class="total-wrap">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <form action="#">
+                                            <div class="row form-group">
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="quantity" class="form-control input-number"
+                                                        placeholder="Your Coupon Number...">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <button type="submit" class="btn btn-primary">Apply Coupon</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-sm-4 text-center">
+                                        <div class="total">
+                                            <!-- Subtotal and Charges Section -->
+                                            <div class="sub">
+                                                <p><span>Subtotal:</span> <span id="totalPrice"
+                                                        data-total="<%= cart.totalPrice %>">₹ <%= cart.totalPrice %>
+                                                            </span>
+                                                </p>
+                                                <p><span>Delivery:</span> <span id="delivery-charge">₹ 0.00</span></p>
+                                                <!-- Uncomment this line if discounts are added in future -->
+                                                <!-- <p><span>Discount:</span> <span id="discount">₹ 0.00</span></p> -->
+                                            </div>
+                                            <!-- Grand Total Section -->
+                                            <div class="grand-total text-center">
+                                                <p>
+                                                    <span><strong>Total:</strong></span>
+                                                    <span id="grand-total">₹ 0.00</span>
+                                                </p>
+                                            </div>
+                                            <!-- Checkout Button -->
+                                            <div class="checkout-btn">
+                                                <a href="/checkout">
+                                                    <button type="submit" class="btn btn-primary">Checkout</button>
+                                                </a>
+
+                                            </div>
+                                            <% } else { %>
+                                                <div style="text-align: center; margin: 50px 0;">
+                                                    <h2
+                                                        style="display: flex; justify-content: center; align-items: center; font-size: 24px; color: #555;">
+                                                        Your cart is empty 🛒
+                                                    </h2>
+                                                    <p style="color: #777; font-size: 16px;">
+                                                        Looks like you haven't added anything to your cart yet.
+                                                    </p>
+                                                    <a href="/shope"
+                                                        style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                                                        Continue Shopping
+                                                    </a>
+                                                </div>
+                                                <% } %>
+
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-lg-3 mb-4 text-center">
-                        <div class="product-entry border">
-                            <a href="#" class="prod-img">
-                                <img src="images/item-2.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
-                            </a>
-                            <div class="desc">
-                                <h2><a href="#">Women's Minam Meaghan</a></h2>
-                                <span class="price">$139.00</span>
+
+                    <div class="row">
+                        <div class="col-sm-8 offset-sm-2 text-center colorlib-heading colorlib-heading-sm">
+                            <h2>Related Products</h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-lg-3 mb-4 text-center">
+                            <div class="product-entry border">
+                                <a href="#" class="prod-img">
+                                    <img src="images/item-1.jpg" class="img-fluid"
+                                        alt="Free html5 bootstrap 4 template">
+                                </a>
+                                <div class="desc">
+                                    <h2><a href="#">Women's Boots Shoes Maca</a></h2>
+                                    <span class="price">$139.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 mb-4 text-center">
+                            <div class="product-entry border">
+                                <a href="#" class="prod-img">
+                                    <img src="images/item-2.jpg" class="img-fluid"
+                                        alt="Free html5 bootstrap 4 template">
+                                </a>
+                                <div class="desc">
+                                    <h2><a href="#">Women's Minam Meaghan</a></h2>
+                                    <span class="price">$139.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 mb-4 text-center">
+                            <div class="product-entry border">
+                                <a href="#" class="prod-img">
+                                    <img src="images/item-3.jpg" class="img-fluid"
+                                        alt="Free html5 bootstrap 4 template">
+                                </a>
+                                <div class="desc">
+                                    <h2><a href="#">Men's Taja Commissioner</a></h2>
+                                    <span class="price">$139.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 mb-4 text-center">
+                            <div class="product-entry border">
+                                <a href="#" class="prod-img">
+                                    <img src="images/item-4.jpg" class="img-fluid"
+                                        alt="Free html5 bootstrap 4 template">
+                                </a>
+                                <div class="desc">
+                                    <h2><a href="#">Russ Men's Sneakers</a></h2>
+                                    <span class="price">$139.00</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-lg-3 mb-4 text-center">
-                        <div class="product-entry border">
-                            <a href="#" class="prod-img">
-                                <img src="images/item-3.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
-                            </a>
-                            <div class="desc">
-                                <h2><a href="#">Men's Taja Commissioner</a></h2>
-                                <span class="price">$139.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-lg-3 mb-4 text-center">
-                        <div class="product-entry border">
-                            <a href="#" class="prod-img">
-                                <img src="images/item-4.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
-                            </a>
-                            <div class="desc">
-                                <h2><a href="#">Russ Men's Sneakers</a></h2>
-                                <span class="price">$139.00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -332,7 +342,7 @@
                 const removeButtons = document.querySelectorAll(".remove-item");
 
                 const totalPriceElement = document.querySelector("#totalPrice");
-                const deliveryCharge = 50; // Example delivery charge
+                const deliveryCharge = 0; // Example delivery charge
                 const grandTotal = parseFloat(totalPriceElement.dataset.total);
 
                 // Set delivery charge and grand total on page load
@@ -353,6 +363,13 @@
                         if (!response.ok) {
                             throw new Error(result.message || "Failed to update quantity.");
                         }
+
+                        // Update frontend totals using the response
+                        totalPriceElement.textContent = `₹ ${result.cart.totalPrice.toFixed(2)}`;
+                        const grandTotalElement = document.getElementById("grand-total");
+                        grandTotalElement.textContent = `₹ ${(result.cart.totalPrice + deliveryCharge).toFixed(2)}`;
+
+                        // Return the result to the calling function
                         return result;
                     } catch (error) {
                         console.error("Error updating quantity:", error);
@@ -360,6 +377,7 @@
                         return null;
                     }
                 }
+
 
                 function updateTotals() {
                     let subtotal = 0;
@@ -372,7 +390,7 @@
                         subtotalElement.textContent = `₹ ${(price * quantity).toFixed(2)}`;
                     });
 
-                   
+
                     totalPriceElement.textContent = `₹ ${subtotal.toFixed(2)}`;
                     const grandTotalElement = document.getElementById("grand-total");
                     grandTotalElement.textContent = `₹ ${(subtotal + deliveryCharge).toFixed(2)}`;

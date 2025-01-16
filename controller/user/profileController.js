@@ -183,7 +183,7 @@ const userProfile = async (req, res) => {
       const addressData = await Address.findOne({ userId: userId });
       const orderData = await Order.find({userId:userId}).populate("items.productId")
 
-      console.log("orderData",orderData)
+
 
       res.render("profile-page", {
          user: userData,

@@ -19,10 +19,11 @@
                         <tr>
                             <th>Category Name</th>
                             <th>Description</th>
-                            <!-- <th>Offer Price</th> -->
-                            <th>Offer</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Offer pesentage</th>
+                            <th>Offer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                            <th>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                            <th>Actions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,9 +35,14 @@
                                 <td>
                                     <%=category.description %>
                                 </td>
-                                <!-- <td>$99.99</td> -->
+                                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%=category.categoryOffer %>%</td>
                                 <td>
-                                    <button class="btn btn-success btn-sm">Add Offer</button>
+                                    <button class="btn btn-success btn-sm add-offer-btn" data-bs-toggle="modal"
+                                        data-bs-target="#addCategoryOfferModal" data-category-id="<%= category._id %>"
+                                        data-category-name="<%= category.name %>"
+                                        data-category-description="<%= category.description %>">
+                                        Add Offer
+                                    </button>
                                 </td>
                                 <td>
                                     <% if(category.isListed){ %>
@@ -74,6 +80,7 @@
             </div>
 
         </div>
+
         <!-- Pagination -->
         <div class="pagination-container">
             <% if (currentPage> 1) { %>
@@ -159,6 +166,30 @@
         </div>
     </div>
 
+    <!-- add offer -->
+    <div class="modal fade" id="addCategoryOfferModal" tabindex="-1" aria-labelledby="addCategoryOfferModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryOfferModalLabel">Add Offer for <span
+                            id="modalCategoryName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addOfferForm">
+                        <input type="hidden" name="categoryId" id="modalCategoryId">
+                        <div class="mb-3">
+                            <label for="offerValue" class="form-label">Offer Percentage</label>
+                            <input type="number" class="form-control" id="offerValue" name="offerValue" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>  //category page script
@@ -238,7 +269,7 @@
                         title: 'Success!',
                         text: result.message || 'Category added successfully',
                         confirmButtonText: 'OK',
-                        timer: 1500 
+                        timer: 1500
                     });
 
                     // Close modal and reset form
@@ -268,7 +299,6 @@
                 });
             }
         }
-
 
         //Edit Category button clicked id/name/discription/ passed functionality 
         document.addEventListener("DOMContentLoaded", function () {
@@ -313,7 +343,7 @@
                         title: 'Success!',
                         text: result.message || 'Category updated successfully.',
                         confirmButtonText: 'OK',
-                        
+
                     });
 
                     // Close modal and refresh page
@@ -341,6 +371,87 @@
             }
         }
 
+        // add offer function 
+        document.addEventListener('DOMContentLoaded', () => {
+            const addOfferButtons = document.querySelectorAll('.add-offer-btn');
+            const modalCategoryName = document.getElementById('modalCategoryName');
+            const modalCategoryId = document.getElementById('modalCategoryId');
+            const offerValueInput = document.getElementById('offerValue');
+            const addOfferForm = document.getElementById('addOfferForm');
+
+            // Set modal data when Add Offer button is clicked
+            addOfferButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const categoryId = button.getAttribute('data-category-id');
+                    const categoryName = button.getAttribute('data-category-name');
+
+                    modalCategoryName.textContent = categoryName;
+                    modalCategoryId.value = categoryId;
+                });
+            });
+
+            // Handle form submission with fetch
+            addOfferForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                const categoryId = modalCategoryId.value;
+                const offerValue = offerValueInput.value;
+
+                try {
+                    const response = await fetch('/admin/addCategoryOffer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            categoryId,
+                            offerValue,
+                        }),
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: result.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true,
+                        });
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: result.message || 'Something went wrong!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message || 'Something went wrong!',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                }
+            });
+        });
+
         // Utility function to display error messages
         function displayErrorMessage(elementId, message) {
             const errorElement = document.getElementById(elementId);
@@ -359,18 +470,17 @@
             }
         }
 
-        
-        // Handle Offer buttons
-        // document.addEventListener('click', function (e) {
-        //     if (e.target.classList.contains('btn-success') && e.target.textContent === 'Add Offer') {
-        //         e.target.classList.replace('btn-success', 'btn-danger');
-        //         e.target.textContent = 'Remove Offer';
-        //     } else if (e.target.classList.contains('btn-danger') && e.target.textContent === 'Remove Offer') {
-        //         e.target.classList.replace('btn-danger', 'btn-success');
-        //         e.target.textContent = 'Add Offer';
-        //     }
-        // });
 
+        // Handle Offer buttons
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('btn-success') && e.target.textContent === 'Add Offer') {
+                e.target.classList.replace('btn-success', 'btn-danger');
+                e.target.textContent = 'Remove Offer';
+            } else if (e.target.classList.contains('btn-danger') && e.target.textContent === 'Remove Offer') {
+                e.target.classList.replace('btn-danger', 'btn-success');
+                e.target.textContent = 'Add Offer';
+            }
+        });
 
         //pagination //////////////////////////
         document.addEventListener('DOMContentLoaded', () => {

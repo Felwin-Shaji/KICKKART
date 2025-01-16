@@ -54,11 +54,15 @@ router.get("/unBlockProduct",adminAuth,productController.unBlockProduct)
 router.get("/editProduct",adminAuth,productController.getEditProduct);
 router.post("/editProduct/:id",adminAuth,uploads.array("images",4),productController.editProduct);
 router.post("/daleteImages",adminAuth,productController.deleteSingleImage);
+router.post("/add-offer/:productId",adminAuth,productController.addOffer)
+router.delete('/remove-offer/:productId', adminAuth,productController.removeOffer);
+router.post("/addCategoryOffer",adminAuth,productController.addCategoryOffer)
+
 
 //order managenent
 router.get("/orders",adminAuth,orderController.getOrder);
 router.get("/orders/:id",adminAuth,orderController.orderDetails)
-router.post("/orders/:id/status",adminAuth,orderController.apdateStatus)
+router.post("/orders/:orderId/:productId/status",adminAuth,orderController.apdateStatus)
 
 
 module.exports = router;

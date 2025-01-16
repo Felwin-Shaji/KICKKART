@@ -32,7 +32,6 @@ const categoryInfo = async (req, res) => {
 const addCategory = async (req, res) => {
     const { name, description } = req.body
 
-    console.log('mmmmmmmm',req.body)
 
     try {
 
@@ -57,8 +56,8 @@ const addCategory = async (req, res) => {
 
 const getEditCategory = async (req, res) => {
     try {
-        const categoryId = req.params.id; // Extract category ID from URL
-        const { name, description } = req.body; // Extract name and description from request body
+        const categoryId = req.params.id; 
+        const { name, description } = req.body; 
 
         if (!name || !description) {
             return res.status(400).json({ error: 'Name and description are required.' });
@@ -70,6 +69,8 @@ const getEditCategory = async (req, res) => {
             { name, description },
             { new: true } // Return the updated document
         );
+
+        console.log("updatedCategory",updatedCategory)
 
         if (!updatedCategory) {
             return res.status(404).json({ error: 'Category not found.' });

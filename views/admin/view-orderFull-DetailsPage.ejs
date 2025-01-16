@@ -1,9 +1,9 @@
 <%- include("../partials/admin/header.ejs") %>
-<style>
-    body{
-        background-color: #343a40;
-    }
-</style>
+    <style>
+        body {
+            background-color: #343a40;
+        }
+    </style>
     <div class="container my-6">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
@@ -20,7 +20,7 @@
                     </p>
                     <p><strong>Date , Time</strong>
                         <%= new Date(order.createdAt).toLocaleDateString('en-US') %> ,
-                        <%= new Date(order.createdAt).toLocaleTimeString('en-US') %>
+                            <%= new Date(order.createdAt).toLocaleTimeString('en-US') %>
                     </p>
                     <p><strong>Status:</strong>
                         <span
@@ -39,6 +39,8 @@
                                 <th>Product</th>
                                 <th>Quantity</th>
                                 <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,6 +53,45 @@
                                         <%= item.quantity %> x <%= item.productId?.salePrice %>
                                     </td>
                                     <td>&#8377;<%= item.price %>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge 
+                                                <%= item.status === 'Pending' ? 'bg-warning' : 
+                                                    item.status === 'Shipped' ? 'bg-info' : 
+                                                    item.status === 'Delivered' ? 'bg-success' : 
+                                                    'bg-danger' %>">
+                                            <%= item.status %>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <form
+                                            action="/admin/orders/<%= order._id %>/<%= item?._id %>/status"
+                                            method="POST" class="d-inline">
+                                            <input type="hidden" name="itemId" value="<%= order._id %>" />
+                                            <!-- Item ID -->
+                                            <select name="status" class="form-select form-select-sm d-inline w-auto">
+                                                <option value="Pending" <%=item.status==="Pending" ? "selected" : "" %> disabled>
+                                                    Pending
+                                                </option>
+                                                <option value="Shipped" <%=item.status==="Shipped" ? "selected" : "" %>>
+                                                    Shipped
+                                                </option>
+                                                <option value="Delivered" <%=item.status==="Delivered" ? "selected" : ""
+                                                    %>>
+                                                    Delivered
+                                                </option>
+                                                <option value="Canceled" <%=item.status==="Canceled" ? "selected" : ""
+                                                    %>>
+                                                    Canceled
+                                                </option>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                &#10003;
+                                            </button>
+                                        </form>
+
                                     </td>
                                 </tr>
                                 <% }); %>

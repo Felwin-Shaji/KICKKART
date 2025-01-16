@@ -324,14 +324,14 @@
                                         <div id="regularPrice-error" class="error-message"></div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <!-- <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Sale price</label>
                                         <input placeholder="$" name="salePrice" type="text" class="form-control border">
 
                                     </div>
                                     <div id="salePrice-error" class="error-message"></div>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="card mb-4">
                                 <div class="card-body">
@@ -514,15 +514,15 @@
                     <button class="btn btn-md rounded font-sm hover-up" type="submit">Publish</button>
                 </div>
             </div>
-    
+
             </form>
         </div>
         </div>
         </div>
         </div>
     </section>
-    
-   
+
+
     <script>
 
         let variantCount = 1;
@@ -586,7 +586,7 @@
             const description = document.getElementById("descriptionid").value.trim();
             const brand = document.getElementsByName("brand")[0].value.trim();
             const price = document.getElementsByName("regularPrice")[0].value.trim();
-            const salePrice = document.getElementsByName("salePrice")[0].value.trim();
+            //const salePrice = document.getElementsByName("salePrice")[0].value.trim();
             const category = document.getElementsByName("category")[0].value.trim();
             const images = document.querySelectorAll("input[type='file']");
 
@@ -599,7 +599,7 @@
             if (name === "") {
                 const message = "Please enter a product name."
                 displayErrorMessage("productName-error", "Please enter a product name.");
-                displayErrorMessageToast(message); 
+                displayErrorMessageToast(message);
                 isValid = false;
             }
 
@@ -623,15 +623,15 @@
                 isValid = false;
             }
 
-            if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) < 0) {
-                displayErrorMessage("salePrice-error", "Please enter a valid non-negative sale price.");
-                isValid = false;
-            }
+            // if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) < 0) {
+            //     displayErrorMessage("salePrice-error", "Please enter a valid non-negative sale price.");
+            //     isValid = false;
+            // }
 
-            if (parseFloat(price) <= parseFloat(salePrice)) {
-                displayErrorMessage("regularPrice-error", "Regular price must be greater than sale price.");
-                isValid = false;
-            }
+            // if (parseFloat(price) <= parseFloat(salePrice)) {
+            //     displayErrorMessage("regularPrice-error", "Regular price must be greater than sale price.");
+            //     isValid = false;
+            // }
 
             for (let i = 0; i < variantSizes.length; i++) {
                 const size = variantSizes[i].value.trim();
@@ -651,16 +651,23 @@
                 }
             }
 
-            let imageCount = 0
-
-            images.forEach(imageInput => {
+            let imageCount = 0;
+            images.forEach((imageInput, index) => {
                 if (imageInput.files.length > 0) {
-                    imageCount++;
+                    const file = imageInput.files[0];
+                    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+                    if (!allowedTypes.includes(file.type)) {
+                        displayErrorMessage(`images-error`, `Invalid file type for Image ${index + 1}. Please select a PNG, JPEG, or JPG file.`);
+                        isValid = false;
+                    } else {
+                        imageCount++;
+                    }
                 }
             });
 
             if (imageCount < 3) {
-                displayErrorMessage("images-error", "Please select at least one image.");
+                displayErrorMessage("images-error", "Please select at least 3 valid image files.");
                 isValid = false;
             }
 

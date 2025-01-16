@@ -197,22 +197,22 @@
             <h1>Order Details</h1>
             <div class="order-info">
                 <p><strong>Order ID:</strong>
-                    <%= order.id %>
+                    <%= order._id %>
                 </p>
                 <p><strong>Date:</strong>
-                    <%= order.createdAt.toLocaleDateString() %>
+                    <%= order.createdAt?.toLocaleDateString() %>
                 </p>
                 <p><strong>Status:</strong>
-                    <span class="order-status status-<%= order.status.toLowerCase() %>">
-                        <%= order.orderStatus %>
+                    <span class="order-status status-<%= order.items[0].status.toLowerCase() %>">
+                        <%= order.items[0].status %>
                     </span>
                 </p>
             </div>
 
             <h2>Order Tracking</h2>
             <div class="tracking">
-                <% const trackingSteps=['Processing', 'Shipped' , 'Out for Delivery' , 'Delivered' ]; %>
-                    <% const currentStepIndex=trackingSteps.indexOf(order.orderStatus); %>
+                <% const trackingSteps=['Pending', 'Shipped' , 'Delivered' , 'Cancelled' ]; %>
+                    <% const currentStepIndex=trackingSteps.indexOf(order.status); %>
                         <% trackingSteps.forEach((step, index)=> { %>
                             <div class="tracking-step">
                                 <div class="tracking-icon <%= index > currentStepIndex ? 'inactive' : '' %>">
@@ -237,105 +237,181 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% order.items.forEach(item=> { %>
-                        <tr>
-                            <td data-label="Product">
-                                <%= item.productId %>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center justify-content-center" style="
-                          width: 40px;
-                          height: 40px;
-                          border-radius: 50%;
-                          overflow: hidden;
-                        "> <img src="/assets/login/" alt="item.product.productName" class="img-fluid rounded-circle"
-                                        style="width: 100%; height: auto">
-                                </div>
-                            </td>
-                            <td data-label="Quantity">
-                                <%= item.quantity %>
-                            </td>
-                            <td data-label="Price">₹<%= item.price.toFixed(2) %>
-                            </td>
-                            <td data-label="Total">₹<%= (item.quantity * item.price).toFixed(2) %>
-                            </td>
-                        </tr>
-                        <% }); %>
+
+                    <tr>
+                        <td data-label="Product">
+                            <%= order.items[0]?.productId?.productName || "Unknown Product" %>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center justify-content-center" style="
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 50%;
+                                overflow: hidden;">
+                                <img src="/uploads/product-images/<%= order.items[0]?.productId?.productImage?.[0] || 'default.jpg' %>"
+                                    alt="<%= order.items[0]?.productId?.productName || 'No Name' %>"
+                                    class="img-fluid rounded-circle" style="width: 100%; height: auto;">
+                            </div>
+                        </td>
+                        <td data-label="Quantity">
+                            <%= order.items[0]?.quantity || 0 %>
+                        </td>
+                        <td data-label="Price">₹<%= order.items[0]?.price?.toFixed(2) || "0.00" %>
+                        </td>
+                        <td data-label="Total">₹<%= ((order.items[0]?.quantity || 0) * (order.items[0]?.price ||
+                                0)).toFixed(2) %>
+                        </td>
+                    </tr>
+
+
+
                 </tbody>
             </table>
 
             <div class="total-section">
                 <div class="total-row">
                     <span>Subtotal:</span>
-                    <span>₹<%= order.totalAmount.toFixed(2) %></span>
+                    <span>₹<%= order.items[0]?.price?.toFixed(2) || "0.00" %></span>
                 </div>
 
 
                 <div class="total-row grand-total">
                     <span>Total:</span>
-                    <span>₹<%= order.totalAmount.toFixed(2) %></span>
+                    <span>₹<%= ((order.items[0]?.quantity || 0) * (order.items[0]?.price || 0)).toFixed(2) %></span>
                 </div>
             </div>
 
-            <h2>Shipping Address</h2>
-            <p>
+            <div class="shipping-address">
+                <h3>Shipping Address</h3>
+                <p><strong>Address Type:</strong>
+                    <%= order.shippingAddress?.addressType || "N/A" %>
+                </p>
+                <p><strong>Name:</strong>
+                    <%= order.shippingAddress?.name || "N/A" %>
+                </p>
+                <p><strong>City:</strong>
+                    <%= order.shippingAddress?.city || "N/A" %>
+                </p>
+                <p><strong>Landmark:</strong>
+                    <%= order.shippingAddress?.landMark || "N/A" %>
+                </p>
+                <p><strong>State:</strong>
+                    <%= order.shippingAddress?.state || "N/A" %>
+                </p>
+                <p><strong>Pincode:</strong>
+                    <%= order.shippingAddress?.pincode || "N/A" %>
+                </p>
+                <p><strong>Phone:</strong>
+                    <%= order.shippingAddress?.phone || "N/A" %>
+                </p>
+                <p><strong>Alternate Phone:</strong>
+                    <%= order.shippingAddress?.altPhone || "N/A" %>
+                </p>
+            </div>
 
-            </p>
 
 
-            <% if (order.status !=='Cancelled' && order.status !=='Delivered' ) { %>
+
+            <% if (order.items[0].status !=='Cancelled' &&order.items[0].status  !=='Delivered' ) { %>
                 <a class="btn-viewPage"
-                    onclick="cancelOrder('<%= order.id %>')">Cancel Order</a>
-                <% } else if(order.status=='Delivered' ){ %>
-                    <a href="/cancel-order/<%= order.id %>" class="btn-viewPage"
-                        onclick="return confirm('Are you sure you want to cancel this order?')">Return Order</a>
+                    onclick="cancelOrder('<%= order._id %>', '<%= order.items[0].productId._id %>')">Cancel Order</a>
+                <% } else if(order.items[0].status =='Delivered' ){ %>
+                    <a class="btn-viewPage"
+                        onclick="returnOrder('<%= order._id %>','<%= order.items[0].productId._id %>')">Return Order</a>
                     <% } %>
         </div>
 
         <script>
-           async function cancelOrder(orderId) {
-    try {
-        const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, cancel it!',
-            cancelButtonText: 'No, keep it'
-        });
+            async function cancelOrder(orderId, productId) {
+                try {
+                    const result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, cancel it!',
+                        cancelButtonText: 'No, keep it'
+                    });
 
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Cancelling...',
-                text: 'Please wait while we process your request.',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Cancelling...',
+                            text: 'Please wait while we process your request.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Perform the API request
+                        const response = await fetch(`/cancel-order/${orderId}/${productId}`, {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
+                        });
+
+                        if (response.ok) {
+                            Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            const errorMessage = await response.text();
+                            Swal.fire('Error!', `Failed to cancel order: ${errorMessage}`, 'error');
+                        }
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', `An unexpected error occurred: ${error.message}`, 'error');
                 }
-            });
-
-            const response = await fetch(`/cancel-order/${orderId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (response.ok) {
-                Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
-                    window.location.reload();
-                });
-            } else {
-                const errorMessage = await response.text();
-                Swal.fire('Error!', `Failed to cancel order: ${errorMessage}`, 'error');
             }
-        }
-    } catch (error) {
-        Swal.fire('Error!', `An unexpected error occurred: ${error.message}`, 'error');
-    }
-}
+
+            async function returnOrder(orderId, productId) {
+                try {
+                    const result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, cancel it!',
+                        cancelButtonText: 'No, keep it'
+                    });
+
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Cancelling...',
+                            text: 'Please wait while we process your request.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Perform the API request
+                        const response = await fetch(`/return-order/${orderId}/${productId}`, {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
+                        });
+
+                        if (response.ok) {
+                            Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            const errorMessage = await response.text();
+                            Swal.fire('Error!', `Failed to cancel order: ${errorMessage}`, 'error');
+                        }
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', `An unexpected error occurred: ${error.message}`, 'error');
+                }
+            }
+
         </script>
 
 
