@@ -18,6 +18,7 @@ const categoryController = require('../controller/admin/categoryController')
 const brandController = require('../controller/admin/brandController')
 const productController = require("../controller/admin/productController")
 const orderController = require("../controller/admin/orderController")
+const couponController = require("../controller/admin/couponController")
 
 
 
@@ -58,6 +59,10 @@ router.post("/add-offer/:productId",adminAuth,productController.addOffer)
 router.delete('/remove-offer/:productId', adminAuth,productController.removeOffer);
 router.post("/addCategoryOffer",adminAuth,productController.addCategoryOffer)
 
+//coopen Management
+router.get("/coupons",adminAuth,couponController.getCouponsPage)
+router.post("/coupons/create",adminAuth, couponController.createCoupon);
+router.post("/deleteCoupons/:id", adminAuth,couponController.deleteCoupon);
 
 //order managenent
 router.get("/orders",adminAuth,orderController.getOrder);

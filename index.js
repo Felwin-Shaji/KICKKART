@@ -5,12 +5,17 @@ const path = require('node:path');
 const session = require('express-session');
 const passport =require('./config/passport');
 const nocache = require('nocache');
+
     
 const database = require('./config/database')
 database()
 
 const userRouter = require('./routes/userRouter')
 const adminRouter = require('./routes/adminRouter')
+
+
+
+
 
 app.use(nocache())
 app.use(express.json({ limit: '10mb' }));

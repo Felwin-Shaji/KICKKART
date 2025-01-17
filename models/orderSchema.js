@@ -8,10 +8,23 @@ const orderSchema = new mongoose.Schema({
     },
     items: [
         {
-            productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-            quantity: { type: Number, required: true },
-            price: { type: Number, required: true },
-            size:{ type: Number, required: true },
+            productId: { 
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: "Product", 
+                required: true 
+            },
+            quantity: {
+                 type: Number, 
+                 required: true 
+                },
+            price: { 
+                type: Number, 
+                required: true 
+            },
+            size:{
+                 type: Number, 
+                 required: true 
+                },
             status: {
                 type: String,
                 enum: ["Pending", "Shipped", "Delivered", "Cancelled","Returned"],
@@ -34,14 +47,13 @@ const orderSchema = new mongoose.Schema({
         enum: ["COD", "Online"],
         required: true,
     },
+    coupenOffer:{
+        type:Number,
+        required:false
+    },
     totalAmount: {
         type: Number,
         required: true,
-    },
-    status: {
-        type: String,
-        enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
-        default: "Pending",
     },
     createdAt: {
         type: Date,

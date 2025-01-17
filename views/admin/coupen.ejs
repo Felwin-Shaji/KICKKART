@@ -1,0 +1,381 @@
+<%- include("../../views/partials/admin/header") %>
+
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #004cff;
+            margin: 20px 0;
+        }
+
+        h3 {
+            color: #333;
+        }
+
+        /* Form Styles */
+        /* form {
+                background-color: #fff;
+                padding: 20px;
+                margin: 20px auto;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                max-width: 500px;
+            }
+
+            form label {
+                display: block;
+                margin: 10px 0 5px;
+                font-weight: bold;
+            }
+
+            form input {
+                width: calc(100% - 20px);
+                padding: 8px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            form button {
+                background-color: #004cff;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+
+            form button:hover {
+                background-color: #0037ff;
+            } */
+
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Button Style */
+        .open-modal-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .open-modal-btn:hover {
+            background-color: #0056b3;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #004cff;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        table td form button {
+            background-color: #e74c3c;
+            color: white;
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+
+        table td form button:hover {
+            background-color: #c0392b;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        input.invalid {
+            border-color: red;
+        }
+
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            form {
+                width: 90%;
+            }
+
+            table {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            table th,
+            table td {
+                padding: 8px;
+            }
+        }
+    </style>
+
+
+    <h1>Coupons Management</h1>
+
+    <button class="open-modal-btn" id="openModalBtn">Create New Coupon</button>
+
+    <!-- Modal for creating a new coupon -->
+    <div id="couponModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModalBtn">&times;</span>
+            <form id="createCouponForm" action="/admin/coupons/create" method="POST" novalidate>
+                <h3>Create New Coupon</h3>
+
+                <label for="code">Coupon Code:</label>
+                <input type="text" id="code" name="code" required />
+                <small class="error-message" id="codeError"></small>
+
+                <label for="discountPercentage">Discount Percentage:</label>
+                <input type="number" id="discountPercentage" name="discountPercentage" min="1" max="100" required />
+                <small class="error-message" id="discountPercentageError"></small>
+
+                <label for="minPurchaseAmount">Minimum Purchase Amount:</label>
+                <input type="number" id="minPurchaseAmount" name="minPurchaseAmount" min="1" required />
+                <small class="error-message" id="minPurchaseAmountError"></small>
+
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required />
+                <small class="error-message" id="startDateError"></small>
+
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required />
+                <small class="error-message" id="endDateError"></small>
+
+                <label for="quantity">Coupon Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" required />
+                <small class="error-message" id="quantityError"></small>
+
+                <button type="submit">Create Coupon</button>
+            </form>
+
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- List of all coupons -->
+    <h3 style="text-align: center;">All Coupons</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Discount (%)</th>
+                <th>Min Purchase</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Qty</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% coupons.forEach(coupon=> { %>
+                <tr>
+                    <td>
+                        <%= coupon.code %>
+                    </td>
+                    <td>
+                        <%= coupon.discountPercentage %>%
+                    </td>
+                    <td>$<%= coupon.minPurchaseAmount %>
+                    </td>
+                    <td>
+                        <%= coupon.startDate.toDateString() %>
+                    </td>
+                    <td>
+                        <%= coupon.endDate.toDateString() %>
+                    </td>
+                    <td>
+                        <%= coupon.quantity %>
+                    </td>
+                    <td>
+                        <form action="/admin/deleteCoupons/<%= coupon._id %>" method="POST" style="display: inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <% }) %>
+        </tbody>
+    </table>
+
+    <script>
+        const modal = document.getElementById('couponModal');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        openModalBtn.addEventListener('click', () => modal.style.display = 'block');
+        closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) modal.style.display = 'none';
+        });
+
+        document.getElementById("createCouponForm").addEventListener("submit", function (event) {
+            const form = event.target;
+
+            document.querySelectorAll(".error-message").forEach(msg => (msg.style.display = "none"));
+            form.querySelectorAll("input").forEach(input => input.classList.remove("invalid"));
+
+            let isValid = true;
+
+            const codeInput = document.getElementById("code");
+            if (!codeInput.value.trim()) {
+                displayError(codeInput, "Coupon code is required.");
+                isValid = false;
+            }
+
+            // Validate Discount Percentage
+            const discountInput = document.getElementById("discountPercentage");
+            if (!discountInput.value || discountInput.value <= 0 || discountInput.value > 100) {
+                displayError(discountInput, "Enter a valid discount percentage (1-100).");
+                isValid = false;
+            }
+
+            // Validate Minimum Purchase Amount
+            const minPurchaseInput = document.getElementById("minPurchaseAmount");
+            if (!minPurchaseInput.value || minPurchaseInput.value <= 0) {
+                displayError(minPurchaseInput, "Enter a valid minimum purchase amount.");
+                isValid = false;
+            }
+
+            // Validate Start Date
+            const startDateInput = document.getElementById("startDate");
+            if (!startDateInput.value) {
+                displayError(startDateInput, "Start date is required.");
+                isValid = false;
+            }
+
+            // Validate End Date
+            const endDateInput = document.getElementById("endDate");
+            if (!endDateInput.value) {
+                displayError(endDateInput, "End date is required.");
+                isValid = false;
+            } else if (new Date(endDateInput.value) <= new Date(startDateInput.value)) {
+                displayError(endDateInput, "End date must be after the start date.");
+                isValid = false;
+            }
+
+            // Validate Quantity
+            const quantityInput = document.getElementById("quantity");
+            if (!quantityInput.value || quantityInput.value <= 0) {
+                displayError(quantityInput, "Enter a valid coupon quantity.");
+                isValid = false;
+            }
+
+            if (!isValid) {
+                event.preventDefault(); // Stop form submission
+            }
+        });
+
+        // Helper function to display error messages
+        function displayError(input, message) {
+            const errorElement = input.nextElementSibling;
+            errorElement.textContent = message;
+            errorElement.style.display = "block";
+            input.classList.add("invalid");
+        }
+
+    </script>
+
+
+
+    <%- include("../../views/partials/admin/footer") %>

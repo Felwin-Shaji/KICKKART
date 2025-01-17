@@ -570,6 +570,7 @@ const logout = async (req, res) => {
 };
 
 const googleVerification = async (req, res) => {
+    req.session.user = req.user.id
     res.redirect('/')
 }
 

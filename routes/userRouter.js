@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const { userAuth, adminAuth } = require("../middlewares/auth")
+const crypto = require('crypto');
+
+
 
 const userController = require('../controller/user/userController');
 const productController = require("../controller/user/productController")
@@ -11,6 +14,8 @@ const wishlistController = require('../controller/user/wishlistController');
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), userController.googleVerification);
+
+
 
 router.get('/pageNotFound', userController.pageNotFound);
 
@@ -60,6 +65,9 @@ router.patch("/cartQuantity",userAuth,cartController.cartQuantity)
 // router.post("/cartQuantity",userAuth,cartController.cartQuantity)
 router.delete("/removeFromCart/:id/:size",userAuth,cartController.remove);
 router.get("/checkout",userAuth,cartController.checkout)
+router.post("/applyCoupen",userAuth,cartController.applyCoupen);
+router.post("/create-order",userAuth,cartController.razorpayCreatOrder);
+router.post("/verify-payment",userAuth,cartController.varifyPayment)
 
 //orderController
 router.post("/place-order",userAuth,cartController.placeOrder)
