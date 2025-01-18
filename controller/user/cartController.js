@@ -95,8 +95,10 @@ const cart = async (req, res) => {
                     quantity: quantities,
                     size: selectedSize,
                     price: productItems.salePrice * quantities,
+                    regularPrice: productItems.regularPrice * quantities
                 }],
                 totalPrice: productItems.salePrice * quantities,
+                totalregularPrice: productItems.regularPrice * quantities
             });
         } else {
             // Check if the product with the selected size already exists in the cart
@@ -106,6 +108,7 @@ const cart = async (req, res) => {
                 // If the product with the selected size exists, update the quantity and price
                 const existingProduct = cart.items[existingProductIndex];
                 existingProduct.price = existingProduct.quantity * productItems.salePrice;
+                existingProduct.regularPrice = existingProduct.quantity * productItems.regularPrice;
             } else {
                 // If it's a new product or size, add it to the cart as a new item
                 cart.items.push({
@@ -113,11 +116,13 @@ const cart = async (req, res) => {
                     quantity: quantities,
                     size: selectedSize,
                     price: productItems.salePrice * quantities,
+                    regularPrice: productItems.regularPrice * quantities
                 });
             }
 
             // Update total price
             cart.totalPrice = cart.items.reduce((total, item) => total + item.price, 0);
+            cart.totalregularPrice = cart.items.reduce((total, item) => total + item.regularPrice, 0);
         }
 
         // Save cart changes
@@ -174,12 +179,14 @@ const cartQuantity = async (req, res) => {
 
             existingProduct.quantity = quantity;
             existingProduct.price = quantity * product.salePrice;
+            existingProduct.regularPrice = quantity * product.regularPrice;
         } else {
             return res.status(404).json({ success: false, message: "Product with the selected size not found in the cart." });
         }
 
 
         cart.totalPrice = cart.items.reduce((total, item) => total + item.price, 0);
+        cart.totalregularPrice = cart.items.reduce((total, item) => total + item.regularPrice, 0);
 
         await cart.save();
 
@@ -189,6 +196,7 @@ const cartQuantity = async (req, res) => {
             cart: {
                 items: cart.items,
                 totalPrice: cart.totalPrice,
+                totalregularPrice: cart.totalregularPrice
             },
         });
 
@@ -201,50 +209,63 @@ const cartQuantity = async (req, res) => {
 
 const remove = async (req, res) => {
     try {
-        const userId = req.session.user; // Assuming you're using authentication to get the logged-in user
+        const userId = req.session.user; // Assuming you're using authentication
         const productId = req.params.id; // The ID of the product to be removed
         const size = String(req.params.size);
 
-        console.log("productSize", size);
+        if (!userId || !productId || !size) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid request parameters.",
+            });
+        }
 
+        console.log("Removing product with size:", size);
 
         // Update the cart by pulling the specific product from the items array
         const updatedCart = await Cart.findOneAndUpdate(
-            { user: userId }, // Find the cart for the logged-in user
-            { $pull: { items: { product: productId, size: size } } }, // Match both product ID and size
+            { user: userId },
+            { $pull: { items: { product: productId, size: size } } },
             { new: true } // Return the updated cart
         );
 
-        console.log("updatedCart", updatedCart)
-
         if (updatedCart) {
-            // Recalculate the total price
-            updatedCart.totalPrice = updatedCart.items.reduce((total, item) => {
-                return total + item.quantity * item.price;
-            }, 0);
+            // Recalculate the total prices
+            updatedCart.totalPrice = updatedCart.items.reduce((total, item) => total + item.price, 0);
+            updatedCart.totalregularPrice = updatedCart.items.reduce((total, item) => total + item.regularPrice, 0);
+
+            // If cart is empty, consider removing it
+            if (updatedCart.items.length === 0) {
+                await Cart.findByIdAndDelete(updatedCart._id);
+                return res.status(200).json({
+                    success: true,
+                    message: "Item removed and cart cleared.",
+                });
+            }
 
             // Save the updated cart
             await updatedCart.save();
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Item removed from cart successfully.",
                 cart: updatedCart,
             });
         } else {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "Cart not found or item not in cart.",
             });
         }
     } catch (error) {
         console.error("Error removing item from cart:", error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "An error occurred while removing the item.",
         });
     }
 };
+
 
 const applyCoupen = async (req, res) => {
     try {
@@ -325,6 +346,7 @@ const checkout = async (req, res) => {
             userId,
             cart,
             totalPrice: cart.totalPrice,
+            totalregularPrice:cart.totalregularPrice,
             userAddress: addresses,
         });
 
@@ -337,7 +359,7 @@ const checkout = async (req, res) => {
 const placeOrder = async (req, res) => {
     const userId = req.session.user;
     try {
-        const { selectedAddress, paymentMethod, coupenCode, totalAmount, coupenOffer } = req.body;
+        const { selectedAddress, paymentMethod, coupenCode, totalAmount, coupenOffer,totalregularPrice } = req.body;
         console.log("req.body", req.body);
 
         const cart = await Cart.findOne({ user: userId }).populate('items.product');
@@ -409,11 +431,13 @@ const placeOrder = async (req, res) => {
                 quantity: item.quantity,
                 size: item.size,
                 price: item.price,
+                regularPrice: item.regularPrice
             })),
             shippingAddress: address,
             paymentMethod,
             coupenOffer: coupenOffer,
             totalAmount: totalAmount,
+            totalregularPrice:totalregularPrice
         };
 
         const order = await Order.create(orderData);
@@ -482,49 +506,49 @@ const varifyPayment = async (req, res) => {
     if (generated_signature === razorpay_signature) {
         try {
 
-            const { selectedAddress, paymentMethod, coupenCode, totalAmount, coupenOffer } = data;
+            const { selectedAddress, paymentMethod, coupenCode, totalAmount, coupenOffer,totalregularPrice } = data;
             const cart = await Cart.findOne({ user: userId }).populate('items.product');
 
 
             if (!cart || !cart.items || cart.items.length === 0) {
                 return res.status(400).json({ message: 'Your cart is empty.' });
             }
-    
+
             const addressDocument = await Address.findOne({ userId, 'address._id': selectedAddress });
             if (!addressDocument) {
                 return res.status(400).json({ message: 'Selected address not found' });
             }
-    
+
             const address = addressDocument.address.find(
                 (addr) => addr._id.toString() === selectedAddress
             );
-    
+
             const coupen = await Coupen.findOne({ code: coupenCode });
 
 
             if (coupen) {
                 const today = new Date();
-    
+
                 // Validate coupon dates
                 if (today < coupen.startDate || today > coupen.endDate) {
                     return res.status(400).json({ message: 'Coupon is not valid for this date.' });
                 }
-    
+
                 // Validate minimum purchase amount
                 if (totalAmount < coupen.minPurchaseAmount) {
                     return res.status(400).json({ message: `Minimum purchase amount is ₹${coupen.minPurchaseAmount}.` });
                 }
-    
+
                 // Validate coupon quantity
                 if (coupen.quantity <= 0) {
                     return res.status(400).json({ message: 'Coupon is no longer available.' });
                 }
-    
+
                 // Check if user has already used the coupon
                 if (coupen.userId.includes(userId)) {
                     return res.status(400).json({ message: 'You have already used this coupon.' });
                 }
-    
+
                 // Update coupon: reduce quantity and add userId
                 coupen.quantity -= 1;
                 coupen.userId.push(userId);
@@ -537,20 +561,20 @@ const varifyPayment = async (req, res) => {
             if (!validPaymentMethods.includes(paymentMethod)) {
                 return res.status(400).json({ message: 'Invalid payment method' });
             }
-    
+
             for (const item of cart.items) {
                 const product = await Product.findOne(
                     { _id: item.product._id, "variants.size": item.size },
                     { "variants.$": 1 }
                 );
-    
+
                 if (!product || product.variants[0].quantity < item.quantity) {
                     throw new Error(
                         `Insufficient stock for product "${item.product.productName}" (size: ${item.size}).`
                     );
                 }
             }
-    
+
             const orderData = {
                 userId,
                 items: cart.items.map((item) => ({
@@ -558,14 +582,16 @@ const varifyPayment = async (req, res) => {
                     quantity: item.quantity,
                     size: item.size,
                     price: item.price,
+                    regularPrice: item.regularPrice
                 })),
                 shippingAddress: address,
                 paymentMethod,
                 coupenOffer: coupenOffer,
                 totalAmount: totalAmount,
+                totalregularPrice:totalregularPrice
             };
 
-    
+
             const order = await Order.create(orderData);
 
 
@@ -574,14 +600,14 @@ const varifyPayment = async (req, res) => {
                 size: item.size,
                 id: item.productId,
             }));
-    
+
             const updatePromises = variantData.map((variant) =>
                 Product.updateOne(
                     { _id: variant.id, "variants.size": variant.size },
                     { $inc: { "variants.$.quantity": -variant.quantity } }
                 )
             );
-    
+
             await Promise.all(updatePromises);
 
 

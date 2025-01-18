@@ -21,6 +21,10 @@ const orderSchema = new mongoose.Schema({
                 type: Number, 
                 required: true 
             },
+            regularPrice: { 
+                type: Number, 
+                required: true 
+            },
             size:{
                  type: Number, 
                  required: true 
@@ -52,6 +56,10 @@ const orderSchema = new mongoose.Schema({
         required:false
     },
     totalAmount: {
+        type: Number,
+        required: true,
+    },
+    totalregularPrice:{
         type: Number,
         required: true,
     },

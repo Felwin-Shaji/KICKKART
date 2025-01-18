@@ -1,22 +1,226 @@
 <%- include("../../views/partials/admin/header") %>
-<!-- Main Content -->
-<main class="p-4">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #343a40;
+    }
+
+    .card {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border: none;
+    }
+
+    .filter-btn {
+      margin: 0 5px;
+    }
+
+    table th,
+    table td {
+      vertical-align: middle;
+    }
+  </style>
+
+  <!-- Main Content -->
+  <main class="p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Dashboard</h2>
-        <div>
-            <input type="date" class="form-control d-inline-block me-2" style="width: auto;">
-            <button class="btn btn-primary">Download</button>
-        </div>
+      <h2>Dashboard</h2>
+      <div>
+
+        <button class="btn btn-primary">Download</button>
+      </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="row g-4 mb-4">
-        <!-- Cards code remains unchanged -->
+      <!-- Cards code remains unchanged -->
     </div>
 
     <!-- Charts and Recent Sales -->
     <div class="row g-4">
-        
+
     </div>
-</main>
-<%- include("../../views/partials/admin/footer") %>
+
+    <body>
+      <div class="container my-4">
+        <h2 class="text-center mb-4">Order Dashboard</h2>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <div class="card p-3">
+              <h5 class="card-title">Overall Sales Count</h5>
+              <h3 class="text-primary" id="sales-count">
+                <%= overallSalesCount %>
+              </h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3">
+              <h5 class="card-title">Overall Sales Amount</h5>
+              <h3 class="text-success" id="sales-amount">₹<%= overallSalesAmount %>
+              </h3>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3">
+              <h5 class="card-title">Overall Discounts</h5>
+              <h3 class="text-danger" id="sales-discount">₹<%= overallDiscount %>
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <!-- <button >Custom Data</button> -->
+            <input type="date" id="startDate" class="btn btn-outline-primary filter-btn" style="width: auto;">
+            <label for="">--</label>
+            <input type="date" id="endDate" class="btn btn-outline-primary filter-btn" style="width: auto;">
+            <button id="filterOrdersBtn" class="btn btn-outline-secondary filter-btn">Filter</button>
+
+          </div>
+
+            <div class="dropdown" style="justify-content: baseline;">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Filter By
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                <li><a class="dropdown-item" href="#" data-filter="1day">1 Day</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="1week">1 Week</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="1month">1 Month</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="1year">1 Year</a></li>
+              </ul>
+            </div>
+
+          
+          <div>
+            <button class="btn btn-success">Download PDF</button>
+            <button class="btn btn-success">Download EXAL</button>
+          </div>
+        </div>
+
+        <div>
+          <h4>Order List</h4>
+
+        </div>
+
+        <!-- Order Table -->
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th>Order ID</th>
+                <th>Data</th>
+                <th>User</th>
+                <th>Items</th>
+                <th>Total Amount</th>
+                <th>Offer Amount</th>
+                <th>Coupon Amount</th>
+                <th>Payment</th>
+                <!-- <th>Status</th>
+                  <th>Actions</th> -->
+              </tr>
+            </thead>
+            <tbody id="order-list">
+              <!-- Dynamic rows go here -->
+              <% orders.forEach((order, index)=> { %>
+
+                <tr>
+                  <td>
+                    <%= index + 1 %>
+                  </td>
+                  <td>
+                    <%= new Date(order.createdAt).toLocaleDateString('en-US') %>
+                  </td>
+                  <td>
+                    <%= order.userId?.name %>
+                  </td>
+                  <td>
+                    <% order.items.forEach((item)=> { %>
+
+                      <p>Product :<%= item.productId.productName || "N/A" %> ,<br>
+                          Qty: <%= item.quantity || "N/A" %> ,Size: <%= item.size || "N/A" %> , Status: <%= item.status
+                                || "N/A" %><br>
+                                Price: ₹<%= item.price ? item.price.toFixed(2) : "0.00" %> ,
+                                  Regular Price: ₹<%= item.regularPrice ? item.regularPrice.toFixed(2) : "0.00" %>, <br>
+
+                      </p>
+                      <% }); %>
+                  </td>
+
+                  <td>₹<%= order.totalAmount %>
+                  </td>
+
+                  <td><span>₹<%= order.totalregularPrice ? (Math.round((order.totalregularPrice - order.totalAmount) *
+                        100) / 100).toFixed(2) : 0 %></span>
+                  </td>
+                  <td>₹<%= order.coupenOffer || 0 %>
+                  </td>
+                  <td>
+                    <%= order.paymentMethod %>
+                  </td>
+
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+      
+
+      <script>
+       document.querySelectorAll(".dropdown-item").forEach((item) => {
+    item.addEventListener("click", (e) => {
+        e.preventDefault();
+        const filter = e.target.getAttribute("data-filter");
+        const today = new Date();
+        let startDate;
+
+        // Calculate the start date based on the selected filter
+        switch (filter) {
+          case "1day":
+                startDate = new Date(today);
+                startDate.setHours(0, 0, 0, 0); // Set to 12:00 AM of today
+                endDate = new Date(today);
+                endDate.setHours(23, 59, 59, 999); // Set to 11:59 PM of today
+                break;
+            case "1week":
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - 7);
+                break;
+            case "1month":
+                startDate = new Date(today);
+                startDate.setMonth(today.getMonth() - 1);
+                break;
+            case "1year":
+                startDate = new Date(today);
+                startDate.setFullYear(today.getFullYear() - 1);
+                break;
+            default:
+                return;
+        }
+
+        // Helper function to format date and time as YYYY-MM-DDTHH:mm:ss
+        const formatDateTime = (date) => {
+            return date.toISOString(); // Outputs in ISO format with time (YYYY-MM-DDTHH:mm:ss.sssZ)
+        };
+
+        // Format start and end dates with time
+        const formattedStartDate = formatDateTime(startDate);
+        const formattedEndDate = formatDateTime(today);
+
+        // Redirect with the calculated date range including time
+        window.location.href = `/admin/?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+    });
+});
+
+      </script>
+
+    </body>
+  </main>
+  <%- include("../../views/partials/admin/footer") %>

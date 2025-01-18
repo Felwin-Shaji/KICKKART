@@ -23,12 +23,21 @@ const cartSchema = new Schema({
             type: String,
             required: true,
         },
-        price: {
+        price: {           ///  there will be salce price of (one product * quantity)
+            type: Number,
+            required: true 
+        },
+        regularPrice:{    /// reguler price of (one product * quantity)
             type: Number,
             required: true 
         }
     }],
-    totalPrice: {
+    totalPrice: {     /// there will be sum of all sales price of each item 
+        type: Number,
+        required: true,
+        default: 0 
+    },
+    totalregularPrice:{
         type: Number,
         required: true,
         default: 0 

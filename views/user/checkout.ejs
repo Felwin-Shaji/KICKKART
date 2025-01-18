@@ -137,6 +137,11 @@
                                     <span>Order Total</span>
                                     <span id="orderTotal">₹<%= cart.items.reduce((total, item)=> total +
                                             (item.product.salePrice * item.quantity), 0).toFixed(2) %></span>
+
+
+                                            
+
+
                                 </li>
                             </ul>
                         </div>
@@ -162,8 +167,12 @@
 
                         <input id="coupenCode" name="coupenCode" type="text" value="" hidden>
                         <input id="totalAmount" name="totalAmount" type="number" value="<%= cart.items.reduce((total, item)=> total +
-                                                (item.product.salePrice * item.quantity), 0).toFixed(2) %>" hidden>
-                        <input id="coupenOfferPrice" name="coupenOffer" type="number" value="0" hidden>
+                                                (item.product.salePrice * item.quantity), 0).toFixed(2) %>" hidden formnovalidate>
+                        <input id="coupenOfferPrice" name="coupenOffer" type="number" value="0" hidden formnovalidate>
+
+
+                        <input id="totalregularPrice" name="totalregularPrice" type="number" value="<%= cart.items.reduce((total, item)=> total +
+                                                (item.product.regularPrice * item.quantity), 0).toFixed(2) %>" hidden>
 
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-primary btn-block">Place an Order</button>
@@ -231,11 +240,8 @@
                             });
                         }
 
-
-
-
-
                     } else if (data.paymentMethod === "Online") {
+
                         try {
                             // Step 1: Create an order on the server
                             const response = await fetch("/create-order", {
