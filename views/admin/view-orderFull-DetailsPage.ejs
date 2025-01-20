@@ -22,12 +22,12 @@
                         <%= new Date(order.createdAt).toLocaleDateString('en-US') %> ,
                             <%= new Date(order.createdAt).toLocaleTimeString('en-US') %>
                     </p>
-                    <p><strong>Status:</strong>
+                    <!-- <p><strong>Status:</strong>
                         <span
                             class="badge <%= order.status === 'Delivered' ? 'bg-success' : order.status === 'Pending' ? 'bg-warning' : 'bg-secondary' %>">
                             <%= order.status %>
                         </span>
-                    </p>
+                    </p> -->
                 </div>
 
                 <!-- Order Items -->
@@ -82,10 +82,10 @@
                                                     %>>
                                                     Delivered
                                                 </option>
-                                                <option value="Canceled" <%=item.status==="Canceled" ? "selected" : ""
+                                                <!-- <option value="Canceled" <%=item.status==="Canceled" ? "selected" : ""
                                                     %>>
                                                     Canceled
-                                                </option>
+                                                </option> -->
                                             </select>
                                             <button type="submit" class="btn btn-primary btn-sm">
                                                 &#10003;

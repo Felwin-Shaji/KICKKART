@@ -177,25 +177,53 @@ const resetPassword = async (req, res) => {
 
 const userProfile = async (req, res) => {
    try {
-      console.log('Session User:', req.session.user);
-      const userId = req.session.user;
-      const userData = await User.findById(userId);
-      const addressData = await Address.findOne({ userId: userId });
-      const orderData = await Order.find({userId:userId}).populate("items.productId")
+       console.log('Session User:', req.session.user);
+       const userId = req.session.user;
+       
+       // Fetch user data
+       const userData = await User.findById(userId);
 
+       // Check if user data exists
+       if (!userData) {
+           console.error("User not found for ID:", userId);
+           return res.status(404).json({ success: false, message: "User not found" });
+       }
 
+       // If the user doesn't have a wallet, create one
+       if (!userData.wallet) {
+           userData.wallet = { balance: 0, transactions: [] };
+           await userData.save();
+           console.log("Wallet created for user:", userId);
+       }
 
-      res.render("profile-page", {
-         user: userData,
-         addresses: addressData ? addressData.address : [], // Pass the array
-         orders: orderData || [], 
-      });
+       // Fetch address data
+       const addressData = await Address.findOne({ userId: userId });
+
+       // Fetch order data and populate the productId in the order
+       const orderData = await Order.find({ userId: userId }).populate("items.productId");
+
+       // Pass the wallet transactions to the view
+       const walletHistory = userData.wallet.transactions || [];
+
+       console.log("userData", userData);
+       console.log("orderData", orderData);
+       console.log("walletHistory", walletHistory);
+
+       // Render the profile page with wallet history
+       res.render("profile-page", {
+           user: userData,
+           addresses: addressData ? addressData.address : [], // Pass the array
+           orders: orderData || [],
+           walletHistory: walletHistory,  // Pass wallet history
+       });
 
    } catch (error) {
-      console.error("Error retrieving profile data:", error);
-      res.redirect("/pageNotFound");
+       console.error("Error retrieving profile data:", error);
+       res.redirect("/pageNotFound");
    }
 };
+
+
 
 const changePassword = async (req, res) => {
    try {

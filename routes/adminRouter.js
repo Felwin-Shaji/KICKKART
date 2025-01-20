@@ -26,6 +26,8 @@ const couponController = require("../controller/admin/couponController")
 router.get('/login', adminController.loadLogin)
 router.post('/login', adminController.Login)
 router.get('/', adminAuth, adminController.loadDashboard)
+router.post("/sales-report/pdf",adminAuth,adminController.salceReportPDF)
+router.post("/sales-report/excel",adminAuth,adminController.salceReportEXCL)
 router.get('/logout', adminController.adminLogout)
 
 //userRouter controller

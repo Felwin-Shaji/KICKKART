@@ -234,38 +234,61 @@
                         <th>Quantity</th>
                         <th>Price</th>
                         <th>Total</th>
+                        <th>status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-
-                    <tr>
-                        <td data-label="Product">
-                            <%= order.items[0]?.productId?.productName || "Unknown Product" %>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center justify-content-center" style="
-                                width: 40px;
-                                height: 40px;
-                                border-radius: 50%;
-                                overflow: hidden;">
-                                <img src="/uploads/product-images/<%= order.items[0]?.productId?.productImage?.[0] || 'default.jpg' %>"
-                                    alt="<%= order.items[0]?.productId?.productName || 'No Name' %>"
-                                    class="img-fluid rounded-circle" style="width: 100%; height: auto;">
-                            </div>
-                        </td>
-                        <td data-label="Quantity">
-                            <%= order.items[0]?.quantity || 0 %>
-                        </td>
-                        <td data-label="Price">₹<%= order.items[0]?.price?.toFixed(2) || "0.00" %>
-                        </td>
-                        <td data-label="Total">₹<%= ((order.items[0]?.quantity || 0) * (order.items[0]?.price ||
-                                0)).toFixed(2) %>
-                        </td>
-                    </tr>
-
-
-
+                    <% if (order.items && order.items.length> 0) { %>
+                        <% order.items.forEach(item=> { %>
+                            <tr>
+                                <td data-label="Product">
+                                    <%= item.productId?.productName || "Unknown Product" %>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center justify-content-center" style="
+                                        width: 40px;
+                                        height: 40px;
+                                        border-radius: 50%;
+                                        overflow: hidden;">
+                                        <img src="/uploads/product-images/<%= item.productId?.productImage?.[0] || 'default.jpg' %>"
+                                            alt="<%= item.productId?.productName || 'No Name' %>"
+                                            class="img-fluid rounded-circle" style="width: 100%; height: auto;">
+                                    </div>
+                                </td>
+                                <td data-label="Quantity">
+                                    <%= item.quantity || 0 %>
+                                </td>
+                                <td data-label="Price">₹<%= item.price?.toFixed(2) || "0.00" %>
+                                </td>
+                                <td data-label="Total">₹<%= ((item.quantity || 0) * (item.price || 0)).toFixed(2) %>
+                                </td>
+                                <td data-label="Action">
+                                    <span class="order-status status-<%= item.status.toLowerCase() %>">
+                                        <%= item.status %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <% if (item.status !=='Cancelled' && item.status !=='Delivered' ) { %>
+                                        <a class="btn-viewPage"
+                                            onclick="cancelOrder('<%= order._id %>', '<%= item.productId._id %>')">Cancel
+                                            Order</a>
+                                        <% } else if (item.status==='Delivered' ) { %>
+                                            <a class="btn-viewPage"
+                                                onclick="returnOrder('<%= order._id %>', '<%= item.productId._id %>')">Return
+                                                Order</a>
+                                            <% } %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7">No items found in this order.</td>
+                                    </tr>
+                                    <% } %>
                 </tbody>
+
+
             </table>
 
             <div class="total-section">
@@ -312,10 +335,10 @@
 
 
 
-            <% if (order.items[0].status !=='Cancelled' &&order.items[0].status  !=='Delivered' ) { %>
+            <% if (order.items[0].status !=='Cancelled' &&order.items[0].status !=='Delivered' ) { %>
                 <a class="btn-viewPage"
                     onclick="cancelOrder('<%= order._id %>', '<%= order.items[0].productId._id %>')">Cancel Order</a>
-                <% } else if(order.items[0].status =='Delivered' ){ %>
+                <% } else if(order.items[0].status=='Delivered' ){ %>
                     <a class="btn-viewPage"
                         onclick="returnOrder('<%= order._id %>','<%= order.items[0].productId._id %>')">Return Order</a>
                     <% } %>
