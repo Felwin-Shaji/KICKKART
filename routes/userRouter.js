@@ -34,8 +34,8 @@ router.post('/logout', userController.logout)
 router.get('/', userController.loadHomePage);
 router.get('/shope', userController.loadShopPage);
 router.get("/filter", userController.filterProduct);
-router.get("/filterPrice", userController.filterPrice)
-router.post("/search", userController.searchProduct)
+router.get("/filterPrice", userController.filterPrice);
+router.post("/search", userController.searchProduct);
 
 
 // product mangemtne
@@ -56,6 +56,8 @@ router.post("/addAddress", userAuth, profileController.addAddress);
 router.get("/editAddress", userAuth, profileController.getEditAddress);
 router.post("/editAddress", userAuth, profileController.editAddress);
 router.get("/deleteAddress", userAuth, profileController.deleteAddress);
+router.post("/editProfile",userAuth,profileController.editProfile)
+
 
 
 //cart

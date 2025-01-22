@@ -223,7 +223,48 @@ const userProfile = async (req, res) => {
    }
 };
 
+const editProfile = async (req, res) => {
+   try {
+     console.log("Request Body:", req.body);
+ 
+     const userId = req.session.user;
+     const { name, phone } = req.body;
+ 
+     if (!userId) {
+       return res.status(400).json({ message: "User not found." });
+     }
+ 
+     if (!name || !phone) {
+       return res.status(400).json({ message: "Name and phone must not be empty." });
+     }
 
+     const phoneRegex = /^[0-9]{10}$/;
+     if (!phoneRegex.test(phone)) {
+       return res.status(400).json({ message: "Phone number must be a valid 10-digit number." });
+     }
+ 
+     const user = await User.findOneAndUpdate(
+       { _id: userId },
+       { $set: { name: name.trim(), phone: phone.trim() } }, 
+       { new: true }
+     );
+
+     if (!user) {
+       return res.status(404).json({ message: "User not found or update failed." });
+     }
+ 
+     return res.status(200).json({
+       message: "Profile updated successfully.",
+       user,
+     });
+ 
+   } catch (error) {
+     console.error("Error updating profile:", error);
+ 
+     return res.status(500).json({ message: "An internal server error occurred. Please try again later." });
+   }
+ };
+ 
 
 const changePassword = async (req, res) => {
    try {
@@ -279,7 +320,9 @@ const addAddress = async (req, res) => {
       const userId = req.session.user
       console.log("aqqqqqqqq", req.body)
       const userData = await User.findOne({ _id: userId });
-      const { addressType, name, city, landMark, state, pincode, phone, altPhone } = req.body
+      const { addressType, name, city, landMark, state, pincode, phone, altPhone} = req.body
+      const redirectTo = req.query
+      console.log("redirectTo",redirectTo)
       const userAddress = await Address.findOne({ userId: userData._id });
 
       if (!userAddress) {
@@ -293,7 +336,11 @@ const addAddress = async (req, res) => {
          await userAddress.save();
       }
 
-      res.redirect("/userProfile");
+      if(redirectTo == "checkout"){
+         return res.redirect("/checkout");
+      }else{
+      return res.redirect("/userProfile");
+      }
 
    } catch (error) {
       console.error("Error adding address:", error);
@@ -399,6 +446,7 @@ module.exports = {
    resendOtp,
    resetPassword,
    userProfile,
+   editProfile,
    changePassword,
    getAddAddress,
    addAddress,

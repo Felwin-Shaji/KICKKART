@@ -273,11 +273,11 @@
                             <div class="col-sm-6 offset-sm-3 text-center slider-text">
                                 <div class="slider-text-inner">
                                     <div class="desc">
-                                        <h1 class="head-1">Men's</h1>
-                                        <h2 class="head-2">Shoes</h2>
-                                        <h2 class="head-3">Collection</h2>
-                                        <p class="category"><span>New trending shoes</span></p>
-                                        <p><a href="#" class="btn btn-primary">Shop Collection</a></p>
+                                        <h1 class="head-1"></h1>
+                                        <h2 class="head-2" style="color: #333;">Shoes</h2>
+                                        <h2 class="head-3" style="color: #333;">Collection</h2>
+                                        <p class="head-2" style="color: #333;"><span>New trending shoes</span></p>
+                                        <p><a href="/shope" class="btn btn-primary">Shop Collection</a></p>
                                     </div>
                                 </div>
                             </div>
@@ -293,16 +293,16 @@
                                     <div class="desc">
                                         <h1 class="head-1">Huge</h1>
                                         <h2 class="head-2">Sale</h2>
-                                        <h2 class="head-3"><strong class="font-weight-bold">50%</strong> Off</h2>
+                                        <!-- <h2 class="head-3"><strong class="font-weight-bold">50%</strong> Off</h2> -->
                                         <p class="category"><span>Big sale sandals</span></p>
-                                        <p><a href="#" class="btn btn-primary">Shop Collection</a></p>
+                                        <p><a href="/shope" class="btn btn-primary">Shop Collection</a></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </li>
-                <li style="background-image: url(/images/img_bg_3.jpg);">
+                <!-- <li style="background-image: url(/images/img_bg_3.jpg);">
                     <div class="overlay"></div>
                     <div class="container-fluid">
                         <div class="row">
@@ -319,7 +319,7 @@
                             </div>
                         </div>
                     </div>
-                </li>
+                </li> -->
             </ul>
         </div>
     </aside>
@@ -338,17 +338,17 @@
             <div class="row">
                 <div class="col-sm-6 text-center">
                     <div class="featured">
-                        <a href="#" class="featured-img" style="background-image: url(/images/men.jpg);"></a>
+                        <a href="/filter?category=6776cd7826c71075205c677d" class="featured-img" style="background-image: url(/images/men.jpg);"></a>
                         <div class="desc">
-                            <h2><a href="#">Shop Men's Collection</a></h2>
+                            <h2><a href="/filter?category=6776cd7826c71075205c677d">Shop Men's Collection</a></h2>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-6 text-center">
                     <div class="featured">
-                        <a href="#" class="featured-img" style="background-image: url(/images/women.jpg);"></a>
+                        <a href="/filter?category=6776cd9c26c71075205c6784" class="featured-img" style="background-image: url(/images/women.jpg);"></a>
                         <div class="desc">
-                            <h2><a href="#">Shop Women's Collection</a></h2>
+                            <h2><a href="/filter?category=6776cd9c26c71075205c6784">Shop Women's Collection</a></h2>
                         </div>
                     </div>
                 </div>
@@ -369,7 +369,7 @@
                     <div class="col-md-4 col-lg-3">
                         <div class="product-card">
                             <div class="position-relative">
-                                <span class="hot-badge"><i class="fa-regular fa-heart"></i></span>
+                                <!-- <span class="hot-badge"><i class="fa-regular fa-heart"></i></span> -->
                                 <a href="/productDetails?id=<%= products[i]._id %>">
                                     <img src="/uploads/product-images/<%= products[i].productImage[0] %>" class="card-img-top"
                                         alt="<%= products[i].productName %>">
@@ -395,10 +395,10 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <span class="h5 mb-0">
-                                            <%= Number(products[i].salePrice).toLocaleString("en-IN") %>
+                                            ₹<%= Number(products[i].salePrice).toLocaleString("en-IN") %>
                                         </span>
                                         <span class="original-price ms-2">
-                                            <%= Number(products[i].regularPrice).toLocaleString("en-IN") %>
+                                            ₹<%= Number(products[i].regularPrice).toLocaleString("en-IN") %>
                                         </span>
                                     </div>
 
@@ -480,18 +480,20 @@
                 <div class="col partner-col text-center">
                     <img src="/images/brand-2.jpg" class="img-fluid" alt="Free html4 bootstrap 4 template">
                 </div>
-                <div class="col partner-col text-center">
+                <div class="col partner-col text-center" style="padding-bottom: 100px;">
                     <img src="/images/brand-3.jpg" class="img-fluid" alt="Free html4 bootstrap 4 template">
                 </div>
-                <div class="col partner-col text-center">
+                <!-- <div class="col partner-col text-center">
                     <img src="/images/brand-4.jpg" class="img-fluid" alt="Free html4 bootstrap 4 template">
-                </div>
+                </div> -->
                 <div class="col partner-col text-center">
                     <img src="/images/brand-5.jpg" class="img-fluid" alt="Free html4 bootstrap 4 template">
                 </div>
             </div>
         </div>
     </div>
+
+
 
     <script>
 

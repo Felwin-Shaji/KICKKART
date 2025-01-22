@@ -4,26 +4,13 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
 
-// console.log("Razorpay Key ID:", process.env.RAZORPAY_KEY);
-// console.log("Razorpay Key Secret:", process.env.RAZORPAY_SECRET);
+
 
 
 const razorpayInstance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY,//'YOUR_KEY_ID',
     key_secret: process.env.RAZORPAY_SECRET, //'YOUR_KEY_SECRET',
 });
-// console.log("Razorpay instance created:", razorpayInstance);
-
-// razorpayInstance.orders.create({
-//     amount: 10000, // Amount in paise
-//     currency: "INR",
-//     receipt: "receipt_001",
-// }).then((order) => {
-//     console.log("Order Created Successfully:", order);
-// }).catch((error) => {
-//     console.error("Error Creating Order:", error);
-// });
-
 
 const Cart = require("../../models/cartSchema")
 const User = require("../../models/userSchema")
@@ -266,7 +253,6 @@ const remove = async (req, res) => {
     }
 };
 
-
 const applyCoupen = async (req, res) => {
     try {
         const { couponNumber, PriceBrfCoupen } = req.body;
@@ -316,7 +302,6 @@ const applyCoupen = async (req, res) => {
         res.status(500).json({ message: "Server error. Please try again later." });
     }
 };
-
 
 const checkout = async (req, res) => {
     try {
@@ -470,8 +455,6 @@ const placeOrder = async (req, res) => {
     }
 };
 
-
-
 const razorpayCreatOrder = async (req, res) => {
     const { amount, currency } = req.body;
 
@@ -488,8 +471,6 @@ const razorpayCreatOrder = async (req, res) => {
         res.status(500).json({ success: false, message: "Unable to create Razorpay order" });
     }
 }
-
-
 
 const varifyPayment = async (req, res) => {
 

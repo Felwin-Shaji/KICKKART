@@ -1,229 +1,176 @@
-<%- include("../partials/user/header.ejs") -%>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* General styles */
+    body {
+        font-family: "Arial", sans-serif;
+        width: 100%;
 
+    }
+
+    /* Sticky search bar */
+    .search-container {
+        position: sticky;
+        justify-items: end;
+        top: 0;
+        z-index: 1000;
+        background-color: #ffffff00;
+
+        /* margin-left: 40%; */
+    }
+
+    .search-container form {
+        margin-left: 0%;
+        width: 75%;
+        padding-left: 10%;
+    }
+
+    .search-container h1 {
+        margin-left: 17%;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+        position: sticky;
+        top: 70px;
+        /* Adjust based on your header height */
+        max-width: 300px;
+        width: 100%;
+    }
+
+    .variant-option.active {
+        background-color: #007bff;
+        /* Blue background */
+        color: white;
+        /* White text */
+        border-color: #007bff;
+        /* Blue border */
+    }
+
+
+    .filterButtom {
+        background-color: #e0e0e000;
+        padding: 5px 10px;
+        width: 90%;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, border 0.3s ease;
+    }
+
+    .filterButtom:hover {
+        background-color: #67b3ff59;
+        border: none;
+    }
+
+
+    @media (max-width: 991px) {
         .sidebar {
-            max-width: 100%;
-            /* Ensure sidebar stays responsive */
-        }
-
-        .container-fluid {
-            padding: 20px;
-        }
-
-        .breadcrumb {
-            background: none;
-            padding: 0;
-        }
-
-        .search-container {
-            top: 72px;
-            display: flex;
-            align-items: center;
+            position: static;
             margin-bottom: 20px;
         }
+    }
 
-        .search-container i {
-            margin-right: 10px;
-            font-size: 1.2rem;
+    /* Product card styles */
+    .product-card {
+        transition: transform .3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ///////////////////////////////////////////////////////// */
+
+    /* .product-card img {
+            height: 200px;
+            object-fit: cover;
+        } */
+
+    /* ///////////////////////////////////////////////////////////// */
+
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+        .col-md-6.col-lg-3 {
+            width: 50%;
         }
+    }
 
-        .search-input {
+    @media (max-width: 575px) {
+        .col-md-6.col-lg-3 {
             width: 100%;
-
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
         }
+    }
 
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+    /* Pagination styles */
+    .pagination {
+        flex-wrap: wrap;
+    }
 
-        .sidebar {
-            width: 100%;
-            max-width: 300px;
-            background-color: #f8f9fa;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+    /* .text-primary{
+            background: #00000000;
+        } */
 
-        .sidebar h5 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #007bff;
-            font-weight: bold;
-        }
+    .text-primary-filter {
+        text-decoration: none;
+        background: linear-gradient(45deg, #3595fc, #2b70ba);
+        color: white;
+        margin-bottom: 5px;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 1.3rem;
+        text-align: center;
+    }
 
-        .sidebar ul {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 20px;
-        }
+    .filter-button {
+        border: none;
+        border-radius: 8px;
+        padding: 5px 10px;
+        width: 100%;
+        margin-bottom: 0px;
+        background-color: white;
 
-        .sidebar ul li {
-            margin: 10px 0;
-        }
+        transition: background-color 0.3s, color 0.3s;
+    }
 
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            display: block;
-            padding: 5px;
-            transition: background-color 0.3s ease;
-        }
+    .filter-button a {
+        color: #000000;
+    }
 
-        .sidebar ul li a:hover {
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-        }
+    .filter-button.active,
+    .filter-button:hover {
+        background-color: #88c1fe;
+        color: rgb(0, 0, 0);
+    }
 
-        .product-card {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: #fff;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
 
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
 
-        .product-card img {
-            width: 100%;
-            height: auto;
-            border-bottom: 1px solid #ddd;
-        }
 
-        .product-card .card-body {
-            padding: 15px;
-            text-align: center;
-        }
 
-        .product-card .card-title {
-            font-size: 16px;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .star-rating i {
-            color: #ffc107;
-        }
-
-        .discount-badge {
-            background-color: #28a745;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .original-price {
-            text-decoration: line-through;
-            color: #6c757d;
-            font-size: 14px;
-        }
-
-        .cart-button,
-        .wish-button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        .cart-button:hover,
-        .wish-button:hover {
-            background-color: #0056b3;
-        }
-
-        .wish-button {
-            background-color: #fa2157;
-        }
-
-        .wish-button:hover {
-            background-color: #fa3465;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .pagination .btn {
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .pagination .btn:hover {
-            background-color: #0056b3;
-        }
-
-        .pagination .btn.active {
-            background-color: #28a745;
+    .parent-container {
+            overflow: visible;
+            /* Ensure modal is fully visible */
         }
 
         .modal-content {
             width: 90%;
             max-width: 400px;
             padding: 20px;
-            background-color: #fff;
-            color: #333;
+            background: transparent;
+            /* Fully transparent background */
+            color: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: none;
+            /* Remove shadow */
+            text-align: center;
         }
 
-        .variant-option {
-            cursor: pointer;
-            padding: 10px 15px;
-            border: 1px solid transparent;
-            display: inline-block;
-            margin: 5px;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .variant-option:hover {
-            border-color: #007bff;
-            background-color: rgba(0, 123, 255, 0.1);
-        }
-
-        .variant-option.selected {
-            background-color: #007bff;
-            color: #fff;
-            border-color: #007bff;
-        }
-
+        
+        /* Modal transparency adjustments */
         .modal {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0);
+            /* Transparent background with a subtle black overlay */
         }
 
         .modal-dialog {
@@ -231,33 +178,101 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            /* Center vertically */
         }
 
         .modal-header,
         .modal-footer {
-            background: rgba(0, 0, 0, 0.8);
-            color: #fff;
+            background: rgba(0, 0, 0, 0.356);
+
             border: none;
+            /* Remove default borders */
         }
 
         .modal-title {
-            font-weight: bold;
+            color: #ffffff;
+            /* Ensure title is visible on transparent background */
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-            }
 
-            .product-card {
-                margin-bottom: 20px;
-            }
+
+    .size-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .variant-option {
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .variant-option:hover {
+        background-color: #f8f9fa;
+    }
+
+
+    /* Enhance discount badge visibility */
+    .discount-badge {
+        font-weight: bold;
+    }
+
+    /* Responsive grid adjustments */
+    @media (min-width: 576px) {
+        .col-sm-6 {
+            flex: 0 0 auto;
+            width: 50%;
         }
-    </style>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap JavaScript -->
+    }
 
+    @media (min-width: 768px) {
+        .col-md-4 {
+            flex: 0 0 auto;
+            width: 33.33333%;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .col-lg-3 {
+            flex: 0 0 auto;
+            width: 25%;
+        }
+    }
+
+    /* Improve spacing and alignment*/
+    .container-fluid {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* Row gap */
+    .row {
+        gap: 0px;
+    }
+
+    /* Enhance sidebar responsiveness */
+    @media (max-width: 991px) {
+        .sidebar {
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+    }
+
+    /* Improve modal responsiveness */
+    @media (max-width: 576px) {
+        .modal-content {
+            width: 95%;
+        }
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<!-- <link rel="stylesheet" href="styles.css"> -->
+<%- include("../partials/user/header.ejs") -%>
 
     <body>
         <div class="container-fluid"> <!-- Breadcrumb -->
@@ -269,72 +284,141 @@
             </nav>
             <div class="row">
                 <!-- Search Bar -->
-                <div class="search-container sticky-top bg-light p-3">
-                    <form action="/search" method="post" class="search-form">
-                        <div class="input-group">
-                            <input 
-                                type="text" 
-                                class="form-control search-input" 
-                                name="search" 
-                                placeholder="Search for items..." 
-                                aria-label="Search for items">
-                            <button type="submit" class="input-group-text bg-primary text-white">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
+
+
+                <div class="search-container sticky-top bg-white p-2 d-flex  ">
+                    <!-- Button to navigate to All Products -->
+
+                    <% if (category.length> 0) { %> <!-- Check if the category array is not empty -->
+                        <% let matchFound=false; %> <!-- Flag to track if a match is found -->
+                            <% for (let i=0; i < category.length; i++) { %> <!-- Loop through the categories -->
+                                <% if (selectedCategory==category[i]._id) { %>
+                                    <!-- Check if this is the selected category -->
+                                    <h1>
+                                        <%= category[i]?.name %>
+                                    </h1> <!-- Display the name of the selected category -->
+                                    <% matchFound=true; %> <!-- Set flag to true if a match is found -->
+                                        <% } %>
+                                            <% } %>
+                                                <% if (!matchFound) { %> <!-- If no match is found, display fallback -->
+                                                    <h1>Shop</h1>
+                                                    <% } %>
+                                                        <% } else { %> <!-- If the category array is empty -->
+                                                            <h1>Shop</h1>
+                                                            <% } %>
+
+
+                                                                <!-- Search Form -->
+                                                                <form action="/search" method="post"
+                                                                    class="search-form w-50">
+                                                                    <div class="input-group">
+                                                                        <input type="text"
+                                                                            class="form-control search-input"
+                                                                            name="search"
+                                                                            placeholder="<%= searchedProduct ? searchedProduct : 'Search for items...' %>"
+                                                                            aria-label="Search for items">
+                                                                        <button type="submit"
+                                                                            class="input-group-text bg-primary text-white">
+                                                                            <i class="bi bi-search"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
                 </div>
-                
+
+
 
                 <!-- Sidebar -->
-                <div class="col-12 col-lg-2">
-                    <div class="sidebar border rounded p-3 shadow-sm bg-white ">
+                <div class="col-4 col-lg-2">
+                    <div class="sidebar border rounded p-3 shadow-sm bg-white">
                         <!-- Categories -->
-                        <h5 id="category-heading" class="text-primary border-bottom pb-2">Category</h5>
+                        <h5 id="category-heading" class="text-primary-filter ">Category</h5>
                         <ul id="category-list" class="list-unstyled">
                             <% for(let i=0; i < category.length; i++) { %>
                                 <li class="mb-2">
-                                    <a href="/filter?category=<%= category[i]._id %>"
-                                        class="text-decoration-none text-dark">
-                                        <%= category[i].name %>
-                                    </a>
+                                    <button
+                                        class="filter-button <%= selectedCategory == category[i]._id ? 'active' : '' %>">
+                                        <a href="/filter?category=<%= category[i]._id %>" class="text-decoration-none">
+                                            <%= category[i].name %>
+                                        </a>
+                                    </button>
                                 </li>
                                 <% } %>
                         </ul>
 
                         <!-- Brands -->
-                        <h5 id="brand-heading" class="text-primary border-bottom pb-2">Brands</h5>
+                        <h5 id="brand-heading" class="text-primary-filter ">Brands</h5>
                         <ul id="brand-list" class="list-unstyled">
                             <% for(let i=0; i < brand.length; i++) { %>
                                 <li class="mb-2">
-                                    <a href="/filter?brand=<%= brand[i]._id %>" class="text-decoration-none text-dark">
-                                        <%= brand[i].brandName %>
-                                    </a>
+                                    <button class="filter-button <%= selectedBrand == brand[i]._id ? 'active' : '' %>">
+                                        <a href="/filter?brand=<%= brand[i]._id %>" class="text-decoration-none">
+                                            <%= brand[i].brandName %>
+                                        </a>
+                                    </button>
                                 </li>
                                 <% } %>
                         </ul>
 
                         <!-- Price Filters -->
-                        <h5 id="price-heading" class="text-primary border-bottom pb-2">Filter by Price</h5>
+                        <!-- Price Filters -->
+                        <!-- Price Filters -->
+                        <h5 id="price-heading" class="text-primary-filter">Filter by Price</h5>
                         <ul id="price-list" class="list-unstyled">
-                            <li class="mb-2"><a href="/filterPrice?gt=0&lt=2000"
-                                    class="text-decoration-none text-dark">Below 2000</a></li>
-                            <li class="mb-2"><a href="/filterPrice?gt=2000&lt=2500"
-                                    class="text-decoration-none text-dark">2000 - 2500</a></li>
-                            <li class="mb-2"><a href="/filterPrice?gt=2500&lt=3000"
-                                    class="text-decoration-none text-dark">2500 - 3000</a></li>
-                            <li class="mb-2"><a href="/filterPrice?gt=3000&lt=2000000"
-                                    class="text-decoration-none text-dark">Above 3000</a></li>
+                            <li class="mb-2">
+                                <button class="filter-button <%= selectedPrice === '0-2000' ? 'active' : '' %>">
+                                    <a href="/filter?category=<%= selectedCategory %>&brand=<%= selectedBrand %>&gt=0&lt=2000"
+                                        class="text-decoration-none">Below ₹2000</a>
+                                </button>
+                            </li>
+                            <li class="mb-2">
+                                <button class="filter-button <%= selectedPrice === '2000-6000' ? 'active' : '' %>">
+                                    <a href="/filter?category=<%= selectedCategory %>&brand=<%= selectedBrand %>&gt=2000&lt=6000"
+                                        class="text-decoration-none">₹2000 - ₹6000</a>
+                                </button>
+                            </li>
+                            <li class="mb-2">
+                                <button class="filter-button <%= selectedPrice === '6000-10000' ? 'active' : '' %>">
+                                    <a href="/filter?category=<%= selectedCategory %>&brand=<%= selectedBrand %>&gt=6000&lt=10000"
+                                        class="text-decoration-none">₹6000 - ₹10000</a>
+                                </button>
+                            </li>
+                            <li class="mb-2">
+                                <button class="filter-button <%= selectedPrice === '10000-9999999' ? 'active' : '' %>">
+                                    <a href="/filter?category=<%= selectedCategory %>&brand=<%= selectedBrand %>&gt=10000&lt=9999999"
+                                        class="text-decoration-none">Above ₹10000</a>
+                                </button>
+                            </li>
                         </ul>
+
+
+
+                        <!-- Clear Filters -->
+                        <button class="btn btn-danger w-100 mt-3">
+                            <a href="/shope" class="text-white text-decoration-none">Clear All Filters</a>
+                        </button>
                     </div>
                 </div>
 
+
+
                 <!-- Main Content -->
-                <div class="col-12 col-md-8" style="margin-left: 10%;"> <!-- Products Grid -->
-                    <h1>Shop</h1>
-                    <div class="row g-4"> <!-- Product Card -->
+                <div class="col-10 col-md-10"> <!-- Products Grid -->
+                    <div class="d-flex justify-content-end align-items-center mb-3">
+                        <p class="mb-0 me-2"><b>Sort by:</b></p>
+                        <select id="sort-options" class="form-select w-auto" onchange="applySorting(this.value)">
+                            <option value="priceLowToHigh" <%=selectedSort==='priceLowToHigh' ? 'selected' : '' %>
+                                >Price: Low to High</option>
+                            <option value="priceHighToLow" <%=selectedSort==='priceHighToLow' ? 'selected' : '' %>
+                                >Price: High to Low</option>
+                            <option value="Aa-Zz" <%=selectedSort==='Aa-Zz' ? 'selected' : '' %>>Aa-Zz</option>
+                            <option value="Zz-Aa" <%=selectedSort==='Zz-Aa' ? 'selected' : '' %>>Zz-Aa</option>
+                        </select>
+
+                    </div>
+
+                    <div class="row g-3"> <!-- Product Card -->
                         <% for(let i=0; i<products.length; i++) { %>
-                            <div class="col-md-6 col-lg-3">
+                            <div class="col-md-3 col-lg-3">
                                 <div class="product-card shadow-sm border rounded">
                                     <div class="position-relative">
                                         <!-- <span class="hot-badge">Hot</span> -->
@@ -358,10 +442,13 @@
                                                 <i class="bi bi-star-fill text-warning"></i>
                                                 <i class="bi bi-star text-secondary"></i>
                                             </div>
-                                            <span class="discount-badge bg-success text-white px-2 py-1 rounded"><%=products[i].isOfferActive %>%
-                                                Off</span>
+                                            <span class="discount-badge bg-success text-white px-2 py-1 rounded">
+                                                <%=products[i].isOfferActive %>%
+                                                    Off
+                                            </span>
                                         </div>
-                                        <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex justify-content-between align-items-end"
+                                            style="margin-left: 10%;">
                                             <div>
                                                 <span class="h5 text-primary mb-0">
                                                     ₹<%= Number(products[i].salePrice).toLocaleString("en-IN") %>
@@ -452,142 +539,170 @@
                 </div>
             </div>
         </div>
+
     </body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('category-heading').onclick = function () {
-            var categoryList = document.getElementById('category-list');
-            categoryList.style.display = categoryList.style.display === 'none' ? 'block' : 'none';
-        };
-        document.getElementById('brand-heading').onclick = function () {
-            var brandList = document.getElementById('brand-list');
-            brandList.style.display = brandList.style.display === 'none' ? 'block' : 'none';
-        };
-        document.getElementById('price-heading').onclick = function () {
-            var priceList = document.getElementById('price-list');
-            priceList.style.display = priceList.style.display === 'none' ? 'block' : 'none';
-        };
 
-        //wishlist
-        document.addEventListener("DOMContentLoaded", () => {
+    <%- include("../partials/user/footer.ejs") -%>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
 
-            const wishButtons = document.querySelectorAll(".wish-button");
+            document.addEventListener('DOMContentLoaded', () => {
+                // Select all size options
+                const sizeModals = document.querySelectorAll('.size-options');
 
+                sizeModals.forEach((modal) => {
+                    modal.addEventListener('click', (event) => {
+                        const target = event.target;
 
-            wishButtons.forEach(button => {
-                button.addEventListener("click", async (event) => {
+                        // Check if a size button was clicked
+                        if (target.classList.contains('variant-option')) {
+                            // Remove active class from all options in this modal
+                            modal.querySelectorAll('.variant-option').forEach((btn) => {
+                                btn.classList.remove('active');
+                            });
 
-                    const productId = button.getAttribute("data-product-wish-id");
-
-                    try {
-                        const response = await fetch("/wishlist", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ productId })
-                        });
-
-                        if (response.ok) {
-                            const result = await response.json();
-                            console.log(result.message);
-                        } else {
-                            console.error("Failed to add to wishlist");
+                            // Add active class to the clicked button
+                            target.classList.add('active');
                         }
-                    } catch (error) {
-                        console.error("Error:", error);
-                    }
+                    });
                 });
             });
-        });
+            document.getElementById('category-heading').onclick = function () {
+                var categoryList = document.getElementById('category-list');
+                categoryList.style.display = categoryList.style.display === 'none' ? 'block' : 'none';
+            };
+            document.getElementById('brand-heading').onclick = function () {
+                var brandList = document.getElementById('brand-list');
+                brandList.style.display = brandList.style.display === 'none' ? 'block' : 'none';
+            };
+            document.getElementById('price-heading').onclick = function () {
+                var priceList = document.getElementById('price-list');
+                priceList.style.display = priceList.style.display === 'none' ? 'block' : 'none';
+            };
 
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll('.cart-button').forEach((button, index) => {
-                button.addEventListener('click', function () {
-                    const productId = this.dataset.productId;
-                    const modal = document.getElementById(`sizeModal-${index}`);
-                    const okButton = modal.querySelector(`#modalOkButton-${index}`);
-                    const closeButton = modal.querySelector('.btn-close');
-                    const cancelButton = modal.querySelector('.btn-cancle');
-                    let selectedSize = null;
+            function applySorting(sortValue) {
+                const urlParams = new URLSearchParams();
+                urlParams.set('sort', sortValue); // Add or update the 'sort' query parameter
+                window.location.href = `/filter?${urlParams.toString()}`; // Redirect to /filter with updated query parameters
+            }
 
-                    // Show modal using Bootstrap
-                    const bootstrapModal = new bootstrap.Modal(modal);
-                    bootstrapModal.show();
 
-                    // Handle size selection
-                    modal.querySelectorAll('.variant-option').forEach(option => {
-                        option.addEventListener('click', function () {
-                            modal.querySelectorAll('.variant-option').forEach(opt => opt.classList.remove('selected'));
-                            this.classList.add('selected');
-                            selectedSize = this.dataset.size;
-                        });
+
+            //wishlist
+            document.addEventListener("DOMContentLoaded", () => {
+
+                const wishButtons = document.querySelectorAll(".wish-button");
+
+
+                wishButtons.forEach(button => {
+                    button.addEventListener("click", async (event) => {
+
+                        const productId = button.getAttribute("data-product-wish-id");
+
+                        try {
+                            const response = await fetch("/wishlist", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ productId })
+                            });
+
+                            if (response.ok) {
+                                const result = await response.json();
+                                console.log(result.message);
+                            } else {
+                                console.error("Failed to add to wishlist");
+                            }
+                        } catch (error) {
+                            console.error("Error:", error);
+                        }
                     });
+                });
+            });
 
-                    // OK button logic
-                    okButton.addEventListener('click', async () => {
-                        if (selectedSize) {
-                            try {
-                                const response = await fetch('/cart', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ productId, selectedSize, quantity: 1 }),
-                                });
-                                if (response.ok) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Success!',
-                                        text: 'Item added to cart successfully!',
-                                        showConfirmButton: false,
-                                        timer: 1500,
-                                    }).then(() => {
-                                        location.reload();
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll('.cart-button').forEach((button, index) => {
+                    button.addEventListener('click', function () {
+                        const productId = this.dataset.productId;
+                        const modal = document.getElementById(`sizeModal-${index}`);
+                        const okButton = modal.querySelector(`#modalOkButton-${index}`);
+                        const closeButton = modal.querySelector('.btn-close');
+                        const cancelButton = modal.querySelector('.btn-cancle');
+                        let selectedSize = null;
+
+                        // Show modal using Bootstrap
+                        const bootstrapModal = new bootstrap.Modal(modal);
+                        bootstrapModal.show();
+
+                        // Handle size selection
+                        modal.querySelectorAll('.variant-option').forEach(option => {
+                            option.addEventListener('click', function () {
+                                modal.querySelectorAll('.variant-option').forEach(opt => opt.classList.remove('selected'));
+                                this.classList.add('selected');
+                                selectedSize = this.dataset.size;
+                            });
+                        });
+
+                        // OK button logic
+                        okButton.addEventListener('click', async () => {
+                            if (selectedSize) {
+                                try {
+                                    const response = await fetch('/cart', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ productId, selectedSize, quantity: 1 }),
                                     });
-                                    bootstrapModal.hide();
-                                } else {
+                                    if (response.ok) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success!',
+                                            text: 'Item added to cart successfully!',
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                        bootstrapModal.hide();
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error!',
+                                            text: 'Failed to add item to cart.',
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.error('Error:', error);
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error!',
-                                        text: 'Failed to add item to cart.',
+                                        text: 'An unexpected error occurred.',
                                     });
                                 }
-                            } catch (error) {
-                                console.error('Error:', error);
+                            } else {
                                 Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: 'An unexpected error occurred.',
+                                    icon: 'warning',
+                                    title: 'Oops...',
+                                    text: 'Please select a size before proceeding!',
                                 });
                             }
-                        } else {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Oops...',
-                                text: 'Please select a size before proceeding!',
-                            });
-                        }
-                    });
+                        });
 
-                    // Close button logic
-                    closeButton.addEventListener('click', () => {
-                        bootstrapModal.hide();
-                        location.reload();
-                    });
-
-                    // Cancel button logic
-                    if (cancelButton) {
-                        cancelButton.addEventListener('click', () => {
+                        // Close button logic
+                        closeButton.addEventListener('click', () => {
                             bootstrapModal.hide();
                             location.reload();
                         });
-                    }
+
+                        // Cancel button logic
+                        if (cancelButton) {
+                            cancelButton.addEventListener('click', () => {
+                                bootstrapModal.hide();
+                                location.reload();
+                            });
+                        }
+                    });
                 });
             });
-        });
 
-    </script>
-
-
-
-    <%- include("../partials/user/footer.ejs") -%>
+        </script>
