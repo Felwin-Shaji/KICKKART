@@ -2,6 +2,7 @@ const User = require("../../models/userSchema");
 const Category = require("../../models/categorySchema")
 const Brand = require("../../models/brandSchema")
 const Product = require("../../models/productSchema")
+const Wishlist = require("../../models/wishlistSchema")
 
 const nodemailer = require('nodemailer')
 const env = require('dotenv').config
@@ -54,6 +55,11 @@ const loadShopPage = async (req, res) => {
             variants: { $elemMatch: { quantity: { $gt: 0 } } },
         });
 
+        const wishlist = await Wishlist.findOne({ userId:user });
+        const wishlistProductIds = wishlist 
+            ? wishlist.products.map(product => product.productId.toString()) 
+            : [];
+
 
         const totalpages = Math.ceil(totalProducts / limit);
 
@@ -71,6 +77,7 @@ const loadShopPage = async (req, res) => {
             totalProducts: totalProducts,
             currentPage: page,
             totalpages: totalpages,
+            wishlistProductIds,
             searchedProduct: "all Products",
             selectedCategory: "",
             selectedPrice: "",
@@ -97,6 +104,11 @@ const filterProduct = async (req, res) => {
         // Fetch brands and categories
         const brands = await Brand.find({}).lean();
         const categories = await Category.find({ isListed: true }).lean();
+
+        const wishlist = await Wishlist.findOne({ userId:user });
+        const wishlistProductIds = wishlist 
+            ? wishlist.products.map(product => product.productId.toString()) 
+            : [];
 
         // Build the query dynamically
         const query = {
@@ -195,6 +207,7 @@ const filterProduct = async (req, res) => {
             selectedPrice: req.session.gt && req.session.lt ? `${req.session.gt}-${req.session.lt}` : null,
             searchedProduct: 'Search here',
             selectedSort: req.session.sort,
+            wishlistProductIds
         });
     } catch (error) {
         console.error('Error filtering products:', error);

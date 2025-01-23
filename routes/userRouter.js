@@ -83,6 +83,7 @@ router.patch("/cancel-order/:orderId/:productId", userAuth, cartController.cance
 //wishlistControlle
 router.get("/wishlist", userAuth, wishlistController.getWishlist)
 router.post("/wishlist", userAuth, wishlistController.addToWishlist)
+router.post("/wishlist/remove",userAuth,wishlistController.removeFromWishlist)
 
 
 

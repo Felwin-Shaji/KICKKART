@@ -27,23 +27,38 @@ const getCart = async (req, res) => {
             return res.redirect("/login"); // Redirect if user is not logged in
         }
 
+        // Find cart and populate product details
         const cartData = await Cart.findOne({ user: userId })
-            .populate("items.product") // Populate product details in items
+            .populate("items.product") // Populate product details
             .lean();
-
-        console.log('cartData:', cartData);
-
 
         if (!cartData || cartData.items.length === 0) {
             return res.render("cart", { cart: { items: [], totalPrice: 0 } });
         }
 
+        // Add stock details to each item in the cart
+        cartData.items = cartData.items.map(item => {
+            // Find the variant with the matching size
+            const variant = item.product.variants.find(variant => variant.size === item.size);
+            const stockQuantity = variant ? variant.quantity : 0; // Get the quantity of the variant
+
+            // Attach stockQuantity to the item
+            return {
+                ...item,
+                stockQuantity, // Include stock quantity for the variant
+            };
+        });
+
+        console.log('Cart with stock quantities:', cartData);
+
+        // Render the cart page with the updated cart data
         res.render("cart", { cart: cartData, user: userId });
     } catch (error) {
         console.error("Error at getCart:", error);
         res.redirect("/pageNotFound");
     }
 };
+
 
 const cart = async (req, res) => {
     try {
@@ -168,10 +183,11 @@ const cartQuantity = async (req, res) => {
             existingProduct.price = quantity * product.salePrice;
             existingProduct.regularPrice = quantity * product.regularPrice;
         } else {
-            return res.status(404).json({ success: false, message: "Product with the selected size not found in the cart." });
+            return res.status(404).json({success: false, message: "Product with the selected size not found in the cart." });
         }
 
 
+        
         cart.totalPrice = cart.items.reduce((total, item) => total + item.price, 0);
         cart.totalregularPrice = cart.items.reduce((total, item) => total + item.regularPrice, 0);
 

@@ -46,15 +46,10 @@ const addToWishlist = async (req, res) => {
 
 const getWishlist = async (req, res) => {
     try {
-        console.log("llllllllllllllllllllllllllllllll");
-        
-        const user = req.session.user; // Assumes `userId` is stored in session
-        console.log("user", user);
+        console.log("Fetching wishlist...");
 
-        // Ensure `user` is a valid ObjectId
-        // if (!mongoose.Types.ObjectId.isValid(user)) {
-        //     throw new Error("Invalid user ID");
-        // }
+        const user = req.session.user; // Assumes `userId` is stored in session
+        console.log("User:", user);
 
         // Query Wishlist by userId
         let wishlist = await Wishlist.findOne({ userId: user }).populate("products.productId");
@@ -66,7 +61,16 @@ const getWishlist = async (req, res) => {
             };
         }
 
-        console.log('wishlist:', JSON.stringify(wishlist, null, 2));
+        // Calculate the sum of quantities in the variants
+        wishlist.products.forEach(product => {
+            if (product.productId && product.productId.variants) {
+                product.totalQuantity = product.productId.variants.reduce((sum, variant) => sum + (variant.quantity || 0), 0);
+            } else {
+                product.totalQuantity = 0;
+            }
+        });
+
+        console.log('Wishlist:', JSON.stringify(wishlist, null, 2));
 
         return res.render('wishlist', { wishlist });
     } catch (error) {
@@ -75,8 +79,33 @@ const getWishlist = async (req, res) => {
     }
 };
 
+const removeFromWishlist = async (req, res) => {
+    try {
+        const { productId } = req.body; // Extract productId from the request body
+        console.log("Product ID to remove:", productId);
+
+        // Use $pull to remove the product from the products array
+        const result = await Wishlist.updateOne(
+            { userId: req.session.user }, // Match the wishlist by userId
+            { $pull: { products: { productId } } } // Remove the product from the array
+        );
+
+        if (result.modifiedCount > 0) {
+            res.status(200).json({ success: true, message: "Item removed successfully" });
+        } else {
+            res.status(404).json({ success: false, message: "Item not found in wishlist" });
+        }
+    } catch (error) {
+        console.error("Error removing item from wishlist:", error);
+        res.status(500).json({ success: false, message: "An error occurred. Please try again." });
+    }
+};
+
+
+
 
 module.exports = {
     getWishlist,
     addToWishlist,
+    removeFromWishlist
 }
