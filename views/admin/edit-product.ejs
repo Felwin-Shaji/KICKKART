@@ -289,8 +289,8 @@
       <div class="col-lg-6">
         <div class="card mb-4">
           <div class="card-body">
-            <form method="post" action="/admin/editProduct/<%=product._id %>" enctype="multipart/form-data"
-              onsubmit="return validateAndSubmit()">
+            <form method="post" action="/admin/editProduct/<%=product._id %>" enctype="multipart/form-data">
+              
               <div class="mb-4">
                 <label for="product_name" class="form-label">Product Name</label>
                 <input type="text" placeholder="Type here" name="productName" class="form-control border"
@@ -300,8 +300,12 @@
               <div class="col-lg-4 mb-4">
                 <label class="form-label">Brand</label>
                 <select class="form-select border" name="brand">
-
                   <% for(let i=0;i<brand.length;i++){ %>
+                  <% if(product.brand == brand[i].brandName)  {%>
+                    <option selected="<%=product.brand %>">
+                      <%=brand[i].brandName%>
+                    </option>
+                    <% } %>
                     <option>
                       <%=brand[i].brandName%>
                     </option>
@@ -323,27 +327,25 @@
                       value="<%=product.regularPrice %>">
                     <div id="regularPrice-error" class="error-message"></div>
                   </div>
-                </div>
-                <!-- <div class="col-lg-4">
-                  <div class="mb-4">
-                    <label class="form-label">Sale price</label>
-                    <input placeholder="₹" name="salePrice" type="text" class="form-control border"
-                      value="">
-
-                  </div>
-                  <div id="salePrice-error" class="error-message"></div>
-                </div> -->
+                </div>              
+              </div>
+              <div>
               </div>
               <div class="card mb-4">
                 <div class="card-body">
                   <div class="row gx-2">
                     <div class="col-sm-6 mb-3">
                       <label class="form-label">Category</label>
-                      <select class="form-select border" style="width: 150px;" name="category">
+                      <select class="form-select border" style="width: 150px;" name="category" value="" >
                         <% for(let i=0;i<cat.length;i++){ %>
-                          <option>
+                          <% if(product.category.name == cat[i].name ){ %>
+                          <option selected = <%=product.category.name %>>
+                            <% }else{ %>
+                              <option>
+                              <% } %>
                             <%= cat[i].name %>
                           </option>
+                          
                           <% } %>
                       </select>
                       <div id="category-error" class="error-message"></div>
@@ -599,124 +601,99 @@
 
 
 
-    function validateAndSubmit() {
-      if (validateForm()) {
-        document.forms[0].submit();
-      }
+    document.querySelector("form").addEventListener("submit", function (event) {
+    let isValid = true;
+    
+    // Validate Product Name
+    const productName = document.getElementById("product_name");
+    if (!productName.value.trim()) {
+        document.getElementById("productName-error").innerText = "Product Name is required.";
+        isValid = false;
+    } else {
+        document.getElementById("productName-error").innerText = "";
+    }
+    
+    // Validate Brand
+    const brandSelect = document.querySelector("select[name='brand']");
+    if (!brandSelect.value) {
+        document.getElementById("brand-error").innerText = "Brand is required.";
+        isValid = false;
+    } else {
+        document.getElementById("brand-error").innerText = "";
     }
 
-    function validateForm() {
-      let imageDatas = false
-      console.log("validate form");
-      clearErrorMessages();
-      const name = document.getElementsByName('productName')[0].value;
-      const description = document.getElementsByName('descriptionData')[0].value;
-      const brand = document.getElementsByName('brand')[0].value;
-      const price = document.getElementsByName('regularPrice')[0].value;
-      //const saleprice = document.getElementsByName('salePrice')[0].value;
-      const color = document.getElementsByName('color')[0].value;
-      const category = document.getElementsByName('category')[0].value;
-      const images = document.getElementById('input1')
-      const quantity = document.getElementsByName('quantity')
-      imageDatas = document.getElementById("imageDatas")?.value;
-      let isValid = true;
-      if (name.trim() === "") {
-        displayErrorMessage('productName-error', 'Please enter a product name.');
+    // Validate Description
+    const description = document.getElementById("descriptionid");
+    if (!description.value.trim()) {
+        document.getElementById("description-error").innerText = "Description is required.";
         isValid = false;
-      }
+    } else {
+        document.getElementById("description-error").innerText = "";
+    }
 
-      if (description === '') {
-        displayErrorMessage('description-error', 'Please enter a product description.');
+    // Validate Regular Price
+    const regularPrice = document.querySelector("input[name='regularPrice']");
+    if (!regularPrice.value.trim() || isNaN(regularPrice.value)) {
+        document.getElementById("regularPrice-error").innerText = "Valid Regular Price is required.";
         isValid = false;
-      }
+    } else {
+        document.getElementById("regularPrice-error").innerText = "";
+    }
 
-
-      if (parseInt(quantity) < 0) {
-        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+    // Validate Category
+    const categorySelect = document.querySelector("select[name='category']");
+    if (!categorySelect.value) {
+        document.getElementById("category-error").innerText = "Category is required.";
         isValid = false;
-      }
+    } else {
+        document.getElementById("category-error").innerText = "";
+    }
 
-
-      if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
-        isValid = false;
-      }
-      // if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-      //   displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-      //   isValid = false;
-      // }
-
-      if (color.trim() === "") {
-        displayErrorMessage('color-error', 'Please enter a color.');
-        isValid = false;
-      }
-      if (!imageDatas && images.files.length === 0) {
-        displayErrorMessage("images-error", 'Please select an image.');
-        isValid = false;
-      }
-
-      if (quantity.length > 0 && parseInt(quantity[0].value) < 0) {
-        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-        isValid = false;
-      }
-
-      const allowedImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-      if (images.files.length > 0) {
-        Array.from(images.files).forEach(file => {
-          if (!allowedImageTypes.includes(file.type)) {
-            displayErrorMessage('images-error', 'Invalid file type. Only JPEG, PNG, and JPG are allowed.');
+    // Validate Variants
+    const variantSizes = document.querySelectorAll("input[name='variantSize[]']");
+    const variantQuantities = document.querySelectorAll("input[name='variantQuantity[]']");
+    variantSizes.forEach((size, index) => {
+        if (!size.value.trim() || !variantQuantities[index].value.trim() || isNaN(variantQuantities[index].value)) {
+            document.getElementById("variant-error").innerText = "Both size and quantity are required for each variant.";
             isValid = false;
-          }
-          if (file.size > 2 * 1024 * 1024) { // 2MB limit
-            displayErrorMessage('images-error', 'File size must be less than 2MB.');
-            isValid = false;
-          }
-        });
-      }
+        }
+    });
 
-      return isValid;
+    // Validate Images
+    const imageInputs = document.querySelectorAll("input[type='file']");
+    let imageUploaded = false;
+    imageInputs.forEach(input => {
+        if (input.files.length > 0) {
+            imageUploaded = true;
+        }
+    });
+    // if (!imageUploaded) {
+    //     document.getElementById("images-error").innerText = "At least one image is required.";
+    //     isValid = false;
+    // } else {
+    //     document.getElementById("images-error").innerText = "";
+    // }
+
+    // Prevent form submission if validation fails
+    if (!isValid) {
+        event.preventDefault();
     }
+});
 
-    function displayErrorMessage(elementId, message) {
-      var errorElement = document.getElementById(elementId);
-      errorElement.innerText = message;
-      errorElement.style.display = "block";
-    }
-
-
-    function clearErrorMessages() {
-      const errorElements = document.getElementsByClassName('error-message');
-      Array.from(errorElements).forEach(element => {
-        element.innerText = '';
-      });
-      const errorMessage = document.getElementById('errorMessage');
-
-
-    }
 
 
     function viewImage1(event) {
       document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0])
     }
-
-
     function viewImage2(event) {
       document.getElementById('imgView2').src = URL.createObjectURL(event.target.files[0])
     }
-
-
     function viewImage3(event) {
       document.getElementById('imgView3').src = URL.createObjectURL(event.target.files[0])
     }
-
-
     function viewImage4(event) {
       document.getElementById('imgView4').src = URL.createObjectURL(event.target.files[0])
     }
-
-
-
-
     function viewImage(event, index) {
       let input = event.target;
       let reader = new FileReader();

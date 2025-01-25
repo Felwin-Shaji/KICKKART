@@ -215,7 +215,6 @@ const filterProduct = async (req, res) => {
     }
 };
 
-
 const filterPrice = async (req, res) => {
     //     try {
     //         const user = req.session.user;
@@ -275,6 +274,11 @@ const searchProduct = async (req, res) => {
         const searchQuery = req.body.search || "";
         console.log("Search Query:", searchQuery);
 
+        const wishlist = await Wishlist.findOne({ userId:userId });
+        const wishlistProductIds = wishlist 
+            ? wishlist.products.map(product => product.productId.toString()) 
+            : [];
+
         // Fetch categories and brands matching the search query
         const categories = await Category.find({
             isListed: true,
@@ -328,12 +332,13 @@ const searchProduct = async (req, res) => {
             selectedPrice: "",
             selectedCategory: "",
             selectedBrand: "",
-            selectedSort :""
+            selectedSort :"",
+            wishlistProductIds
         });
 
     } catch (error) {
         console.log("Error in searchProduct:", error);
-        res.status(500).send("An error occurred while searching for products.");
+        res.redirect("/pageNotFound");
     }
 };
 

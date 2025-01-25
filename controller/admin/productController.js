@@ -37,7 +37,6 @@ const addProducts = async (req, res) => {
             variantQuantity,
         } = req.body;
 
-        // Check if the product already exists
         const productExists = await Product.findOne({ productName });
 
         if (productExists) {
@@ -50,7 +49,6 @@ const addProducts = async (req, res) => {
                 const originalImagePath = file.path;
                 const resizedImagePath = path.join("public", "uploads", "product-images", file.filename);
 
-                // Resize and save the image
                 await sharp(originalImagePath)
                     .resize({ width: 440, height: 440 })
                     .toFile(resizedImagePath);
@@ -170,7 +168,7 @@ const getEditProduct = async (req, res) => {
     try {
 
         let { _id } = req.query;
-        const product = await Product.findOne({ _id: _id });
+        const product = await Product.findOne({ _id: _id }).populate("category");
         const category = await Category.find({})
         const brand = await Brand.find({});
 
@@ -190,7 +188,6 @@ const editProduct = async (req, res) => {
         const id = req.params.id;
         const data = req.body;
 
-        // Check for duplicate product name
         const existingProduct = await Product.findOne({
             productName: data.productName,
             _id: { $ne: id }
@@ -200,26 +197,22 @@ const editProduct = async (req, res) => {
             return res.status(400).json({ error: "Product with this name already exists. Please try another name." });
         }
 
-        // Validate category
         const category = await Category.findOne({ name: data.category });
         if (!category) {
             return res.status(400).json({ error: "Invalid category name." });
         }
 
-        // Fetch product instance
         const product = await Product.findById(id);
         if (!product) {
             return res.status(404).json({ error: "Product not found." });
         }
 
-        // Update images if provided
         const images = [];
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
                 const originalImagePath = req.files[i].path;
                 const resizedImagePath = path.join("public", "uploads", "product-images", req.files[i].filename);
 
-                // Resize and save the image
                 await sharp(originalImagePath)
                     .resize({ width: 440, height: 440 })
                     .toFile(resizedImagePath);
@@ -232,13 +225,11 @@ const editProduct = async (req, res) => {
             product.productImage.push(...images);
         }
 
-        // Update variants
         product.variants = data.variantSize.map((size, index) => ({
             size,
             quantity: data.variantQuantity[index],
         }));
 
-        // Update other fields
         product.productName = data.productName;
         product.description = data.description;
         product.brand = data.brand;
@@ -285,7 +276,6 @@ const addOffer = async (req, res) => {
             return res.status(400).json({ success: false, message: "Product ID is required." });
         }
 
-        // Find the product and populate the category
         const product = await Product.findOne({ _id: productId }).populate('category');
 
         if (!product) {
@@ -295,13 +285,11 @@ const addOffer = async (req, res) => {
         const productOffer = parseFloat(offer || 0);
         const categoryOffer = product.category?.categoryOffer || 0;
 
-        // Determine the highest offer
         const highestOffer = Math.max(productOffer, categoryOffer);
 
-        // Update the product instance
         product.isOfferActive = highestOffer;
 
-        // Save the product to trigger middleware
+    
         await product.save();
 
         return res.status(200).json({

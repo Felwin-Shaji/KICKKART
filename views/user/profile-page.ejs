@@ -202,9 +202,6 @@
 
                   <!-- ///////////////////////////////////////// -->
 
-
-
-
                   <!-- Edit Profile modal -->
                   <div class="modal fade" id="editProfileModalCenter" tabindex="-1" role="dialog"
                     aria-labelledby="editProfileModalCenterTitle" aria-hidden="true">
@@ -372,30 +369,24 @@
                             </thead>
                             <% if (orders.length> 0) { %>
                               <% orders.forEach(order=> { %>
-                                <% if (order.items && order.items.length> 0) { %>
-                                  <% order.items.forEach(item=>{%>
+                               
+                                  
                                     <tbody>
                                       <tr>
                                         <td>
-                                          <%=item.productId.productName %>"(<%=item.size %>)"
+                                          <%=order.createdAt %>
                                         </td>
                                         <td>
-                                          <%=item.status %>
+                                          <%=order.items.length %>
                                         </td>
-                                        <td>₹<%=item.price %>
+                                        <td>₹<%=order.totalAmount %>
                                         </td>
                                         <td>
-                                          <a href="/viewOrderDetails/<%=order._id %>/<%=item.productId._id %>"
+                                          <a href="/viewOrderDetails/<%=order._id %>/12342344"
                                             class="btn-small d-block">View</a>
                                         </td>
                                       </tr>
-                                    </tbody>
-                                    <% }) %>
-                                      <% } else { %>
-                                        <tr>
-                                          <td colspan="5">No items in this order.</td>
-                                        </tr>
-                                        <% } %>
+                                    </tbody>  
                                           <% }); %>
                                             <% } else { %>
                                               <tr>
@@ -541,7 +532,6 @@
         confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
         if (result.isConfirmed) {
-          // Redirect to the delete URL if confirmed
           window.location.href = deleteUrl;
         }
       });
@@ -686,16 +676,13 @@
    
     document.getElementById("saveChangesButton").addEventListener("click", async function () {
   try {
-    // Get the input fields and error message elements
     const userName = document.getElementById("userName");
     const userPhone = document.getElementById("userPhone");
     const nameError = document.getElementById("nameError");
     const phoneError = document.getElementById("phoneError");
 
-    // Validation flags
     let isValid = true;
 
-    // Name validation
     if (userName.value.trim().length < 3) {
       nameError.classList.remove("d-none");
       isValid = false;
@@ -703,7 +690,6 @@
       nameError.classList.add("d-none");
     }
 
-    // Phone validation (10 digits only)
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(userPhone.value.trim())) {
       phoneError.classList.remove("d-none");
@@ -712,42 +698,27 @@
       phoneError.classList.add("d-none");
     }
 
-    // If all validations pass, send the data to the backend
     if (isValid) {
       const data = {
         name: userName.value.trim(),
         phone: userPhone.value.trim(),
       };
 
-      // // Show a loading SweetAlert
-      // Swal.fire({
-      //   title: 'Updating Profile...',
-      //   text: 'Please wait while we save your changes.',
-      //   allowOutsideClick: false,
-      //   showConfirmButton: false,
-      //   willOpen: () => {
-      //     Swal.showLoading();
-      //   },
-      // });
 
-      // Sending data to the backend using fetch
       const response = await fetch('/editProfile', {
-        method: 'POST', // HTTP method
+        method: 'POST', 
         headers: {
-          'Content-Type': 'application/json', // Sending JSON data
+          'Content-Type': 'application/json', 
         },
-        body: JSON.stringify(data), // Convert data to JSON
+        body: JSON.stringify(data), 
       });
 
-      // Check if response is okay
       if (!response.ok) {
         throw new Error('Failed to update profile');
       }
 
-      // Parse the JSON response
       const result = await response.json();
 
-      // Show success alert
       Swal.fire({
         icon: 'success',
         title: 'Profile Updated!',
@@ -759,13 +730,11 @@
       });
 
       window.location.href = "/userProfile"
-      // Close the modal
       $('#editProfileModalCenter').modal('hide');
     }
   } catch (error) {
     console.error('Error:', error);
 
-    // Show error alert
     Swal.fire({
       icon: 'error',
       title: 'Update Failed',

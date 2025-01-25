@@ -22,6 +22,9 @@
                         <%= new Date(order.createdAt).toLocaleDateString('en-US') %> ,
                             <%= new Date(order.createdAt).toLocaleTimeString('en-US') %>
                     </p>
+                    <p><strong>Payment Method</strong>:
+                        <%= order.paymentMethod %>
+                    </p>
                     <!-- <p><strong>Status:</strong>
                         <span
                             class="badge <%= order.status === 'Delivered' ? 'bg-success' : order.status === 'Pending' ? 'bg-warning' : 'bg-secondary' %>">

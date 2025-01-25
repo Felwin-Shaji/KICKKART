@@ -8,9 +8,9 @@ const express = require('express');
 const XLSX = require('xlsx');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
-require('pdfkit-table'); // Extends PDFDocument
+require('pdfkit-table');
 const doc = new PDFDocument();
-// doc.pipe(fs.createWriteStream('test.pdf'));
+
 
 const loadLogin = async (req, res) => {
     try {
@@ -70,16 +70,26 @@ const adminLogout = async (req, res) => {
     }
 }
 
-
 const loadDashboard = async (req, res) => {
+    try {
+        res.render("adminDashboard")
+    } catch (error) {
+
+    }
+}
+
+const loadSalesReport = async (req, res) => {
     if (req.session.admin) {
         try {
-            // Extract query parameters for filtering
-            const { startDate, endDate, page = 1 } = req.query;  // Default to page 1 if not provided
+            const { startDate, endDate, page = 1 } = req.query;
             let filterDescription = "All Orders";
 
-            // Create a filter object
-            const filter = {};
+            const filter = {
+                items: {
+                    $elemMatch: { status: "Delivered" }, 
+                },
+            };
+
             if (startDate && endDate) {
                 const start = new Date(startDate);
                 const end = new Date(endDate);
@@ -89,11 +99,9 @@ const loadDashboard = async (req, res) => {
                     $lte: end,
                 };
 
-                // Calculate the difference in days
                 const timeDifference = end.getTime() - start.getTime();
                 const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 
-                // Determine the filter description
                 if (daysDifference === 1) {
                     filterDescription = "Day One";
                 } else if (daysDifference === 7) {
@@ -109,18 +117,15 @@ const loadDashboard = async (req, res) => {
                 }
             }
 
-
-            // Fetch orders with pagination and filter
             const orders = await Order.find(filter)
                 .populate("userId")
                 .populate("items.productId")
-                .sort({ createdAt: -1 }) // Sort by createdAt in descending order (latest first)
+                .sort({ createdAt: -1 })
 
 
-            // Fetch total order count for pagination
+
             const totalOrders = await Order.countDocuments(filter);
 
-            // Calculate overall stats
             const overallSalesCount = orders.length;
             const overallSalesAmount = orders.reduce((total, order) => {
                 const deliveredItems = order.items.filter(item => item.status === "Delivered");
@@ -129,23 +134,21 @@ const loadDashboard = async (req, res) => {
 
             const overallDiscount = orders.reduce((total, order) => total + (order.coupenOffer || 0), 0);
 
-            // Pass data to the dashboard view
-            res.render("adminDashboard", {
+            res.render("adminSalesReport", {
                 orders,
                 overallSalesCount,
                 overallSalesAmount,
                 overallDiscount,
                 filterDescription,
-                startDate,  // Pass startDate to the view
-                endDate,    // Pass endDate to the view
-                // Total pages for pagination
+                startDate,
+                endDate,
             });
         } catch (error) {
             console.error("Error loading dashboard:", error);
             res.redirect("/pageNotFound");
         }
     } else {
-        res.redirect("/adminLogin"); // Redirect if admin is not logged in
+        res.redirect("/adminLogin");
     }
 };
 
@@ -160,10 +163,10 @@ const salceReportPDF = (req, res) => {
 
     doc.pipe(res);
 
-    const pageHeight = 700; // Usable page height after margins
+    const pageHeight = 700;
     const headerRowHeight = 30;
 
-    const columnWidths = [30, 60, 60, 150, 50, 50, 50, 50];
+    const columnWidths = [45, 65, 75, 165, 60, 60, 60, 60];
     let currentY = 100;
 
     // Column headers
@@ -175,7 +178,7 @@ const salceReportPDF = (req, res) => {
     const drawHeaders = () => {
         doc.fontSize(9).fillColor('black');
         headers.forEach((header, index) => {
-            const xPos = 10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
+            const xPos = 7 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
             const cellWidth = columnWidths[index];
             doc.rect(xPos, currentY, cellWidth, headerRowHeight)
                 .fillAndStroke('lightgray', 'black');
@@ -213,10 +216,10 @@ const salceReportPDF = (req, res) => {
 
         // Dynamically calculate row height for "Name and Items"
         const nameAndItemsHeight = doc.heightOfString(formattedItems, {
-            width: columnWidths[2] - 10, // Account for padding
+            width: columnWidths[2], // Account for padding
         });
 
-        const rowHeight = Math.max(headerRowHeight, nameAndItemsHeight + 10); // Add some padding
+        const rowHeight = Math.max(headerRowHeight, nameAndItemsHeight - 100); // Add some padding
 
         const values = [
             ordersCount, date, name, formattedItems, row.paymentMethod || 'N/A', row.totalAmount || 'N/A', row.offerAmount || 'N/A', row.coupenAmound || 'N/A',
@@ -285,10 +288,10 @@ const salceReportEXCL = (req, res) => {
         }
     });
 
-  
+
 
     // Set row heights (if needed)
-   
+
 
     // Create a workbook and add the worksheet
     const workbook = XLSX.utils.book_new();
@@ -311,6 +314,7 @@ module.exports = {
     loadLogin,
     Login,
     loadDashboard,
+    loadSalesReport,
     adminLogout,
     salceReportPDF,
     salceReportEXCL

@@ -162,6 +162,12 @@
                                             required> Online
                                     </label>
                                 </div>
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="radio" name="paymentMethod" value="Wallet" class="form-check-input"
+                                            required> Wallet
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -345,6 +351,50 @@
                                 showConfirmButton: true,
                             });
                         }
+                    }else if(data.paymentMethod === "Wallet"){
+                         try {
+                            const response = await fetch("/place-order-wallet", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(data),
+                            });
+
+                            const responseText = await response.text();
+
+                            if (response.ok) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Order Placed!",
+                                    text: "Your order has been placed successfully!",
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "/order-success";
+                                }, 3000);
+                            } else {
+                                const error = JSON.parse(responseText);
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Oops!",
+                                    text: `Error: ${error.message}`,
+                                    showConfirmButton: true,
+                                });
+                            }
+                        } catch (error) {
+                            console.error("Error placing order:", error);
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops!",
+                                text: "An error occurred while placing your order. Please try again.",
+                                showConfirmButton: true,
+                            });
+                        }
+
                     }
 
 

@@ -38,6 +38,21 @@
             font-size: 15px;
             font-weight: 600;
         }
+        .error-message {
+    background-color: #ffe6e6; /* Light red background */
+    color: #d9534f; /* Red text color */
+    font-size: 16px; /* Slightly larger font size */
+    padding: 10px 15px; /* Padding for spacing */
+    border: 1px solid #d9534f; /* Red border */
+    border-radius: 5px; /* Rounded corners */
+    margin-bottom: 15px; /* Space below the message */
+    text-align: center; /* Center align the message */
+}
+
+.error-message strong {
+    font-weight: bold; /* Bold the strong tags */
+}
+
 
         .display-tc p {
             color: black;
@@ -46,116 +61,135 @@
             font-size: 14px;
             font-weight: 400;
         }
+
         .checkout-btn button {
             width: 100%;
             padding: 10px;
             font-size: 16px;
             margin-top: 10px;
         }
+
         /* Styling the quantity input container */
-.quantity-input { 
-    color: #000000;
-}
+        .quantity-input {
+            color: #000000;
+        }
 
-/* Decrement button styling */
-.decrement-btn {
-    display: inline-block;
-    margin-bottom: 61px;
-    width: 30px;
-    height: 30px;
-    font-weight: 600;
-    border: 1px solid #ddd;
-    background-color: #f1f1f1;
-    color: #333;
-    font-size: 16px;
-    line-height: 30px;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 10%; /* Circular button */
-    transition: all 0.2s;
-}
+        /* Decrement button styling */
+        .decrement-btn {
+            display: inline-block;
+            margin-bottom: 61px;
+            width: 30px;
+            height: 30px;
+            font-weight: 600;
+            border: 1px solid #ddd;
+            background-color: #f1f1f1;
+            color: #333;
+            font-size: 16px;
+            line-height: 30px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10%;
+            /* Circular button */
+            transition: all 0.2s;
+        }
 
-.decrement-btn:hover {
-    background-color: #6a9ef8;
-    color: #ffffff;
-    font-weight: 600;
-}
+        .decrement-btn:hover {
+            background-color: #6a9ef8;
+            color: #ffffff;
+            font-weight: 600;
+        }
 
-/* Increment button styling */
-.increment-btn {
-    display: inline-block;
-    margin-bottom: 61px;
-    font-weight: 600;
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ddd;
-    background-color: #f1f1f1;
-    color: #333;
-    font-size: 16px;
-    line-height: 30px;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 10%; /* Circular button */
-    transition: all 0.2s;
-}
+        /* Increment button styling */
+        .increment-btn {
+            display: inline-block;
+            margin-bottom: 61px;
+            font-weight: 600;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background-color: #f1f1f1;
+            color: #333;
+            font-size: 16px;
+            line-height: 30px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10%;
+            /* Circular button */
+            transition: all 0.2s;
+        }
 
-.increment-btn:hover {
-    background-color: #6a9ef8;
-    color: #ffffff;
-    font-weight: 600;
-}
+        .increment-btn:hover {
+            background-color: #6a9ef8;
+            color: #ffffff;
+            font-weight: 600;
+        }
 
-/* Responsive layout for buttons and input */
-.one-eight.text-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-weight: 600;
-}
+        /* Responsive layout for buttons and input */
+        .one-eight.text-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 600;
+        }
 
-/* Adjust for smaller screens */
-@media (max-width: 768px) {
-    .quantity-input {
-        width: 40px;
-        font-size: 12px;
-    }
+        /* Adjust for smaller screens */
+        @media (max-width: 768px) {
+            .quantity-input {
+                width: 40px;
+                font-size: 12px;
+            }
 
-    .decrement-btn,
-    .increment-btn {
-        width: 25px;
-        height: 25px;
-        font-size: 14px;
-        line-height: 25px;
-    }
-}
+            .decrement-btn,
+            .increment-btn {
+                width: 25px;
+                height: 25px;
+                font-size: 14px;
+                line-height: 25px;
+            }
+        }
 
-.remove-item {
-    background-color: #333; /* Bright red background */
-    color: #fff; /* White icon color */
-    border: none; /* Remove default border */
-    border-radius: 4px; /* Smooth corners */
-    padding: 5px 5px; /* Adjust padding for better size */
-    font-size: 14px; /* Icon size */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: all 0.3s ease; /* Smooth hover effect */
-}
+        .remove-item {
+            background-color: #333;
+            /* Bright red background */
+            color: #fff;
+            /* White icon color */
+            border: none;
+            /* Remove default border */
+            border-radius: 4px;
+            /* Smooth corners */
+            padding: 5px 5px;
+            /* Adjust padding for better size */
+            font-size: 14px;
+            /* Icon size */
+            cursor: pointer;
+            /* Pointer cursor on hover */
+            transition: all 0.3s ease;
+            /* Smooth hover effect */
+        }
 
-.remove-item:hover {
-    background-color: #d32f2f; /* Darker red on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow on hover */
-    transform: scale(1.1); /* Slightly enlarge on hover */
-}
+        .remove-item:hover {
+            background-color: #d32f2f;
+            /* Darker red on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Subtle shadow on hover */
+            transform: scale(1.1);
+            /* Slightly enlarge on hover */
+        }
 
-.remove-item:active {
-    background-color: #b71c1c; /* Even darker red when clicked */
-    transform: scale(0.95); /* Slightly shrink when clicked */
-}
+        .remove-item:active {
+            background-color: #b71c1c;
+            /* Even darker red when clicked */
+            transform: scale(0.95);
+            /* Slightly shrink when clicked */
+        }
 
-.remove-item i {
-    margin: 0; /* Ensure icon is centered */
-    vertical-align: middle; /* Align icon with button content */
-}
+        .remove-item i {
+            margin: 0;
+            /* Ensure icon is centered */
+            vertical-align: middle;
+            /* Align icon with button content */
+        }
 
 
 
@@ -261,6 +295,7 @@
             <div class="container">
                 <div class="row row-pb-lg">
                     <% if(cart.items.length>0){ %>
+
                         <div class="col-md-12">
                             <div class="product-name d-flex">
                                 <div class="one-forth text-left px-4">
@@ -278,6 +313,7 @@
                                     <span>Remove</span>
                                 </div>
                             </div>
+
 
 
                             <% cart.items.forEach(item=> { %>
@@ -309,65 +345,70 @@
                                                         %>
                                                         <%= selectedVariant ? selectedVariant.size : 'N/A' %>
                                                             <!-- Display size -->
-                                                            </span></p>
-                                                            <p>Price: <span class="price">₹<%= item.product.salePrice %>
-                                                                        </span></p>
-                                                                        <p>Reguler price: <span class="price"><del>₹<%= item.product.regularPrice %></del>
-                                                                        </span></p>
-                                                                        <p class="badge  p-2" style="color: #078300; font-size: 600;" >Offer: <span ><%= item.product.isOfferActive %>%</span></p>
-                                                                        <% if (item.stockQuantity > 0) { %>
-                                                                            <span class="badge bg-success">In Stock (Total: <%= item.stockQuantity  %>)</span>
-                                                                        <% } else { %>
-                                                                            <span class="badge bg-danger"></span>
-                                                                        <% } %>
+                                                </span></p>
+                                            <p>Price: <span class="price">₹<%= item.product.salePrice %>
+                                                </span></p>
+                                            <p>Reguler price: <span class="price"><del>₹<%= item.product.regularPrice %>
+                                                    </del>
+                                                </span></p>
+                                            <p class="badge  p-2" style="color: #078300; font-size: 600;">Offer: <span>
+                                                    <%= item.product.isOfferActive %>%
+                                                </span></p>
+                                            <% if (item.stockQuantity> 0) { %>
+                                                <span class="badge bg-success">In Stock (Total: <%= item.stockQuantity
+                                                        %>)</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-danger"></span>
+                                                    <% } %>
                                         </div>
                                     </div>
 
 
                                     <!-- Quantity Input -->
                                     <div class="one-eight text-center">
-
-                                        <% if (item.stockQuantity > 0) { %>
-                                        
+                                        <% if (item.stockQuantity> 0) { %>
                                             <button type="button" class="decrement-btn"
-                                                data-id="<%= item.product._id %>" data-size="<%= item.size%>">-</button>
-                                        
-                                        <input type="hidden" name="salePrice" value="<%= item.product.salePrice %>">
-                                        <!-- Quantity Input and Update Form -->
-                                        <div class="display-tc">
-                                            <input type="number"
-                                                class="quantity-input form-control input-number text-center"
-                                                style=" margin: 0; width: 62px; font-weight: 600; "
-                                                name="quantity" data-price="<%= item.product.salePrice %>"
-                                                value="<%= item.quantity %>" min="1" max="10"
-                                                data-subtotal-id="subtotal-<%= item.product._id %>" readonly>
-                                        </div>
-                                        <button type="button" class="increment-btn" 
-                                            data-id="<%= item.product._id %>" data-size="<%= item.size%>">+</button>
+                                                data-id="<%= item.product._id %>"
+                                                data-size="<%= item.size %>">-</button>
+
+                                            <input type="hidden" name="salePrice" value="<%= item.product.salePrice %>">
+                                            <!-- Quantity Input and Update Form -->
+                                            <div class="display-tc">
+                                                <input type="number"
+                                                    class="quantity-input form-control input-number text-center"
+                                                    style=" margin: 0; width: 62px; font-weight: 600; " name="quantity"
+                                                    data-price="<%= item.product.salePrice %>"
+                                                    value="<%= item.quantity %>" min="1" max="<%= item.stockQuantity %>"
+                                                    data-subtotal-id="subtotal-<%= item.product._id %>" readonly>
+                                            </div>
+                                            <button type="button" class="increment-btn"
+                                                data-id="<%= item.product._id %>"
+                                                data-size="<%= item.size %>">+</button>
                                             <% } else { %>
                                                 <button type="button" class="decrement-btn" style="display: none;"
-                                                data-id="<%= item.product._id %>" data-size="<%= item.size%>"></button>
-                                        
-                                        <input type="hidden" name="salePrice" value="0">
-                                        <!-- Quantity Input and Update Form -->
-                                        <div class="display-tc">
-                                            <input type="number"
-                                                class="quantity-input form-control input-number text-center"
-                                                style=" margin: 0; width: 62px; font-weight: 600; "
-                                                name="quantity" data-price="0"
-                                                value="0" 
-                                                data-subtotal-id="subtotal-<%= item.product._id %>" hidden>
-                                                <span class="badge bg-danger">Out of Stock</span>
-                                        </div>
-                                        <button type="button" class="increment-btn" style="display: none;"
-                                            data-id="<%= item.product._id %>" data-size="<%= item.size%>"></button>
-                                                                        <% } %>
+                                                    data-id="<%= item.product._id %>"
+                                                    data-size="<%= item.size %>"></button>
+
+                                                <input type="hidden" name="salePrice" value="0">
+                                                <!-- Quantity Input and Update Form -->
+                                                <div class="display-tc">
+                                                    <input type="number"
+                                                        class="quantity-input form-control input-number text-center"
+                                                        style=" margin: 0; width: 62px; font-weight: 600; "
+                                                        name="quantity" data-price="0" value="0"
+                                                        data-subtotal-id="subtotal-<%= item.product._id %>" hidden>
+                                                    <span class="badge bg-danger">Out of Stock</span>
+                                                </div>
+                                                <button type="button" class="increment-btn" style="display: none;"
+                                                    data-id="<%= item.product._id %>"
+                                                    data-size="<%= item.size %>"></button>
+                                                <% } %>
                                     </div>
+
 
                                     <!-- Subtotal -->
                                     <div class="one-eight text-center">
                                         <div class="display-tc" style="font-weight: 600;">
-                                            <!-- Display the price of the selected variant if available -->
                                             <span class="variant-price">₹ <%= item.price %></span>
                                         </div>
                                     </div>
@@ -377,7 +418,8 @@
                                         <div class="display-tc">
 
                                             <button class="remove-item" data-id="<%= item.product._id %>"
-                                                data-size="<%= selectedVariant ? selectedVariant.size : '' %>"><i class="bi bi-trash"></i></button>
+                                                data-size="<%= selectedVariant ? selectedVariant.size : '' %>"><i
+                                                    class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -385,6 +427,11 @@
                                 <% }) %>
 
                         </div>
+                        <% if(errorMessage){ %>
+                        <div class="error-message">
+                          <%= errorMessage %>
+                        </div>
+                        <% } %>
                         <div class="row row-pb-lg">
                             <div class="col-md-12">
                                 <div class="total-wrap">
@@ -410,12 +457,21 @@
                                                     </p>
                                                 </div>
                                                 <!-- Checkout Button -->
-                                                
+                                                 
+
                                                 <div class="checkout-btn">
-                                                    <a href="/checkout">
-                                                        <button type="submit" class="btn btn-primary">Checkout</button>
-                                                    </a>
+                                                    <% if(errorMessage) { %>
+
+                                                        <a href="/cart">
+                                                            <button type="submit" class="btn btn-danger" disabled>Checkout</button>
+                                                        </a>
+                                                    <% } else { %>
+                                                        <a href="/checkout">
+                                                            <button type="submit" class="btn btn-primary">Checkout</button>
+                                                        </a>
+                                                    <% } %>
                                                 </div>
+                                                
                                                 <% } else { %>
                                                     <div style="text-align: center; margin: 50px 0;">
                                                         <h2
@@ -440,7 +496,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-sm-8 offset-sm-2 text-center colorlib-heading colorlib-heading-sm">
                                 <h2>Related Products</h2>
                             </div>
@@ -494,7 +550,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                 </div>
             </div>
 
@@ -511,10 +567,9 @@
 
 
                 const totalPriceElement = document.querySelector("#totalPrice");
-                const deliveryCharge = 0; // Example delivery charge
+                const deliveryCharge = 0; 
                 const grandTotal = parseFloat(totalPriceElement.dataset.total);
 
-                // Set delivery charge and grand total on page load
                 document.getElementById("delivery-charge").textContent = `₹ ${deliveryCharge.toFixed(2)}`;
                 document.getElementById("grand-total").textContent = `₹ ${(grandTotal + deliveryCharge).toFixed(2)}`;
 
@@ -533,17 +588,12 @@
                             throw new Error(result.message || "Failed to update quantity.");
                         }
 
-                        console.log("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq", result);
-
-
-                        // Update frontend totals using the response
                         totalPrice.textContent = `₹ ${result.cart.items[0].price.toFixed(2)}`
 
                         totalPriceElement.textContent = `₹ ${result.cart.totalPrice.toFixed(2)}`;
                         const grandTotalElement = document.getElementById("grand-total");
                         grandTotalElement.textContent = `₹ ${(result.cart.totalPrice + deliveryCharge).toFixed(2)}`;
 
-                        // Return the result to the calling function
                         return result;
                     } catch (error) {
                         console.error("Error updating quantity:", error);
@@ -574,7 +624,7 @@
                     grandTotalElement.textContent = `₹ ${(subtotal + deliveryCharge).toFixed(2)}`;
                 }
 
-                // Increment Button Logic
+                // Increment Button 
                 incrementButtons.forEach(button => {
                     button.addEventListener("click", async () => {
                         const input = button.parentElement.querySelector(".quantity-input");
@@ -589,20 +639,25 @@
                             if (result) {
                                 input.value = newQuantity;
 
-                                // Update variant price for this product
                                 const itemSubtotal = newQuantity * parseFloat(input.dataset.price);
                                 const variantPriceElement = input.closest(".product-cart").querySelector(".variant-price");
                                 variantPriceElement.textContent = `₹ ${itemSubtotal.toFixed(2)}`;
 
-                                // Update all totals
                                 updateTotals();
                             }
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Insufficient Stock',
+                                text: 'Sorry, we do not have enough stock for this item.',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#3085d6',
+                            });
                         }
                     });
                 });
 
-
-                // Decrement Button Logic
+                // Decrement Button 
                 decrementButtons.forEach(button => {
                     button.addEventListener("click", async () => {
                         const input = button.parentElement.querySelector(".quantity-input");
@@ -611,26 +666,24 @@
                         const min = parseInt(input.getAttribute("min"), 10);
                         const value = parseInt(input.value, 10);
 
+                        
                         if (value > min) {
                             const newQuantity = value - 1;
                             const result = await updateQuantity(productId, size, newQuantity);
                             if (result) {
                                 input.value = newQuantity;
 
-                                // Update variant price for this product
                                 const itemSubtotal = newQuantity * parseFloat(input.dataset.price);
                                 const variantPriceElement = input.closest(".product-cart").querySelector(".variant-price");
                                 variantPriceElement.textContent = `₹ ${itemSubtotal.toFixed(2)}`;
 
-                                // Update all totals
                                 updateTotals();
                             }
                         }
                     });
                 });
 
-
-                // Remove Button Logic
+                // Remove Button 
                 removeButtons.forEach(button => {
                     button.addEventListener("click", async () => {
                         const productId = button.dataset.id;
@@ -652,7 +705,6 @@
                     });
                 });
 
-                // Initialize totals on page load
                 updateTotals();
             });
 

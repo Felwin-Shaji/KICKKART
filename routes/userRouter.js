@@ -70,6 +70,7 @@ router.get("/checkout", userAuth, cartController.checkout)
 router.post("/applyCoupen", userAuth, cartController.applyCoupen);
 router.post("/create-order", userAuth, cartController.razorpayCreatOrder);
 router.post("/verify-payment", userAuth, cartController.varifyPayment)
+router.post("/place-order-wallet" , userAuth, cartController.walletOrderPayment)
 router.post("/addWallet/create-order",userAuth,cartController.razorpayCreatWallet)
 router.post("/addWallet/verify-payment",userAuth,cartController.razorpayvarifyWallet)
 

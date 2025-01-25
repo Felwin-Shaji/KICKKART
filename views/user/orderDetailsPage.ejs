@@ -202,14 +202,14 @@
                 <p><strong>Date:</strong>
                     <%= order.createdAt?.toLocaleDateString() %>
                 </p>
-                <p><strong>Status:</strong>
-                    <span class="order-status status-<%= order.items[0].status.toLowerCase() %>">
-                        <%= order.items[0].status %>
+                <p><strong>Payment Method:</strong>
+                    <span class="order-status">
+                        <%= order.paymentMethod %>
                     </span>
                 </p>
             </div>
 
-            <h2>Order Tracking</h2>
+            <!-- <h2>Order Tracking</h2>
             <div class="tracking">
                 <% const trackingSteps=['Pending', 'Shipped' , 'Delivered' , 'Cancelled' ]; %>
                     <% const currentStepIndex=trackingSteps.indexOf(order.status); %>
@@ -223,7 +223,7 @@
                                 </div>
                             </div>
                             <% }); %>
-            </div>
+            </div> -->
 
             <h2>Items Ordered</h2>
             <table>
@@ -233,7 +233,7 @@
                         <th>Image</th>
                         <th>Quantity</th>
                         <th>Price</th>
-                        <th>Total</th>
+                        <!-- <th>Total</th> -->
                         <th>status</th>
                         <th>Action</th>
                     </tr>
@@ -247,14 +247,14 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center justify-content-center" style="
-                                        width: 40px;
-                                        height: 40px;
-                                        border-radius: 50%;
+                                        width: 140px;
+                                        height: 140px;
+                                        border-radius: 10%;
                                         overflow: hidden;">
                                         <img src="/uploads/product-images/<%= item.productId?.productImage?.[0] || 'default.jpg' %>"
                                         alt="<%= item.productId?.productName || 'No Name' %>"
                                         class="img-fluid rounded-circle"
-                                        style="width: 60px; height: 60px;">
+                                        style="width: 140px; height: 140px;">
                                     
                                     </div>
                                 </td>
@@ -262,9 +262,9 @@
                                     <%= item.quantity || 0 %>
                                 </td>
                                 <td data-label="Price">₹<%= item.price?.toFixed(2) || "0.00" %>
-                                </td>
+                                <!-- </td>
                                 <td data-label="Total">₹<%= ((item.quantity || 0) * (item.price || 0)).toFixed(2) %>
-                                </td>
+                                </td> -->
                                 <td data-label="Action">
                                     <span class="order-status status-<%= item.status.toLowerCase() %>">
                                         <%= item.status %>
@@ -295,14 +295,18 @@
 
             <div class="total-section">
                 <div class="total-row">
-                    <span>Subtotal:</span>
-                    <span>₹<%= order.items[0]?.price?.toFixed(2) || "0.00" %></span>
+                    <span>Reguler Price:</span>
+                    <span>₹<%= order.totalregularPrice.toFixed(2) || "0.00" %></span>
+                </div>
+                <div class="total-row">
+                    <span>offer:</span>
+                    <span><%= order.coupenOffer.toFixed(2) || "0" %>%</span>
                 </div>
 
 
                 <div class="total-row grand-total">
                     <span>Total:</span>
-                    <span>₹<%= ((order.items[0]?.quantity || 0) * (order.items[0]?.price || 0)).toFixed(2) %></span>
+                    <span>₹<%= order.totalAmount.toFixed(2) %></span>
                 </div>
             </div>
 

@@ -8,58 +8,58 @@ const orderSchema = new mongoose.Schema({
     },
     items: [
         {
-            productId: { 
-                type: mongoose.Schema.Types.ObjectId, 
-                ref: "Product", 
-                required: true 
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Product",
+                required: true
             },
             quantity: {
-                 type: Number, 
-                 required: true 
-                },
-            price: { 
-                type: Number, 
-                required: true 
+                type: Number,
+                required: true
             },
-            regularPrice: { 
-                type: Number, 
-                required: true 
+            price: {
+                type: Number,
+                required: true
             },
-            size:{
-                 type: Number, 
-                 required: true 
-                },
+            regularPrice: {
+                type: Number,
+                required: true
+            },
+            size: {
+                type: Number,
+                required: true
+            },
             status: {
                 type: String,
-                enum: ["Pending", "Shipped", "Delivered", "Cancelled","Returned"],
+                enum: ["Pending", "Shipped", "Delivered", "Cancelled", "Returned"],
                 default: "Pending", // Default status for each product
             },
         },
     ],
     shippingAddress: {
-        addressType:String,
+        addressType: String,
         name: String,
         city: String,
-        landMark:String,
-        state:String,
+        landMark: String,
+        state: String,
         pincode: String,
         phone: String,
-        altPhone:String,
+        altPhone: String,
     },
     paymentMethod: {
         type: String,
-        enum: ["COD", "Online"],
+        enum: ["COD", "Online", "Wallet"],
         required: true,
     },
-    coupenOffer:{
-        type:Number,
-        required:false
+    coupenOffer: {
+        type: Number,
+        required: false
     },
     totalAmount: {
         type: Number,
         required: true,
     },
-    totalregularPrice:{
+    totalregularPrice: {
         type: Number,
         required: true,
     },
@@ -69,5 +69,5 @@ const orderSchema = new mongoose.Schema({
     },
 });
 
-const Order = mongoose.model("Order", orderSchema)
-module.exports =  Order;
+const Order = mongoose.model("Order", orderSchema)
+module.exports = Order;
