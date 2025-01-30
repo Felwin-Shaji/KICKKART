@@ -1,5 +1,4 @@
 <%- include("../partials/user/header.ejs") -%>
-
     <style>
         .container-form {
             background: rgb(210, 214, 221);
@@ -11,6 +10,82 @@
             font-size: 1.5rem;
             margin-bottom: 1rem;
         }
+
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 10px;
+            /* Added rounded corners */
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-body {
+            background-color: #e7e7e7d5;
+            border-radius: 10px;
+
+            padding: 20px;
+            /* Increased padding for better spacing */
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            /* Increased font size */
+            font-weight: bold;
+        }
+
+        .card-text {
+
+            font-size: 0.9rem;
+            /* Slightly smaller text */
+        }
+
+        .badge {
+            font-size: 1.1rem;
+            /* Increased size of the code badge */
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            margin-top: 10px;
+        }
+
+        .btn-outline-dark {
+            padding: 0px 6px;
+            /* Smaller padding to reduce button size */
+            font-weight: bold;
+            /* Bold text */
+            font-size: 0.85rem;
+            /* Slightly smaller font */
+            border-radius: 20px;
+            /* Rounded corners for the button */
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-outline-success:hover {
+            background-color: #000000;
+            /* Lighter green */
+            color: white;
+            transform: scale(1.1);
+            /* Slight scaling effect on hover */
+        }
+
+        .btn-outline-success:active {
+            transform: scale(1);
+            /* Keep the size consistent when clicked */
+        }
+
+        .copy-btn-text {
+            font-weight: bold;
+            /* Bold text */
+            font-size: 1.2rem;
+            /* Larger font size for code visibility */
+            letter-spacing: 0.5px;
+            /* Slightly increased spacing between letters */
+        }
+
+
+
 
         .form-control {
             margin-bottom: 1rem;
@@ -43,7 +118,6 @@
             }
         }
     </style>
-
     <div class="breadcrumbs">
         <div class="container">
             <div class="row">
@@ -58,14 +132,60 @@
 
     <div class="colorlib-product">
         <div class="container-form">
+
             <!-- Coupon Section -->
             <div class="row">
+
                 <div class="col-md-12 ">
                     <form id="couponForm" onsubmit="applyCoupon(event)">
                         <div class="row form-group align-items-center" style="margin: 20px;">
-                            <div class="col-sm-9">
+                            <div class="col-sm-12">
+                                <div class="mt-4">
+                                    <a href="#" id="showCouponsToggle" class="btn btn-link">Available Coupons - See
+                                        Here</a>
+                                </div>
+
+                                <div id="couponsContainer" class="container my-4" style="display: none;">
+                                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                                        <% coupons.forEach(coupon=> { %>
+                                            <div class="col">
+                                                <div class="card shadow-lg rounded-3 h-100 border-0">
+                                                    <div class="card-body text-center p-4">
+                                                        <h5 class="card-title text-uppercase text-dark">
+                                                            Save <span class="text-success fw-bold">
+                                                                <%= coupon.discountPercentage %>%
+                                                            </span>
+                                                        </h5>
+                                                        <p class="card-text text-muted mb-2">Min Purchase: ₹<%=
+                                                                coupon.minPurchaseAmount %>
+                                                        </p>
+                                                        <p class="text-muted small">
+                                                            Valid: <%= new Date(coupon.startDate).toLocaleDateString()
+                                                                %> -
+                                                                <%= new Date(coupon.endDate).toLocaleDateString() %>
+                                                        </p>
+                                                        <span class="badge bg-success text-white px-3 py-2 mb-3">
+                                                            Code: <span class="copy-btn-text">
+                                                                <%= coupon.code %>
+                                                            </span>
+                                                        </span>
+
+                                                        <!-- Copy Button -->
+                                                        <button class="btn btn-outline-dark btn-sm"
+                                                            data-clipboard-text="<%= coupon.code %>"
+                                                            id="copyButton<%= coupon._id %>">
+                                                            Copy Code
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                    </div>
+                                </div>
+
                                 <input type="text" id="couponNumber" name="couponNumber"
                                     class="form-control input-number" placeholder="Your Coupon Number..." required>
+
                                 <small id="errorMessage" style="color: red; display: none;">Please enter a valid coupon
                                     number.</small>
                                 <input id="totalAmountBfrCoupn" name="totalAmountBfrCoupn" type="number" value="<%= cart.items.reduce((total, item)=> total +
@@ -83,6 +203,7 @@
                     </form>
                 </div>
             </div>
+
             <!-- </div> -->
 
             <div class="row ">
@@ -102,7 +223,8 @@
                             </select>
                         </div>
                         <div>
-                            <a href="/addAddress?redirectTo=checkout" class="btn col-lg-4 btn-primary btn-block">Add Address</a>
+                            <a href="/addAddress?redirectTo=checkout" class="btn col-lg-4 btn-primary btn-block">Add
+                                Address</a>
                         </div>
 
                         <!-- Cart Details -->
@@ -138,10 +260,6 @@
                                     <span id="orderTotal">₹<%= cart.items.reduce((total, item)=> total +
                                             (item.product.salePrice * item.quantity), 0).toFixed(2) %></span>
 
-
-                                            
-
-
                                 </li>
                             </ul>
                         </div>
@@ -172,9 +290,10 @@
                         </div>
 
                         <input id="coupenCode" name="coupenCode" type="text" value="" hidden>
-                        <input id="totalAmount" name="totalAmount" type="number" value="<%= cart.items.reduce((total, item)=> total +
-                                                (item.product.salePrice * item.quantity), 0).toFixed(2) %>" hidden formnovalidate>
-                        <input id="coupenOfferPrice" name="coupenOffer" type="number" value="0" hidden formnovalidate>
+                        <input id="totalAmount" name="totalAmount" type="number" value="<%= cart.items.reduce((total, item)=> total + (item.product.salePrice * item.quantity), 0).toFixed(2) %>" readonly hidden>
+
+                        <input id="coupenOfferPrice" name="coupenOffer" type="number" value="0" readonly hidden>
+                        
 
 
                         <input id="totalregularPrice" name="totalregularPrice" type="number" value="<%= cart.items.reduce((total, item)=> total +
@@ -188,320 +307,382 @@
             </div>
 
         </div>
+        <%- include("../partials/user/footer.ejs") -%>
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                document.getElementById("orderForm").addEventListener("submit", async function (event) {
-                    event.preventDefault();
+            <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
+            <script>
 
-                    const formData = new FormData(this);
-                    const data = {};
-                    formData.forEach((value, key) => {
-                        data[key] = value;
-                    });
+                document.addEventListener("DOMContentLoaded", () => {
+                    const toggleButton = document.getElementById("showCouponsToggle");
+                    const couponsContainer = document.getElementById("couponsContainer");
 
-                    console.log("data.paymentMethoddata.paymentMethoddata.paymentMethoddata.paymentMethod", data.paymentMethod);
-                    if (data.paymentMethod == "COD") {
-                        try {
-                            const response = await fetch("/place-order", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify(data),
-                            });
+                    toggleButton.addEventListener("click", (event) => {
+                        event.preventDefault(); // Prevent the default link behavior
 
-                            const responseText = await response.text();
-
-                            if (response.ok) {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Order Placed!",
-                                    text: "Your order has been placed successfully!",
-                                    timer: 3000,
-                                    timerProgressBar: true,
-                                    showConfirmButton: false,
-                                });
-
-                                setTimeout(() => {
-                                    window.location.href = "/order-success";
-                                }, 3000);
-                            } else {
-                                const error = JSON.parse(responseText);
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Oops!",
-                                    text: `Error: ${error.message}`,
-                                    showConfirmButton: true,
-                                });
-                            }
-                        } catch (error) {
-                            console.error("Error placing order:", error);
-                            Swal.fire({
-                                icon: "error",
-                                title: "Oops!",
-                                text: "An error occurred while placing your order. Please try again.",
-                                showConfirmButton: true,
-                            });
+                        // Toggle the visibility of the coupons container
+                        if (couponsContainer.style.display === "none") {
+                            couponsContainer.style.display = "block";
+                            toggleButton.textContent = "Hide Coupons";
+                        } else {
+                            couponsContainer.style.display = "none";
+                            toggleButton.textContent = "Available Coupons - See Here";
                         }
+                    });
+                });
 
-                    } else if (data.paymentMethod === "Online") {
+                // Initialize Clipboard.js
+                var clipboard = new ClipboardJS('.btn');
 
-                        try {
-                            // Step 1: Create an order on the server
-                            const response = await fetch("/create-order", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                    amount: data.totalAmount, // Pass the total amount
-                                    currency: "INR",
-                                }),
-                            });
+                clipboard.on('success', function (e) {
+                    e.clearSelection();
 
-                            const orderData = await response.json();
+                    // Change the button text and style after copying
+                    var button = e.trigger;
+                    button.textContent = 'Copied!';
+                    button.classList.remove('btn-outline-success');
+                    button.classList.add('btn-success');
+                    button.disabled = true; // Disable the button to prevent multiple copies
 
-                            if (!orderData.success) {
+                    // Revert the button back to the original state after 2 seconds
+                    setTimeout(function () {
+                        button.textContent = 'Copy Code';
+                        button.classList.remove('btn-success');
+                        button.classList.add('btn-outline-success');
+                        button.disabled = false;
+                    }, 2000); // Change back after 2 seconds
+                });
+
+                clipboard.on('error', function (e) {
+                    alert('Failed to copy code.');
+                });
+
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.getElementById("orderForm").addEventListener("submit", async function (event) {
+                        event.preventDefault();
+
+                        const formData = new FormData(this);
+                        const data = {};
+                        formData.forEach((value, key) => {
+                            data[key] = value;
+                        });
+
+                        console.log("data.paymentMethoddata.paymentMethoddata.paymentMethoddata.paymentMethod", data.paymentMethod);
+                        if (data.paymentMethod == "COD") {
+
+                            try {
+                                const response = await fetch("/place-order", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(data),
+                                });
+
+                                const responseText = await response.text();
+
+                                if (response.ok) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Order Placed!",
+                                        text: "Your order has been placed successfully!",
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                    });
+
+                                    setTimeout(() => {
+                                        window.location.href = "/order-success";
+                                    }, 3000);
+                                } else {
+                                    const error = JSON.parse(responseText);
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Oops!",
+                                        text: `Error: ${error.message}`,
+                                        showConfirmButton: true,
+                                    });
+                                }
+                            } catch (error) {
+                                console.error("Error placing order:", error);
                                 Swal.fire({
                                     icon: "error",
                                     title: "Oops!",
-                                    text: "Unable to create order. Please try again.",
+                                    text: "An error occurred while placing your order. Please try again.",
                                     showConfirmButton: true,
                                 });
-                                return;
                             }
-                            
-                            // Step 2: Open Razorpay payment modal
-                            const options = {
-                                key: "rzp_test_FgtVyF2A1Al0K2", //"YOUR_RAZORPAY_KEY_ID", // Replace with your Razorpay Key ID
-                                amount: orderData.order.amount, // Amount in paise
-                                currency: orderData.order.currency,
-                                name: "KICKKART",
-                                description: "Order Payment",
-                                order_id: orderData.order.id, // Razorpay order ID
-                                handler: async function (response) {
-                                    // Step 3: Verify the payment on the server
-                                    try {
-                                        const verifyResponse = await fetch("/verify-payment", {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type": "application/json",
-                                            },
-                                            body: JSON.stringify({
-                                                razorpay_order_id: response.razorpay_order_id,
-                                                razorpay_payment_id: response.razorpay_payment_id,
-                                                razorpay_signature: response.razorpay_signature,
-                                                data
-                                            }),
-                                        });
 
-                                        const verifyData = await verifyResponse.json();
+                        } else if (data.paymentMethod === "Online") {
 
-                                        if (verifyData.success) {
-                                            Swal.fire({
-                                                icon: "success",
-                                                title: "Payment Successful!",
-                                                text: "Your payment was successful, and your order has been placed.",
-                                                timer: 3000,
-                                                timerProgressBar: true,
-                                                showConfirmButton: false,
+                            console.log("fffffffffffffffffffffffffffffffffffffffffff",data.totalAmount)
+                            try {
+
+                                const response = await fetch("/create-order", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                        amount: data.totalAmount,
+                                        currency: "INR",
+                                    }),
+                                });
+
+                                const orderData = await response.json();
+
+                                if (!orderData.success) {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Oops!",
+                                        text: "Unable to create order. Please try again.",
+                                        showConfirmButton: true,
+                                    });
+                                    return;
+                                }
+
+
+                                const options = {
+                                    key: "rzp_test_FgtVyF2A1Al0K2", //"YOUR_RAZORPAY_KEY_ID", 
+                                    amount: orderData.order.amount, // Amount in paise
+                                    currency: orderData.order.currency,
+                                    name: "KICKKART",
+                                    description: "Order Payment",
+                                    order_id: orderData.order.id, // Razorpay order ID
+                                    handler: async function (response) {
+
+                                        try {
+                                            const verifyResponse = await fetch("/verify-payment", {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                },
+                                                body: JSON.stringify({
+                                                    razorpay_order_id: response.razorpay_order_id,
+                                                    razorpay_payment_id: response.razorpay_payment_id,
+                                                    razorpay_signature: response.razorpay_signature,
+                                                    data
+                                                }),
                                             });
 
-                                            setTimeout(() => {
-                                                window.location.href = "/order-success";
-                                            }, 3000);
-                                        } else {
+                                            const verifyData = await verifyResponse.json();
+
+                                            if (verifyData.success) {
+                                                Swal.fire({
+                                                    icon: "success",
+                                                    title: "Payment Successful!",
+                                                    text: "Your payment was successful, and your order has been placed.",
+                                                    timer: 3000,
+                                                    timerProgressBar: true,
+                                                    showConfirmButton: false,
+                                                });
+
+                                                setTimeout(() => {
+                                                    window.location.href = "/order-success";
+                                                }, 3000);
+                                            } else {
+                                                Swal.fire({
+                                                    icon: "error",
+                                                    title: "Payment Verification Failed",
+                                                    text: "Your payment could not be verified. Please contact support.",
+                                                    showConfirmButton: true,
+                                                });
+                                            }
+                                        } catch (error) {
+                                            console.error("Error verifying payment:", error);
                                             Swal.fire({
                                                 icon: "error",
-                                                title: "Payment Verification Failed",
-                                                text: "Your payment could not be verified. Please contact support.",
+                                                title: "Oops!",
+                                                text: "An error occurred during payment verification. Please try again.",
                                                 showConfirmButton: true,
                                             });
                                         }
-                                    } catch (error) {
-                                        console.error("Error verifying payment:", error);
-                                        Swal.fire({
-                                            icon: "error",
-                                            title: "Oops!",
-                                            text: "An error occurred during payment verification. Please try again.",
-                                            showConfirmButton: true,
-                                        });
-                                    }
-                                },
-                                prefill: {
-                                    name: data.name, // Add user details from your form
-                                    email: data.email,
-                                    contact: data.phone,
-                                },
-                                theme: {
-                                    color: "#3399cc",
-                                },
-                            };
+                                    },
+                                    prefill: {
+                                        name: data.name, // Add user details from your form
+                                        email: data.email,
+                                        contact: data.phone,
+                                    },
+                                    theme: {
+                                        color: "#3399cc",
+                                    },
+                                };
 
-                            const razorpay = new Razorpay(options);
-                            razorpay.open();
-                        } catch (error) {
-                            console.error("Error initiating online payment:", error);
-                            Swal.fire({
-                                icon: "error",
-                                title: "Oops!",
-                                text: "An error occurred while initiating the payment. Please try again.",
-                                showConfirmButton: true,
-                            });
-                        }
-                    }else if(data.paymentMethod === "Wallet"){
-                         try {
-                            const response = await fetch("/place-order-wallet", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify(data),
-                            });
-
-                            const responseText = await response.text();
-
-                            if (response.ok) {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Order Placed!",
-                                    text: "Your order has been placed successfully!",
-                                    timer: 3000,
-                                    timerProgressBar: true,
-                                    showConfirmButton: false,
-                                });
-
-                                setTimeout(() => {
-                                    window.location.href = "/order-success";
-                                }, 3000);
-                            } else {
-                                const error = JSON.parse(responseText);
+                                const razorpay = new Razorpay(options);
+                                razorpay.open();
+                            } catch (error) {
+                                console.error("Error initiating online payment:", error);
                                 Swal.fire({
                                     icon: "error",
                                     title: "Oops!",
-                                    text: `Error: ${error.message}`,
+                                    text: "An error occurred while initiating the payment. Please try again.",
                                     showConfirmButton: true,
                                 });
                             }
-                        } catch (error) {
-                            console.error("Error placing order:", error);
-                            Swal.fire({
-                                icon: "error",
-                                title: "Oops!",
-                                text: "An error occurred while placing your order. Please try again.",
-                                showConfirmButton: true,
-                            });
-                        }
+                        } else if (data.paymentMethod === "Wallet") {
+                            try {
+                                const response = await fetch("/place-order-wallet", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(data),
+                                });
 
-                    }
+                                const responseText = await response.text();
 
+                                if (response.ok) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Order Placed!",
+                                        text: "Your order has been placed successfully!",
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false,
+                                    });
 
-                });
-            });
-
-            document.addEventListener("DOMContentLoaded", () => {
-                const couponForm = document.getElementById("couponForm");
-                const couponInput = document.getElementById("couponNumber");
-                const totalAmountBfrCoupn = document.getElementById("totalAmountBfrCoupn");
-                const errorMessage = document.getElementById("errorMessage");
-                const responseMessage = document.getElementById("responseMessage");
-                const orderTotalElement = document.getElementById("orderTotal");
-                const coupenOfferElement = document.getElementById("couponOffer");
-                const coupenOfferPriceElement = document.getElementById("coupenOfferPrice");
-                const totalAmountElement = document.getElementById("totalAmount");
-                const coupenCodeElement = document.getElementById("coupenCode")
-                const applyCouponButton = document.getElementById("applyCouponButton");
-                const removeCouponButton = document.getElementById("removeCouponButton");
-
-                async function applyCoupon(event) {
-                    event.preventDefault();
-
-                    const couponNumber = couponInput.value.trim();
-                    const PriceBrfCoupen = totalAmountBfrCoupn.value.trim();
-
-                    if (!couponNumber) {
-                        errorMessage.style.display = "block";
-                        errorMessage.textContent = "Please enter a coupon number.";
-                        return;
-                    }
-                    errorMessage.style.display = "none";
-
-                    try {
-                        const response = await fetch("/applyCoupen", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ couponNumber, PriceBrfCoupen }),
-                        });
-
-                        const data = await response.json();
-
-                        responseMessage.style.display = "block";
-                        if (response.ok) {
-                            responseMessage.style.color = "green";
-                            responseMessage.textContent = data.message;
-
-                            if (data.discount) {
-                                let priceBeforeCoupon = Number(orderTotalElement.textContent.replace(/₹/, "").trim());
-                                let discountAmount = (priceBeforeCoupon * data.discount) / 100;
-                                let totalPrice = priceBeforeCoupon - discountAmount;
-
-                                coupenOfferElement.textContent = `${data.discount}%`;
-                                orderTotalElement.textContent = `₹${totalPrice.toFixed(2)}`;
-                                coupenOfferPriceElement.value = discountAmount || 0;
-                                totalAmountElement.value = totalPrice;
-                                coupenCodeElement.value = data.couponNumber
-
-
-                                // Toggle buttons
-                                applyCouponButton.style.display = "none";
-                                removeCouponButton.style.display = "block";
+                                    setTimeout(() => {
+                                        window.location.href = "/order-success";
+                                    }, 3000);
+                                } else {
+                                    const error = JSON.parse(responseText);
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Oops!",
+                                        text: `Error: ${error.message}`,
+                                        showConfirmButton: true,
+                                    });
+                                }
+                            } catch (error) {
+                                console.error("Error placing order:", error);
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Oops!",
+                                    text: "An error occurred while placing your order. Please try again.",
+                                    showConfirmButton: true,
+                                });
                             }
-                        } else {
-                            responseMessage.style.color = "red";
-                            responseMessage.textContent = data.message;
+
                         }
-                    } catch (error) {
-                        console.error("Error applying coupon:", error);
-                        responseMessage.style.display = "block";
-                        responseMessage.style.color = "red";
-                        responseMessage.textContent = "Something went wrong. Please try again.";
+
+
+                    });
+                });
+
+                document.addEventListener("DOMContentLoaded", () => {
+                    const couponForm = document.getElementById("couponForm");
+                    const couponInput = document.getElementById("couponNumber");
+                    const totalAmountBfrCoupn = document.getElementById("totalAmountBfrCoupn");
+                    const errorMessage = document.getElementById("errorMessage");
+                    const responseMessage = document.getElementById("responseMessage");
+                    const orderTotalElement = document.getElementById("orderTotal");
+                    const coupenOfferElement = document.getElementById("couponOffer");
+                    const coupenOfferPriceElement = document.getElementById("coupenOfferPrice");
+                    const totalAmountElement = document.getElementById("totalAmount");
+                    const coupenCodeElement = document.getElementById("coupenCode")
+                    const applyCouponButton = document.getElementById("applyCouponButton");
+                    const removeCouponButton = document.getElementById("removeCouponButton");
+
+                    function updateHiddenFields(discountAmount, totalPrice, couponCode) {
+                        // Update the hidden inputs
+                        coupenOfferPriceElement.value = discountAmount;
+                        totalAmountElement.value = totalPrice;
+                        coupenCodeElement.value = couponCode;
+
+                        // Debug logs to verify updates
+                        console.log("Updated Hidden Fields:");
+                        console.log("Coupon Offer Price:", coupenOfferPriceElement.value);
+                        console.log("Total Amount:", totalAmountElement.value);
+                        console.log("Coupon Code:", coupenCodeElement.value);
                     }
-                }
-
-                function removeCoupon() {
-                    // Reset the coupon-related values
-                    coupenOfferElement.textContent = "₹00.00";
-                    orderTotalElement.textContent = `₹${totalAmountBfrCoupn.value}`;
-                    coupenOfferPriceElement.value = 0;
-                    totalAmountElement.value = totalAmountBfrCoupn.value;
-
-                    // Clear the input field and hide/remove messages
-                    couponInput.value = "";
-                    errorMessage.style.display = "none";
-
-                    // Show success message for 3 seconds
-                    responseMessage.style.display = "block";
-                    responseMessage.style.color = "green";
-                    responseMessage.textContent = "Coupon removed successfully!";
-                    setTimeout(() => {
-                        responseMessage.style.display = "none";
-                    }, 3000);
 
 
-                    // Toggle buttons
-                    applyCouponButton.style.display = "block";
-                    removeCouponButton.style.display = "none";
-                }
+                    async function applyCoupon(event) {
+    event.preventDefault();
 
-                couponForm.addEventListener("submit", applyCoupon);
-                removeCouponButton.addEventListener("click", removeCoupon);
-            });
+    const couponNumber = couponInput.value.trim();
+    const PriceBrfCoupen = totalAmountBfrCoupn.value.trim();
+
+    if (!couponNumber) {
+        errorMessage.style.display = "block";
+        errorMessage.textContent = "Please enter a coupon number.";
+        return;
+    }
+    errorMessage.style.display = "none";
+
+    try {
+        const response = await fetch("/applyCoupen", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ couponNumber, PriceBrfCoupen }),
+        });
+
+        const data = await response.json();
+
+        responseMessage.style.display = "block";
+        if (response.ok) {
+            responseMessage.style.color = "green";
+            responseMessage.textContent = data.message;
+
+            if (data.discount) {
+                let priceBeforeCoupon = Number(orderTotalElement.textContent.replace(/₹/, "").trim());
+                let discountAmount = (priceBeforeCoupon * data.discount) / 100;
+
+                let totalPrice = priceBeforeCoupon - discountAmount;
+
+                // Update the hidden fields
+                updateHiddenFields(discountAmount, totalPrice, data.couponNumber);
+
+                coupenOfferElement.textContent = `${data.discount}%`;
+                orderTotalElement.textContent = `₹${totalPrice.toFixed(2)}`;
+
+                // Toggle buttons
+                applyCouponButton.style.display = "none";
+                removeCouponButton.style.display = "block";
+            }
+        } else {
+            responseMessage.style.color = "red";
+            responseMessage.textContent = data.message;
+        }
+    } catch (error) {
+        console.error("Error applying coupon:", error);
+        responseMessage.style.display = "block";
+        responseMessage.style.color = "red";
+        responseMessage.textContent = "Something went wrong. Please try again.";
+    }
+}
 
 
-        </script>
+                    function removeCoupon() {
+                        // Reset the coupon-related values
+                        coupenOfferElement.textContent = "₹00.00";
+                        orderTotalElement.textContent = `₹${totalAmountBfrCoupn.value}`;
+                        coupenOfferPriceElement.value = 0;
+                        totalAmountElement.value = totalAmountBfrCoupn.value;
 
-        <%- include("../partials/user/footer.ejs") -%>
+                        // Clear the input field and hide/remove messages
+                        couponInput.value = "";
+                        errorMessage.style.display = "none";
+
+                        // Show success message for 3 seconds
+                        responseMessage.style.display = "block";
+                        responseMessage.style.color = "green";
+                        responseMessage.textContent = "Coupon removed successfully!";
+                        setTimeout(() => {
+                            responseMessage.style.display = "none";
+                        }, 3000);
+
+
+                        // Toggle buttons
+                        applyCouponButton.style.display = "block";
+                        removeCouponButton.style.display = "none";
+                    }
+
+                    couponForm.addEventListener("submit", applyCoupon);
+                    removeCouponButton.addEventListener("click", removeCoupon);
+                });
+
+
+            </script>

@@ -1,7 +1,267 @@
 <%- include("../../views/partials/admin/header") %>
+<style>
+    .chart-fixed {
+    width: 100% !important; /* Ensures chart uses full width of the parent container */
+    height: 400px !important; /* Fixed height for the chart */
+}
+
+</style>
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-center flex-grow-1">Dashboard</h2>
+
+    <div class="dropdown me-3">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            Filter By
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+            <li><a class="dropdown-item" href="/admin/?filter=1day" data-filter="1day">1 Day</a></li>
+            <li><a class="dropdown-item" href="/admin/?filter=1week" data-filter="1week">1 Week</a></li>
+            <li><a class="dropdown-item" href="/admin/?filter=1month" data-filter="1month">1 Month</a></li>
+            <li><a class="dropdown-item" href="/admin/?filter=1year" data-filter="1year">1 Year</a></li>
+        </ul>
+    </div>
+
+   
+</div>
+
+
+<div class="container">
+    <div class="row" style="background-color: rgb(203, 203, 203); padding-top: 20px;">
+        <h3 style="margin-left: 20px;"> <%= filter %></h3>
+
+        <div class="col-lg- mb-4">
+            <div class="card p-4 shadow-sm">
+                <h4 class="text-center mb-3">Sales Chart</h4>
+                <canvas id="salesChart" class="chart-fixed"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card p-4 shadow-sm">
+                <h4 class="text-center mb-3">Top 10 Best Selling Products</h4>
+                <canvas id="productChart" class="chart-fixed"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card p-4 shadow-sm">
+                <h4 class="text-center mb-3">Top Best Selling Categories </h4>
+                <canvas id="categoryChart" class="chart-fixed"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card p-4 shadow-sm">
+                <h4 class="text-center mb-3">Top Best Selling Brands </h4>
+                <canvas id="brandChart" class="chart-fixed"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <div>
+    <div class="row mb-4">
+        <!-- Best Selling Products Section -->
+        <div class="col-lg-6">
+            <div class="card p-4 shadow-sm">
+                <h4 class="text-center mb-3">Top 10 Best Selling Products</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped text-center align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Product</th>
+                                <th scope="col">Sold Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (product && product.length > 0) { %> 
+                                <% product.forEach((item, index) => { %>   
+                                    <tr>
+                                        <td><%= index + 1 %></td>
+                                        <td>
+                                            <img src="/uploads/re-image/<%= item.productDetails.productImage[0] %>" alt="Product Image" class="img-fluid"
+                                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                        </td>
+                                        <td><%= item.productDetails.productName %></td>
+                                        <td>
+                                            <span class="badge bg-primary rounded-pill">
+                                                <%= item.totalSold %> Items SOLD
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }) %> 
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No data available</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     
+        <!-- Right Side: Best Selling Categories & Brands -->
+        <div class="col-lg-6">
+            <!-- Best Selling Categories Section -->
+            <div class="card p-4 shadow-sm mb-4">
+                <h4 class="text-center mb-3">Top Best Selling Categories</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped text-center align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Sold Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (category && category.length > 0) { %>
+                                <% category.forEach((cat, index) => { %>   
+                                    <tr>
+                                        <td><%= index + 1 %></td>
+                                        <td><%= cat.categoryDetails.name %></td>
+                                        <td>
+                                            <span class="badge bg-success rounded-pill">
+                                                <%= cat.totalSold %> Items SOLD
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }) %> 
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No data available</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    
+            <!-- Best Selling Brands Section -->
+            <div class="card p-4 shadow-sm">
+                <h4 class="text-center mb-3">Top Best Selling Brands</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped text-center align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Brand</th>
+                                <th scope="col">Sold Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (brands && brands.length > 0) { %>
+                                <% brands.forEach((brand, index) => { %>   
+                                    <tr>
+                                        <td><%= index + 1 %></td>
+                                        <td><%= brand.brandDetails.brandName %></td>
+                                        <td>
+                                            <span class="badge bg-warning rounded-pill">
+                                                <%= brand.totalSold %> Items SOLD
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }) %> 
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No data available</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+   const productData = <%- JSON.stringify(product) %>;
+const categoryData = <%- JSON.stringify(category) %>;
+const brandData = <%- JSON.stringify(brands) %>;
+const salesData = <%- JSON.stringify(sales) %>;
+
+// Extract labels and values
+const productLabels = productData.map(item => item.productDetails.productName);
+const productValues = productData.map(item => item.totalSold);
+
+const categoryLabels = categoryData.map(item => item.categoryDetails.name);
+const categoryValues = categoryData.map(item => item.totalSold);
+
+const brandLabels = brandData.map(item => item.brandDetails.brandName);
+const brandValues = brandData.map(item => item.totalSold);
+
+// sales data
+const salesLabels = salesData.map(item => item.date); // Use 'date' for labels
+const salesValues = salesData.map(item => item.totalSales); // Use 'totalSales' for values
+
+
+// Store chart instances
+let productChartInstance, categoryChartInstance, brandChartInstance, salesChartInstance;
+
+// Function to create a chart (Destroys existing chart first)
+function createChart(ctx, type, labels, values, labelText, bgColor, chartInstanceVar) {
+    // Destroy existing chart if it exists
+    if (chartInstanceVar && chartInstanceVar !== null) {
+        chartInstanceVar.destroy();
+    }
+
+    // Create new chart
+    return new Chart(ctx, {
+        type: type,
+        data: {
+            labels: labels,
+            datasets: [{
+                label: labelText,
+                data: values,
+                backgroundColor: bgColor,
+                borderColor: 'rgba(75, 192, 192, 1)', // Make line visible
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: type === "bar" ? { y: { beginAtZero: true } } : {},
+            plugins: {
+                legend: { display: type !== "bar" } // Hide legend for bar charts
+            }
+        }
+    });
+}
+
+// Generate the charts
+document.addEventListener("DOMContentLoaded", function () {
+    const productCtx = document.getElementById("productChart").getContext("2d");
+    const categoryCtx = document.getElementById("categoryChart").getContext("2d");
+    const brandCtx = document.getElementById("brandChart").getContext("2d");
+    const salesCtx = document.getElementById("salesChart").getContext("2d");
+
+    productChartInstance = createChart(productCtx, "pie", productLabels, productValues, "Best Selling Products", ["#ff5733", "#33ff57", "#3357ff", "#ff33a8", "#a833ff", "#33fff5"], productChartInstance);
+    categoryChartInstance = createChart(categoryCtx, "pie", categoryLabels, categoryValues, "Best Selling Categories", ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0", "#9966ff", "#ff9f40"], categoryChartInstance);
+    brandChartInstance = createChart(brandCtx, "pie", brandLabels, brandValues, "Best Selling Brands", ["#ff5733", "#33ff57", "#3357ff", "#ff33a8", "#a833ff", "#33fff5"], brandChartInstance);
+
+    // Sales Chart (Bar Chart)
+    salesChartInstance = createChart(salesCtx, "line", salesLabels, salesValues, "Sales Report", ["#4287f5"], salesChartInstance);
+});
+
+</script>
+
+
+
+
 
 <%- include("../../views/partials/admin/footer") %>

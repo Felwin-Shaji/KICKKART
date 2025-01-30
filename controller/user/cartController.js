@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const env = require('dotenv').config;
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
 
 
 const razorpayInstance = new Razorpay({
@@ -336,6 +339,8 @@ const checkout = async (req, res) => {
         const userAddress = await Address.findOne({ userId: userId });
         const addresses = userAddress?.address || [];
 
+        const coupons  = await Coupen.find({})
+
 
         console.log("userAddress", userAddress);
 
@@ -356,6 +361,7 @@ const checkout = async (req, res) => {
             totalPrice: cart.totalPrice,
             totalregularPrice: cart.totalregularPrice,
             userAddress: addresses,
+            coupons 
         });
 
     } catch (error) {
@@ -823,17 +829,15 @@ const cancelSingleItem = async (req, res) => {
 
         const orderedItem = await Order.findOne(
             { _id: orderId, userId: userId, "items.productId": productId },
-            { "items.$": 1, paymentMethod: 1, coupenOffer: 1, totalAmount: 1, totalregularPrice: 1 }
+            { "items.$": 1, paymentMethod: 1, coupenOffer: 1, totalAmount: 1, totalregularPrice: 1, isCouponAdjusted: 1 }
         ).lean();
-
-        //console.log("orderedItemorderedItem", orderedItem);
 
         if (!orderedItem || !orderedItem.items || orderedItem.items.length === 0) {
             return res.status(404).json({ message: "Order or product not found." });
         }
 
         const item = orderedItem.items[0];
-        const { paymentMethod, coupenOffer, totalAmount, totalregularPrice } = orderedItem;
+        const { paymentMethod, coupenOffer, totalAmount, totalregularPrice, isCouponAdjusted } = orderedItem;
 
         if (coupenOffer > 0 && item.price < coupenOffer) {
             return res.status(400).json({
@@ -841,33 +845,22 @@ const cancelSingleItem = async (req, res) => {
             });
         }
 
-        if (paymentMethod === "Online" || paymentMethod == "Wallet") {
-            const result = await Order.updateOne(
-                { _id: orderId, "items.productId": productId },
-                { $set: { "items.$.status": "Cancelled" } }
-            );
+        const result = await Order.updateOne(
+            { _id: orderId, "items.productId": productId },
+            { $set: { "items.$.status": "Cancelled" } }
+        );
 
-            if (result.nModified === 0) {
-                return res.status(400).json({ message: "Failed to cancel the item." });
+        if (result.modifiedCount === 0) {
+            return res.status(400).json({ message: "Failed to cancel the item." });
+        }
+
+        if (paymentMethod === "Online" || paymentMethod === "Wallet") {
+            let refundAmount = item.price;
+
+            if (!isCouponAdjusted && coupenOffer > 0) {
+                refundAmount -= coupenOffer; // Deduct coupon amount only once
+                await Order.updateOne({ _id: orderId }, { $set: { isCouponAdjusted: true } });
             }
-
-            await Order.updateOne(
-                { _id: orderId },
-                {
-                    $inc: {
-                        totalAmount: -(item.price),
-                        totalregularPrice: -item.regularPrice
-                    }
-                }
-            );
-
-            const user = await User.findById(userId);
-            if (!user.wallet || typeof user.wallet !== "object") {
-                user.wallet = { balance: 0, transactions: [] };
-                await user.save();
-            }
-
-            const refundAmount = item.price * item.quantity;
 
             await User.updateOne(
                 { _id: userId },
@@ -883,25 +876,205 @@ const cancelSingleItem = async (req, res) => {
                     }
                 }
             );
+
             return res.status(200).json({ message: "Item cancelled and refund processed successfully." });
         }
 
         if (paymentMethod === "COD") {
-            const result = await Order.updateOne(
-                { _id: orderId, "items.productId": productId },
-                { $set: { "items.$.status": "Cancelled" } }
-            );
-
-            if (result.nModified === 0) {
-                return res.status(400).json({ message: "Failed to cancel the item." });
-            }
-
-            console.log("Cancelled COD Item:", { orderId, productId });
-            res.status(200).json({ message: "Item cancelled successfully." });
+            return res.status(200).json({ message: "Item cancelled successfully." });
         }
+
     } catch (error) {
         console.error("Error cancelling item:", error.message);
         res.status(500).json({ message: "An error occurred while cancelling the item." });
+    }
+};
+
+
+const downloadInvoice = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        const order = await Order.findById(orderId).populate("items.productId");
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        const doc = new PDFDocument({ margin: 10 });
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename="invoice_${orderId}.pdf"`);        
+
+        doc.pipe(res);
+
+        // *Colors and Styling*
+        const primaryColor = "#007BFF"; // Blue
+        const textColor = "#343A40"; // Dark Gray
+        const statusColors = {
+            Pending: "#FFC107",
+            Shipped: "#17A2B8",
+            Delivered: "#28A745",
+            Cancelled: "#DC3545",
+            Returned: "#6C757D",
+        };
+
+        // *Header Background*
+        doc.rect(0, 0, doc.page.width, 80).fill(primaryColor);
+        doc.fillColor("#FFFFFF").fontSize(24).font("Helvetica-Bold").text("INVOICE", 50, 30);
+
+        // *Order Details*
+        doc.fillColor(textColor).fontSize(12).moveDown(2);
+        doc.text(`Order ID: ${order._id}`, 10).moveDown(0.2);
+        doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`).moveDown(0.2);
+        doc.text(`Payment Method: ${order.paymentMethod}`).moveDown();
+
+        // *Billing Address*
+        const billingAddress = order.shippingAddress || {};
+        doc.fillColor("#28A745").fontSize(14).text("Billing Address:", { underline: true }).moveDown(0.5);
+        doc.fillColor(textColor).fontSize(12);
+        doc.text(`Name: ${billingAddress.name || "N/A"}`);
+        doc.text(`City: ${billingAddress.city || "N/A"}`);
+        doc.text(`State: ${billingAddress.state || "N/A"}`);
+        doc.text(`Pincode: ${billingAddress.pincode || "N/A"}`);
+        doc.text(`Phone: ${billingAddress.phone || "N/A"}`).moveDown();
+
+        // *Table Headers*
+        doc.fillColor("#28A745").fontSize(14).text("Order Items:", { underline: true }).moveDown(0.5);
+
+        const colX = { no: 30, name: 90, price: 250, qty: 320, total: 400, status: 500 };
+        const rowHeight = 25;
+
+        // *Header Row Styling*
+        doc.fillColor("#FFFFFF").rect(20, doc.y - 5, 570, rowHeight).fill(primaryColor);
+        doc.fillColor("#FFFFFF").fontSize(12).font("Helvetica-Bold");
+
+        // *Column Headers*
+        const headerY = doc.y + 5;
+        doc.text("No", colX.no, headerY, { width: 30, align: "center" });
+        doc.text("Product Name", colX.name, headerY, { width: 160, align: "left" });
+        doc.text("Price", colX.price, headerY, { width: 50, align: "right" });
+        doc.text("Qty", colX.qty, headerY, { width: 30, align: "center" });
+        doc.text("Total", colX.total, headerY, { width: 70, align: "right" });
+        doc.text("Status", colX.status, headerY, { width: 70, align: "center" });
+
+        doc.moveDown(1);
+        doc.fillColor(textColor).font("Helvetica");
+        let positionY = doc.y;
+
+        let totalRefundAmount = 0;
+
+        // *Order Items Processing*
+        order.items.forEach((item, index) => {
+            const bgColor = index % 2 === 0 ? "#F8F9FA" : "#E9ECEF";
+            doc.rect(20, positionY - 5, 570, 20).fill(bgColor);
+            doc.fillColor(textColor).fontSize(12);
+
+            doc.text(`${index + 1}`, colX.no, positionY, { width: 30, align: "center" });
+            doc.text(item.productId?.name || "Unknown Product", colX.name, positionY);
+            doc.text(`Rs ${item.productId?.salePrice}`, colX.price, positionY, { width: 50, align: "right" });
+            doc.text(`${item.quantity}`, colX.qty, positionY, { width: 30, align: "center" });
+            doc.text(`Rs ${item.price}`, colX.total, positionY, { width: 70, align: "right" });
+
+            // *Order Status with Color*
+            const statusColor = statusColors[item.status] || "#000000";
+            doc.fillColor(statusColor).text(item.status, colX.status, positionY, { width: 70, align: "center" });
+            doc.fillColor(textColor); // Reset color
+
+            // *Refund Calculation*
+            if (["Cancelled", "Returned"].includes(item.status)) {
+                totalRefundAmount += item.price;
+            }
+
+            positionY += 20;
+        });
+
+
+
+        // *Adjust Refund for Coupon*
+        if (order.coupenOffer > 0) {
+            totalRefundAmount = Math.max(0, totalRefundAmount - order.coupenOffer);
+        }
+
+        // *Total Amount - Left Aligned*
+        doc.moveDown(1);
+        doc.fillColor("#6C757D").lineWidth(1).moveTo(20, doc.y).lineTo(590, doc.y).stroke();
+        doc.moveDown(1.5);
+        doc.fillColor("#000000").fontSize(14).font("Helvetica-Bold");
+
+        doc.text(`Subtotal: Rs ${order.totalregularPrice}`, 20, doc.y);
+        doc.text(`Discount: Rs ${order.coupenOffer || 0}`, 20, doc.y);
+        doc.text(`Grand Total: Rs ${order.totalAmount}`, 20, doc.y);
+
+        if (totalRefundAmount > 0) {
+            doc.text(`Total Refund: Rs ${totalRefundAmount}`, 20, doc.y);
+        }
+
+        // *Footer*
+        doc.fillColor(primaryColor).fontSize(10).font("Helvetica-Oblique").text("Thank you for shopping with us!", { align: "center" });
+
+        doc.end();
+    } catch (error) {
+        console.error("Error generating invoice:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+const returnOrder = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const orderId = req.params.orderId;
+        const productId = req.params.productId;
+
+        const orderedItem = await Order.findOne(
+            { _id: orderId, userId: userId, "items.productId": productId },
+            { "items.$": 1, paymentMethod: 1, coupenOffer: 1, totalAmount: 1, totalregularPrice: 1 }
+        ).lean();
+
+        if (!orderedItem || !orderedItem.items || orderedItem.items.length === 0) {
+            return res.status(404).json({ message: "Order or product not found." });
+        }
+
+        const item = orderedItem.items[0];
+        if (item.status !== "Delivered") {
+            return res.status(400).json({ message: "Only delivered items can be returned." });
+        }        
+            const refundAmount = item.price * item.quantity;
+
+            const result = await Order.updateOne(
+                { _id: orderId, "items.productId": productId },
+                { $set: { "items.$.status": "Returned" } }
+            );
+
+            if (result.nModified === 0) {
+                return res.status(400).json({ message: "Failed to return the item." });
+            }
+
+            const user = await User.findById(userId);
+            if (!user.wallet || typeof user.wallet !== "object") {
+                user.wallet = { balance: 0, transactions: [] };
+                await user.save();
+            }
+
+            await User.updateOne(
+                { _id: userId },
+                {
+                    $inc: { "wallet.balance": refundAmount },
+                    $push: {
+                        "wallet.transactions": {
+                            type: "credit",
+                            amount: refundAmount,
+                            description: `Refund for returned item (Order ID: ${orderId})`,
+                            date: new Date(),
+                        },
+                    },
+                }
+            );
+
+            return res.status(200).json({ message: "Item returned and refund processed successfully." });
+
+    } catch (error) {
+        console.error("Error returning item:", error.message);
+        res.status(500).json({ message: "An error occurred while processing the return." });
     }
 };
 
@@ -995,9 +1168,11 @@ module.exports = {
     getOrderSuccessPage,
     viewOrderDetails,
     cancelSingleItem,
+    returnOrder,
     razorpayCreatOrder,
     varifyPayment,
     razorpayCreatWallet,
     razorpayvarifyWallet,
-    walletOrderPayment
+    walletOrderPayment,
+    downloadInvoice
 }

@@ -134,6 +134,26 @@
         background-color: #0056b3;
     }
 
+    .variant-option {
+    cursor: pointer;
+    padding: 8px 15px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.variant-option:hover {
+    border-color: #007bff;
+}
+
+.variant-option.selected,
+.variant-option.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #0056b3;
+}
+
+
     /* Responsive Design */
     @media (max-width: 768px) {
         .wishlist-container {
@@ -220,8 +240,7 @@
 
                                                 <td class="stock-status" data-title="Stock">
                                                     <% if (product.totalQuantity> 0) { %>
-                                                        <span class="badge bg-success">In Stock (Total: <%=
-                                                                product.totalQuantity %>)</span>
+                                                        <span class="badge bg-success">In Stock</span>
                                                         <% } else { %>
                                                             <span class="badge bg-danger">Out of Stock</span>
                                                             <% } %>
@@ -365,85 +384,87 @@
 
 
             document.addEventListener("DOMContentLoaded", () => {
-                // Attach event listeners for cart buttons using delegation
-                document.querySelectorAll('.cart-button').forEach((button, index) => {
-                    button.addEventListener('click', function () {
-                        const productId = this.dataset.productId;
-                        const modal = document.getElementById(`sizeModal-${index}`);
-                        const okButton = modal.querySelector(`#modalOkButton-${index}`);
-                        const closeButton = modal.querySelector('.btn-close');
-                        const cancelButton = modal.querySelector('.btn-cancle');
-                        let selectedSize = null;
+    document.querySelectorAll('.cart-button').forEach((button, index) => {
+        button.addEventListener('click', function () {
+            const productId = this.dataset.productId;
+            const modal = document.getElementById(`sizeModal-${index}`);
+            const okButton = modal.querySelector(`#modalOkButton-${index}`);
+            const closeButton = modal.querySelector('.btn-close');
+            const cancelButton = modal.querySelector('.btn-cancle');
+            let selectedSize = null;
 
-                        // Show modal using Bootstrap
-                        const bootstrapModal = new bootstrap.Modal(modal);
-                        bootstrapModal.show();
+            // Show modal using Bootstrap
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
 
-                        // Handle size selection
-                        modal.querySelectorAll('.variant-option').forEach(option => {
-                            option.addEventListener('click', function () {
-                                modal.querySelectorAll('.variant-option').forEach(opt => opt.classList.remove('selected'));
-                                this.classList.add('selected');
-                                selectedSize = this.dataset.size;
-                            });
-                        });
-
-                        // OK Button Logic
-                        okButton.addEventListener('click', async () => {
-                            if (selectedSize) {
-                                try {
-                                    const response = await fetch('/cart', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ productId, selectedSize, quantity: "1" }),
-                                    });
-
-                                    if (response.ok) {
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Success!',
-                                            text: 'Item added to cart successfully!',
-                                            showConfirmButton: false,
-                                            timer: 1500,
-                                        }).then(() => {
-                                            location.reload(); // Or dynamically update cart items
-                                        });
-                                        bootstrapModal.hide();
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Error!',
-                                            text: 'Failed to add item to cart.',
-                                        });
-                                    }
-                                } catch (error) {
-                                    console.error('Error:', error);
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error!',
-                                        text: 'An unexpected error occurred.',
-                                    });
-                                }
-                            } else {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Oops...',
-                                    text: 'Please select a size before proceeding!',
-                                });
-                            }
-                        });
-
-                        // Close & Cancel Button Logic
-                        const closeModal = () => {
-                            bootstrapModal.hide();
-                            location.reload(); // Or reset modal state without reload
-                        };
-
-                        closeButton.addEventListener('click', closeModal);
-                        if (cancelButton) {
-                            cancelButton.addEventListener('click', closeModal);
-                        }
-                    });
+            // Handle size selection
+            modal.querySelectorAll('.variant-option').forEach(option => {
+                option.addEventListener('click', function () {
+                    // Remove 'selected' class from all options
+                    modal.querySelectorAll('.variant-option').forEach(opt => opt.classList.remove('selected', 'active'));
+                    
+                    // Add 'selected' and 'active' class to the clicked option
+                    this.classList.add('selected', 'active');
+                    selectedSize = this.dataset.size;
                 });
             });
+
+            // OK Button Logic
+            okButton.addEventListener('click', async () => {
+                if (selectedSize) {
+                    try {
+                        const response = await fetch('/cart', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productId, selectedSize, quantity: "1" }),
+                        });
+
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Item added to cart successfully!',
+                                showConfirmButton: false,
+                                timer: 1500,
+                            }).then(() => {
+                                location.reload();
+                            });
+                            bootstrapModal.hide();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Failed to add item to cart.',
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'An unexpected error occurred.',
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'Please select a size before proceeding!',
+                    });
+                }
+            });
+
+            // Close & Cancel Button Logic
+            const closeModal = () => {
+                bootstrapModal.hide();
+            };
+
+            closeButton.addEventListener('click', closeModal);
+            if (cancelButton) {
+                cancelButton.addEventListener('click', closeModal);
+            }
+        });
+    });
+});
+
         </script>

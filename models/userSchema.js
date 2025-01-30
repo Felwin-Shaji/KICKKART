@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+
+
 const userSchema = new Schema({
     name: {
         type: String,
@@ -80,9 +82,10 @@ const userSchema = new Schema({
         default: Date.now,
     },
     referalCode: {
-        type: String
+        type: String,
+        unique:true
     },
-    redeemed: {
+    referalPoints: {
         type: Boolean
     },
     redeemedUser: [{
@@ -104,5 +107,19 @@ const userSchema = new Schema({
     }]
 })
 
+userSchema.pre('save', function (next) {
+    if (!this.referalCode) {
+        console.log('Generating referral code');
+        this.referalCode = generateReferralCode(this.name);
+    }
+    next();
+});
+
+function generateReferralCode(name) {
+    const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const namePart = name.substring(0, 3).toUpperCase(); 
+    return `${namePart}${randomString}`;
+}
+
 const User = mongoose.model("User", userSchema)
-module.exports = User;
+module.exports = User; 

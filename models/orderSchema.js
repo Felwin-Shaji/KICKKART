@@ -18,7 +18,7 @@ const orderSchema = new mongoose.Schema({
                 required: true
             },
             price: {
-                type: Number,
+                type: Number,      
                 required: true
             },
             regularPrice: {
@@ -63,6 +63,11 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    isCouponAdjusted: {
+        type: Boolean,
+        default: false,
+    },
+    
     createdAt: {
         type: Date,
         default: Date.now,

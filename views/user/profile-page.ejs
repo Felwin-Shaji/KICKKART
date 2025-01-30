@@ -361,21 +361,20 @@
                           <table class="table">
                             <thead>
                               <tr>
-                                <th>Order</th>
-                                <th>Status</th>
+                                <th>Date</th>
+                                <th>No of Products</th>
                                 <th>Total</th>
                                 <th>Actions</th>
                               </tr>
-                            </thead>
-                            <% if (orders.length> 0) { %>
+                            </thead>    
+                            <% if (orders?.length> 0) { %>
                               <% orders.forEach(order=> { %>
-                               
-                                  
                                     <tbody>
                                       <tr>
                                         <td>
-                                          <%=order.createdAt %>
+                                          <%= new Date(order.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric" }) %>
                                         </td>
+                                        
                                         <td>
                                           <%=order.items.length %>
                                         </td>
@@ -497,8 +496,6 @@
                     </div>
                   </div>
 
-
-
                   <div class="tab-pane fade" id="referal" role="tabpanel" aria-labelledby="track-orders-tab">
                     <div class="card">
                       <div class="card-header">
@@ -506,8 +503,8 @@
                       </div>
                       <div class="card-body">
                         <h6 class="mb-3">Refer your friends and earn money!</h6>
-                        <p>Share this link: <strong>></strong></p>
-                        <p>Earned: ₹</p>
+                        <p>Share this link: <strong><%= user?.referalCode %></strong></p>
+                        <p>Earned: ₹<%= user?.referalPoints %></p>
                       </div>
                     </div>
                   </div>

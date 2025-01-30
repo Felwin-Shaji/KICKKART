@@ -22,6 +22,7 @@ router.get('/pageNotFound', userController.pageNotFound);
 router.get("/signup", userController.loadSignup);
 router.post("/signup", userController.signup);
 
+router.post("/varifyReferelCode",userController.verifyReferralCode)
 router.get("/verify-otp", userController.getVerifyOTP)
 router.post("/verify-otp", userController.verifyOtp);
 router.post("/resend-otp", userController.resendOtp);
@@ -56,9 +57,7 @@ router.post("/addAddress", userAuth, profileController.addAddress);
 router.get("/editAddress", userAuth, profileController.getEditAddress);
 router.post("/editAddress", userAuth, profileController.editAddress);
 router.get("/deleteAddress", userAuth, profileController.deleteAddress);
-router.post("/editProfile",userAuth,profileController.editProfile)
-
-
+router.post("/editProfile",userAuth,profileController.editProfile);
 
 //cart
 router.get("/cart", userAuth, cartController.getCart)
@@ -80,6 +79,8 @@ router.get("/order-success", userAuth, cartController.getOrderSuccessPage)
 router.get("/viewOrderDetails/:orderId/:productId", userAuth, cartController.viewOrderDetails)
 //router.patch("/cancel-order/:id",userAuth,cartController.cancelOrderAllCart)
 router.patch("/cancel-order/:orderId/:productId", userAuth, cartController.cancelSingleItem)
+router.patch("/return-order/:orderId/:productId",userAuth,cartController.returnOrder);
+router.get("/order/invoice/:orderId",userAuth, cartController.downloadInvoice);
 
 //wishlistControlle
 router.get("/wishlist", userAuth, wishlistController.getWishlist)

@@ -193,17 +193,15 @@
                             return;
                     }
 
-                    // Helper function to format date and time as YYYY-MM-DDTHH:mm:ss
+                    
                     const formatDateTime = (date) => {
-                        return date.toISOString(); // Outputs in ISO format with time (YYYY-MM-DDTHH:mm:ss.sssZ)
+                        return date.toISOString(); 
                     };
 
-                    // Format start and end dates with time
                     const formattedStartDate = formatDateTime(startDate);
                     const formattedEndDate = formatDateTime(today);
 
-                    // Redirect with the calculated date range including time
-                    window.location.href = `/admin/?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+                    window.location.href = `/admin/saleReport/?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
                 });
             });
 
@@ -218,7 +216,7 @@
                     return;
                 }
 
-                window.location.href = `/admin/?startDate=${startDate}&endDate=${endDate}`;
+                window.location.href = `/admin/saleReport/?startDate=${startDate}&endDate=${endDate}`;
             });
 
             document.getElementById('downloadPDF').addEventListener('click', async () => {

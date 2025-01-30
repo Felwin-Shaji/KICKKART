@@ -180,42 +180,35 @@ const userProfile = async (req, res) => {
        console.log('Session User:', req.session.user);
        const userId = req.session.user;
        
-       // Fetch user data
        const userData = await User.findById(userId);
 
-       // Check if user data exists
        if (!userData) {
            console.error("User not found for ID:", userId);
            return res.status(404).json({ success: false, message: "User not found" });
        }
 
-       // If the user doesn't have a wallet, create one
        if (!userData.wallet) {
            userData.wallet = { balance: 0, transactions: [] };
            await userData.save();
            console.log("Wallet created for user:", userId);
        }
 
-       // Fetch address data
        const addressData = await Address.findOne({ userId: userId });
 
-       // Fetch order data and populate the productId in the order
-       const orderData = await Order.find({ userId: userId }).populate("items.productId");
+       const orderData = await Order.find({ userId: userId }).populate("items.productId").sort({createdAt:-1});
 
-       // Pass the wallet transactions to the view
        const walletHistory = userData.wallet.transactions || [];
 
        console.log("userData", userData);
        console.log("orderData", orderData);
        console.log("walletHistory", walletHistory);
 
-       // Render the profile page with wallet history
        res.render("profile-page", {
            user: userData,
-           addresses: addressData ? addressData.address : [], // Pass the array
+           addresses: addressData ? addressData.address : [], 
            orders: orderData || [],
-           walletHistory: walletHistory,  // Pass wallet history
-       });
+           walletHistory: walletHistory,  
+       })
 
    } catch (error) {
        console.error("Error retrieving profile data:", error);
@@ -263,9 +256,8 @@ const editProfile = async (req, res) => {
  
      return res.status(500).json({ message: "An internal server error occurred. Please try again later." });
    }
- };
+};
  
-
 const changePassword = async (req, res) => {
    try {
       const userId = req.query.id
@@ -308,7 +300,8 @@ const changePassword = async (req, res) => {
 const getAddAddress = async (req, res) => {
    try {
       const user = req.session.user;
-      res.render("user-address", { user: user })
+      const {redirectTo} = req.query
+      res.render("user-address", { user: user,redirectTo })
 
    } catch (error) {
       res.redirect("/pageNotFound")
@@ -320,8 +313,8 @@ const addAddress = async (req, res) => {
       const userId = req.session.user
       console.log("aqqqqqqqq", req.body)
       const userData = await User.findOne({ _id: userId });
-      const { addressType, name, city, landMark, state, pincode, phone, altPhone} = req.body
-      const redirectTo = req.query
+      const { addressType, name, city, landMark, state, pincode, phone, altPhone,redirectTo} = req.body
+      //const redirectTo = req.query
       console.log("redirectTo",redirectTo)
       const userAddress = await Address.findOne({ userId: userData._id });
 

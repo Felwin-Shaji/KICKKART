@@ -72,11 +72,152 @@ const adminLogout = async (req, res) => {
 
 const loadDashboard = async (req, res) => {
     try {
-        res.render("adminDashboard")
-    } catch (error) {
+        const filter = req.query.filter;
+        console.log("filterfilter",filter);
+        
+        let dateFilter = {};
 
+        if (filter) {
+            let fromDate = new Date();
+            switch (filter) {
+                case "1day":
+                    fromDate.setDate(fromDate.getDate() - 1);
+                    break;
+                case "1week":
+                    fromDate.setDate(fromDate.getDate() - 7);
+                    break;
+                case "1month":
+                    fromDate.setMonth(fromDate.getMonth() - 1);
+                    break;
+                case "1year":
+                    fromDate.setFullYear(fromDate.getFullYear() - 1);
+                    break;
+            }
+            console.log("Filter applied from:", fromDate); // Debugging log
+            dateFilter = { createdAt: { $gte: fromDate } };
+        }
+
+        const sales = await Order.aggregate([
+            { 
+                $match: dateFilter // Apply the date filter
+            },
+            { 
+                $unwind: "$items" // Flatten the items array to access each product separately
+            },
+            { 
+                $group: { 
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, // Group by date
+                    totalSales: { $sum: { $multiply: ["$items.quantity", "$items.price"] } }, // Calculate total sales
+                    totalQuantity: { $sum: "$items.quantity" } // Sum total quantity sold
+                } 
+            },
+            { 
+                $sort: { _id: 1 } // Sort the sales report by date (oldest to newest)
+            },
+            { 
+                $project: { 
+                    date: "$_id", 
+                    totalSales: 1, 
+                    totalQuantity: 1, 
+                    _id: 0 
+                } 
+            }
+        ]);
+
+        console.log("sales",sales)
+        
+
+        const topProducts = await Order.aggregate([
+            { $match: dateFilter },  
+            { $unwind: "$items" },
+            { 
+                $group: { 
+                    _id: "$items.productId", 
+                    totalSold: { $sum: "$items.quantity" } 
+                } 
+            },
+            { $sort: { totalSold: -1 } }, 
+            { $limit: 10 }, 
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            { $unwind: "$productDetails" }
+        ]);
+
+        const topCategories = await Order.aggregate([
+            { $match: dateFilter },  
+            { $unwind: "$items" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.productId",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            { $unwind: "$productDetails" },
+            { 
+                $group: { 
+                    _id: "$productDetails.category", 
+                    totalSold: { $sum: "$items.quantity" } 
+                } 
+            },
+            { $sort: { totalSold: -1 } }, 
+            { $limit: 10 }, 
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "categoryDetails"
+                }
+            },
+            { $unwind: "$categoryDetails" }
+        ]);
+
+        const topBrands = await Order.aggregate([
+            { $match: dateFilter },  
+            { $unwind: "$items" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.productId",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            { $unwind: "$productDetails" },
+            { 
+                $group: { 
+                    _id: "$productDetails.brand", 
+                    totalSold: { $sum: "$items.quantity" } 
+                } 
+            },
+            { $sort: { totalSold: -1 } }, 
+            { $limit: 10 }, 
+            {
+                $lookup: {
+                    from: "brands",
+                    localField: "_id",
+                    foreignField: "brandName",
+                    as: "brandDetails"
+                }
+            },
+            { $unwind: "$brandDetails" }
+        ]);
+        
+        res.render("adminDashboard", { product: topProducts, category: topCategories, brands: topBrands,sales , filter });
+
+    } catch (error) {
+        console.error("Error loading dashboard:", error);
+        res.status(500).send("Server Error");
     }
-}
+};
 
 const loadSalesReport = async (req, res) => {
     if (req.session.admin) {

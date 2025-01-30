@@ -29,7 +29,6 @@ const getOrder = async (req, res) => {
     }
 };
 
-
 const orderDetails = async (req, res) => {
     try {
 
@@ -76,10 +75,8 @@ const apdateStatus = async (req, res) => {
             { new: true } 
         );
 
-        console.log("updatedOrder",updatedOrder);
+        //console.log("updatedOrder",updatedOrder);
         
-
-
         if (!updatedOrder) {
             return res.status(404).send("Order not found.");
         }

@@ -97,6 +97,7 @@ const listCategory = async (req, res) => {
         res.redirect('/pageNotFound')
     }
 }
+
 const unListCategory = async (req, res) => {
     try {
         let _id = req.query;

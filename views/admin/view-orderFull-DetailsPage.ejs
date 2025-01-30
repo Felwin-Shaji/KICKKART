@@ -69,32 +69,22 @@
                                     </td>
 
                                     <td>
-                                        <form
-                                            action="/admin/orders/<%= order._id %>/<%= item?._id %>/status"
-                                            method="POST" class="d-inline">
+                                        <form action="/admin/orders/<%= order._id %>/<%= item?._id %>/status" method="POST" class="d-inline">
+                                            <!-- Hidden input for item ID -->
                                             <input type="hidden" name="itemId" value="<%= order._id %>" />
-                                            <!-- Item ID -->
-                                            <select name="status" class="form-select form-select-sm d-inline w-auto">
-                                                <option value="Pending" <%=item.status==="Pending" ? "selected" : "" %> disabled>
-                                                    Pending
-                                                </option>
-                                                <option value="Shipped" <%=item.status==="Shipped" ? "selected" : "" %>>
-                                                    Shipped
-                                                </option>
-                                                <option value="Delivered" <%=item.status==="Delivered" ? "selected" : ""
-                                                    %>>
-                                                    Delivered
-                                                </option>
-                                                <!-- <option value="Canceled" <%=item.status==="Canceled" ? "selected" : ""
-                                                    %>>
-                                                    Canceled
-                                                </option> -->
+                                            
+                                            <!-- Status dropdown -->
+                                            <select name="status" class="form-select form-select-sm d-inline w-auto" <%= (item.status === "Cancelled" || item.status === "Returned") ? "disabled" : "" %>>
+                                                <option value="Pending" <%= item.status === "Pending" ? "selected" : "" %>>Pending</option>
+                                                <option value="Shipped" <%= item.status === "Shipped" ? "selected" : "" %>>Shipped</option>
+                                                <option value="Delivered" <%= item.status === "Delivered" ? "selected" : "" %>>Delivered</option>
                                             </select>
-                                            <button type="submit" class="btn btn-primary btn-sm">
+                                        
+                                            <!-- Submit button -->
+                                            <button type="submit" class="btn btn-primary btn-sm" <%= (item.status === "Canceled" || item.status === "Returned") ? "disabled" : "" %>>
                                                 &#10003;
                                             </button>
                                         </form>
-
                                     </td>
                                 </tr>
                                 <% }); %>

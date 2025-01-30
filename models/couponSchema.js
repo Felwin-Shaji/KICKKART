@@ -41,8 +41,6 @@ const couponSchema = new Schema({
         ref: "User",
         default: [], // Ensure it's initialized as an empty array
     },
-    
-
 });
 
 const Coupon = mongoose.models.Coupon || mongoose.model("Coupon", couponSchema);
