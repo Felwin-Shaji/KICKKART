@@ -1,0 +1,52 @@
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+<%- include("../partials/user/header.ejs") -%>
+
+<div class="breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p class="bread"><span><a href="index.html">Home</a></span> / <span>Payment Failed</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="colorlib-product">
+    <div class="container">
+        <div class="row row-pb-lg">
+            <div class="col-sm-10 offset-md-1">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-10 offset-sm-1 text-center">
+                <p class="icon-addcart text-danger">
+                    <span><i class="fa fa-times-circle" style="font-size: 60px; color: red;"></i></span>
+
+                </p>
+                <h2 class="mb-4 text-danger">Oops! Your payment failed.</h2>
+                <div class="alert alert-danger text-center p-4" style="border-radius: 10px; max-width: 600px; margin: auto;">
+                    <p class="text-danger" style="font-size: 20px; font-weight: bold;">
+                        <i class="fas fa-exclamation-triangle"></i> Payment Failed
+                    </p>
+                    <p class="text-muted" style="font-size: 16px; line-height: 1.5;">
+                        There was an issue processing your payment. Please go to the 
+                        <a href="/userProfile" class="text-danger font-weight-bold">Profile</a> page, navigate to your orders, and complete the payment.
+                    </p>
+                    <a href="/" class="btn btn-primary btn-outline-primary">Home</a>
+                    <a href="/shope" class="btn btn-primary btn-outline-primary"><i class="icon-shopping-cart"></i> Continue Shopping</a>
+                    <a href="/userProfile" class="btn btn-primary btn-outline-primary"><i class="icon-user"></i> Profile</a>
+                </p>
+
+                </div>
+                
+                    
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<%- include("../partials/user/footer.ejs") -%>

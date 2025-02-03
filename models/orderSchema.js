@@ -51,6 +51,15 @@ const orderSchema = new mongoose.Schema({
         enum: ["COD", "Online", "Wallet"],
         required: true,
     },
+    razorpayOrderId:{
+        type:String,
+        required:false
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'completed', 'failed'],
+        required: true, 
+    },
     coupenOffer: {
         type: Number,
         required: false

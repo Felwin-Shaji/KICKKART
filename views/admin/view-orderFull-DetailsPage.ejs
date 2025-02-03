@@ -74,17 +74,25 @@
                                             <input type="hidden" name="itemId" value="<%= order._id %>" />
                                             
                                             <!-- Status dropdown -->
-                                            <select name="status" class="form-select form-select-sm d-inline w-auto" <%= (item.status === "Cancelled" || item.status === "Returned") ? "disabled" : "" %>>
-                                                <option value="Pending" <%= item.status === "Pending" ? "selected" : "" %>>Pending</option>
+                                            <select name="status" class="form-select form-select-sm d-inline w-auto" 
+                                                <%= (item.status === "Cancelled" || item.status === "Returned" || item.status === "Delivered") ? "disabled" : "" %>>
+                                                
+                                                <option value="Pending" 
+                                                    <%= item.status === "Pending" ? "selected" : "" %> 
+                                                    <%= item.status === "Delivered" ? "disabled" : "" %>>Pending
+                                                </option>
+                                                
                                                 <option value="Shipped" <%= item.status === "Shipped" ? "selected" : "" %>>Shipped</option>
                                                 <option value="Delivered" <%= item.status === "Delivered" ? "selected" : "" %>>Delivered</option>
                                             </select>
                                         
                                             <!-- Submit button -->
-                                            <button type="submit" class="btn btn-primary btn-sm" <%= (item.status === "Canceled" || item.status === "Returned") ? "disabled" : "" %>>
+                                            <button type="submit" class="btn btn-primary btn-sm" 
+                                                <%= (item.status === "Cancelled" || item.status === "Returned") ? "disabled" : "" %>>
                                                 &#10003;
                                             </button>
                                         </form>
+                                        
                                     </td>
                                 </tr>
                                 <% }); %>

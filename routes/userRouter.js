@@ -67,15 +67,18 @@ router.patch("/cartQuantity", userAuth, cartController.cartQuantity)
 router.delete("/removeFromCart/:id/:size", userAuth, cartController.remove);
 router.get("/checkout", userAuth, cartController.checkout)
 router.post("/applyCoupen", userAuth, cartController.applyCoupen);
-router.post("/create-order", userAuth, cartController.razorpayCreatOrder);
+router.post("/create-order", userAuth, cartController.razorpayCreatOrder);////////////////////////////
 router.post("/verify-payment", userAuth, cartController.varifyPayment)
 router.post("/place-order-wallet" , userAuth, cartController.walletOrderPayment)
 router.post("/addWallet/create-order",userAuth,cartController.razorpayCreatWallet)
 router.post("/addWallet/verify-payment",userAuth,cartController.razorpayvarifyWallet)
+router.post('/retry-payment', userAuth,cartController.retryPayment);
+// router.post("/Failed-payment",userAuth,cartController.handleFailedPayment);
 
 //orderController/
 router.post("/place-order", userAuth, cartController.placeOrder)
-router.get("/order-success", userAuth, cartController.getOrderSuccessPage)
+router.get("/order-success", userAuth, cartController.getOrderSuccessPage);
+router.get("/order-failed",userAuth,cartController.getOrderFailedPage)
 router.get("/viewOrderDetails/:orderId/:productId", userAuth, cartController.viewOrderDetails)
 //router.patch("/cancel-order/:id",userAuth,cartController.cancelOrderAllCart)
 router.patch("/cancel-order/:orderId/:productId", userAuth, cartController.cancelSingleItem)

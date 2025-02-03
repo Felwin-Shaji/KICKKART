@@ -93,26 +93,26 @@ const loadDashboard = async (req, res) => {
                     fromDate.setFullYear(fromDate.getFullYear() - 1);
                     break;
             }
-            console.log("Filter applied from:", fromDate); // Debugging log
+            console.log("Filter applied from:", fromDate); 
             dateFilter = { createdAt: { $gte: fromDate } };
         }
 
         const sales = await Order.aggregate([
             { 
-                $match: dateFilter // Apply the date filter
+                $match: dateFilter 
             },
             { 
-                $unwind: "$items" // Flatten the items array to access each product separately
+                $unwind: "$items"
             },
             { 
                 $group: { 
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, // Group by date
-                    totalSales: { $sum: { $multiply: ["$items.quantity", "$items.price"] } }, // Calculate total sales
-                    totalQuantity: { $sum: "$items.quantity" } // Sum total quantity sold
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, 
+                    totalSales: { $sum: { $multiply: ["$items.quantity", "$items.price"] } },
+                    totalQuantity: { $sum: "$items.quantity" } 
                 } 
             },
             { 
-                $sort: { _id: 1 } // Sort the sales report by date (oldest to newest)
+                $sort: { _id: 1 } 
             },
             { 
                 $project: { 
