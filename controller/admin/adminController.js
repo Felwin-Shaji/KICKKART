@@ -11,25 +11,26 @@ const fs = require('fs');
 require('pdfkit-table');
 const doc = new PDFDocument();
 
+const errorPage = async(req,res)=>{
+    res.status(404).render('adminErrorPage')
+}
 
 const loadLogin = async (req, res) => {
     try {
         if (!req.session.admin) {
             return res.render('adminLogin')
+        }else{
+            res.redirect('/admin')
         }
     } catch (error) {
         console.log('loadLoign is not working');
-        res.redirect('/admin')
+        res.redirect("/admin/errorPage");
     }
 }
 
 const Login = async (req, res) => {
     try {
-        console.log(req.body)
         const { email, password } = req.body;
-        console.log('...............', password);
-        // const admindemo = await User.findOne({ email, isAdmin:true });
-        // console.log('Hardcoded Query Result:', admindemo);
 
         const admin = await Admin.findOne({ email, isAdmin: true });
         console.log(admin);
@@ -52,6 +53,7 @@ const Login = async (req, res) => {
 
     } catch (error) {
         console.log('cannot get admin login ');
+        res.redirect("/admin/errorPage");
     }
 }
 
@@ -66,15 +68,15 @@ const adminLogout = async (req, res) => {
         })
     } catch (error) {
         console.log("logout error ", error);
-        res.redirect('/pageNotFound');
+        res.redirect("/admin/errorPage");
     }
 }
 
 const loadDashboard = async (req, res) => {
     try {
         const filter = req.query.filter;
-        console.log("filterfilter",filter);
-        
+        console.log("filterfilter", filter);
+
         let dateFilter = {};
 
         if (filter) {
@@ -93,51 +95,51 @@ const loadDashboard = async (req, res) => {
                     fromDate.setFullYear(fromDate.getFullYear() - 1);
                     break;
             }
-            console.log("Filter applied from:", fromDate); 
+            console.log("Filter applied from:", fromDate);
             dateFilter = { createdAt: { $gte: fromDate } };
         }
 
         const sales = await Order.aggregate([
-            { 
-                $match: dateFilter 
+            {
+                $match: dateFilter
             },
-            { 
+            {
                 $unwind: "$items"
             },
-            { 
-                $group: { 
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, 
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
                     totalSales: { $sum: { $multiply: ["$items.quantity", "$items.price"] } },
-                    totalQuantity: { $sum: "$items.quantity" } 
-                } 
+                    totalQuantity: { $sum: "$items.quantity" }
+                }
             },
-            { 
-                $sort: { _id: 1 } 
+            {
+                $sort: { _id: 1 }
             },
-            { 
-                $project: { 
-                    date: "$_id", 
-                    totalSales: 1, 
-                    totalQuantity: 1, 
-                    _id: 0 
-                } 
+            {
+                $project: {
+                    date: "$_id",
+                    totalSales: 1,
+                    totalQuantity: 1,
+                    _id: 0
+                }
             }
         ]);
 
-        console.log("sales",sales)
-        
+        console.log("sales", sales)
+
 
         const topProducts = await Order.aggregate([
-            { $match: dateFilter },  
+            { $match: dateFilter },
             { $unwind: "$items" },
-            { 
-                $group: { 
-                    _id: "$items.productId", 
-                    totalSold: { $sum: "$items.quantity" } 
-                } 
+            {
+                $group: {
+                    _id: "$items.productId",
+                    totalSold: { $sum: "$items.quantity" }
+                }
             },
-            { $sort: { totalSold: -1 } }, 
-            { $limit: 10 }, 
+            { $sort: { totalSold: -1 } },
+            { $limit: 10 },
             {
                 $lookup: {
                     from: "products",
@@ -150,7 +152,7 @@ const loadDashboard = async (req, res) => {
         ]);
 
         const topCategories = await Order.aggregate([
-            { $match: dateFilter },  
+            { $match: dateFilter },
             { $unwind: "$items" },
             {
                 $lookup: {
@@ -161,14 +163,14 @@ const loadDashboard = async (req, res) => {
                 }
             },
             { $unwind: "$productDetails" },
-            { 
-                $group: { 
-                    _id: "$productDetails.category", 
-                    totalSold: { $sum: "$items.quantity" } 
-                } 
+            {
+                $group: {
+                    _id: "$productDetails.category",
+                    totalSold: { $sum: "$items.quantity" }
+                }
             },
-            { $sort: { totalSold: -1 } }, 
-            { $limit: 10 }, 
+            { $sort: { totalSold: -1 } },
+            { $limit: 10 },
             {
                 $lookup: {
                     from: "categories",
@@ -181,7 +183,7 @@ const loadDashboard = async (req, res) => {
         ]);
 
         const topBrands = await Order.aggregate([
-            { $match: dateFilter },  
+            { $match: dateFilter },
             { $unwind: "$items" },
             {
                 $lookup: {
@@ -192,14 +194,14 @@ const loadDashboard = async (req, res) => {
                 }
             },
             { $unwind: "$productDetails" },
-            { 
-                $group: { 
-                    _id: "$productDetails.brand", 
-                    totalSold: { $sum: "$items.quantity" } 
-                } 
+            {
+                $group: {
+                    _id: "$productDetails.brand",
+                    totalSold: { $sum: "$items.quantity" }
+                }
             },
-            { $sort: { totalSold: -1 } }, 
-            { $limit: 10 }, 
+            { $sort: { totalSold: -1 } },
+            { $limit: 10 },
             {
                 $lookup: {
                     from: "brands",
@@ -210,12 +212,12 @@ const loadDashboard = async (req, res) => {
             },
             { $unwind: "$brandDetails" }
         ]);
-        
-        res.render("adminDashboard", { product: topProducts, category: topCategories, brands: topBrands,sales , filter });
+
+        res.render("adminDashboard", { product: topProducts, category: topCategories, brands: topBrands, sales, filter });
 
     } catch (error) {
         console.error("Error loading dashboard:", error);
-        res.status(500).send("Server Error");
+        res.redirect("/admin/errorPage");
     }
 };
 
@@ -227,7 +229,7 @@ const loadSalesReport = async (req, res) => {
 
             const filter = {
                 items: {
-                    $elemMatch: { status: "Delivered" }, 
+                    $elemMatch: { status: "Delivered" },
                 },
             };
 
@@ -286,15 +288,18 @@ const loadSalesReport = async (req, res) => {
             });
         } catch (error) {
             console.error("Error loading dashboard:", error);
-            res.redirect("/pageNotFound");
+            res.redirect("/admin/errorPage");
         }
     } else {
-        res.redirect("/adminLogin");
+        res.redirect("/admin/login");
     }
 };
 
 const salceReportPDF = (req, res) => {
     const salesData = req.body.salesData;
+    const salesCount = req.body.salesCount;
+    const salesAmount = req.body.salesAmount;
+    const salesDiscount = req.body.salesDiscount;
 
     const doc = new PDFDocument({ margin: 50 });
     const fileName = 'sales-report.pdf';
@@ -306,28 +311,24 @@ const salceReportPDF = (req, res) => {
 
     const pageHeight = 700;
     const headerRowHeight = 30;
-
     const columnWidths = [45, 65, 75, 165, 60, 60, 60, 60];
     let currentY = 100;
 
     // Column headers
-    const headers = [
-        'No of', 'Date', 'Name', 'Items', 'Payment', 'Price', 'Offer', 'Coupon'
-    ];
+    const headers = ['No', 'Date', 'Name', 'Items', 'Payment', 'Offer', 'Coupon', 'Price'];
 
     // Function to draw headers
     const drawHeaders = () => {
         doc.fontSize(9).fillColor('black');
         headers.forEach((header, index) => {
-            const xPos = 7 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
+            const xPos = 10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
             const cellWidth = columnWidths[index];
-            doc.rect(xPos, currentY, cellWidth, headerRowHeight)
-                .fillAndStroke('lightgray', 'black');
-            doc.fillColor('black')
-                .text(header, xPos + (cellWidth / 2) - (doc.widthOfString(header) / 2), currentY + 5, {
-                    width: cellWidth,
-                    align: 'center',
-                });
+
+            doc.rect(xPos, currentY, cellWidth, headerRowHeight).fillAndStroke('lightgray', 'black');
+            doc.fillColor('black').text(header, xPos + (cellWidth / 2) - (doc.widthOfString(header) / 2), currentY + 8, {
+                width: cellWidth,
+                align: 'left',
+            });
         });
         currentY += headerRowHeight;
     };
@@ -336,34 +337,36 @@ const salceReportPDF = (req, res) => {
     const checkPageBreak = (rowHeight) => {
         if (currentY + rowHeight > pageHeight) {
             doc.addPage();
-            currentY = 50; // Reset position on the new page
-            drawHeaders(); // Redraw the headers
+            currentY = 50; // Reset position on new page
+            drawHeaders(); // Redraw headers
         }
     };
 
     // Title of the report
     doc.fontSize(16).text('Sales Report', { align: 'center' });
-    doc.moveDown();
-    drawHeaders();
+    doc.moveDown(2); // Add space after the title
 
-    console.log("salesData", salesData)
+    // Draw table headers and data
+    drawHeaders();
+    console.log("salesData:", salesData);
+
 
     // Draw data rows
     salesData.forEach((row, rowIndex) => {
         const ordersCount = rowIndex + 1;
         const date = row.date || 'N/A';
         const name = row.user || 'N/A';
-        const formattedItems = row.items || 'N/A'; // Use raw items data
+        const formattedItems = Array.isArray(row.items)
+            ? row.items.join(', ')
+            : (typeof row.items === 'string' ? row.items : 'N/A');
 
-        // Dynamically calculate row height for "Name and Items"
-        const nameAndItemsHeight = doc.heightOfString(formattedItems, {
-            width: columnWidths[2], // Account for padding
-        });
-
-        const rowHeight = Math.max(headerRowHeight, nameAndItemsHeight - 100); // Add some padding
+        // Calculate row height dynamically based on the item list
+        const nameAndItemsHeight = doc.heightOfString(formattedItems, { width: columnWidths[3] });
+        const rowHeight = Math.max(headerRowHeight, nameAndItemsHeight + 10); // Ensure a minimum height
 
         const values = [
-            ordersCount, date, name, formattedItems, row.paymentMethod || 'N/A', row.totalAmount || 'N/A', row.offerAmount || 'N/A', row.coupenAmound || 'N/A',
+            ordersCount, date, name, formattedItems, row.paymentMethod || 'N/A',
+            row.offerAmount || 'N/A', row.coupenAmound || 'N/A', row.totalAmount || 'N/A',
         ];
 
         checkPageBreak(rowHeight); // Check if the row fits on the current page
@@ -375,16 +378,24 @@ const salceReportPDF = (req, res) => {
             doc.rect(xPos, currentY, cellWidth, rowHeight)
                 .fillAndStroke(rowIndex % 2 === 0 ? 'white' : 'lightgray', 'black');
 
-            doc.fillColor('black')
-                .text(value, xPos + 5, currentY + 5, {
-                    width: cellWidth - 10,
-                    align: 'left',
-                    lineBreak: true,
-                });
+            doc.fillColor('black').text(value, xPos + 5, currentY + 5, {
+                width: cellWidth - 10,
+                align: 'left',
+                lineBreak: true,
+            });
         });
 
         currentY += rowHeight;
     });
+
+    let summaryStartY = doc.y + 40; // Get the current position after the title
+    doc.fontSize(14).fillColor('black').text('Sales Summary', 50, summaryStartY, { underline: true, align: "left" });
+    doc.fontSize(12).text(`Sales Count: ${salesCount}`, 50, summaryStartY + 20);
+    doc.fontSize(12).text(`Sales Discount: ${salesDiscount}`, 50, summaryStartY + 40);
+    doc.fontSize(12).text(`Sales Amount: ${salesAmount}`, 50, summaryStartY + 60);
+    summaryStartY += 30;
+    doc.moveDown(2); // Ensure space before the table
+
 
     doc.end();
 };
@@ -392,27 +403,23 @@ const salceReportPDF = (req, res) => {
 const salceReportEXCL = (req, res) => {
     const { salesData } = req.body;
 
-    // Convert salesData to worksheet
     const worksheet = XLSX.utils.json_to_sheet(salesData);
 
-    // Determine column widths
     const columnWidths = [];
     salesData.forEach((row) => {
         Object.keys(row).forEach((key, index) => {
-            const cellValue = String(row[key]); // Ensure it's a string
+            const cellValue = String(row[key]);
             const currentWidth = columnWidths[index] || 0;
-            columnWidths[index] = Math.max(currentWidth, cellValue.length); // Update with max width
+            columnWidths[index] = Math.max(currentWidth, cellValue.length);
         });
     });
 
-    // Adjust the column widths carefully
     worksheet['!cols'] = columnWidths.map((width) => ({
-        wpx: width * 4,  // Adjust the multiplier to avoid excessive width
+        wpx: width * 4,
     }));
 
-    // Handle the items field correctly (check if it's an array)
     salesData.forEach((order) => {
-        // Check if items is an array or object and format accordingly
+
         if (Array.isArray(order.items)) {
             const items = order.items.map((item) => {
                 return `Product: ${item.productId.productName || "N/A"}\nQty: ${item.quantity || "N/A"}\nSize: ${item.size || "N/A"}\nStatus: ${item.status || "N/A"}`;
@@ -429,29 +436,20 @@ const salceReportEXCL = (req, res) => {
         }
     });
 
-
-
-    // Set row heights (if needed)
-
-
-    // Create a workbook and add the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sales Report');
 
-    // Write workbook to buffer
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
-    // Set headers for download
     res.setHeader('Content-Disposition', 'attachment; filename="sales-report.xlsx"');
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-    // Send the Excel file as response
+
     res.send(buffer);
 };
 
-
-
 module.exports = {
+    errorPage,
     loadLogin,
     Login,
     loadDashboard,

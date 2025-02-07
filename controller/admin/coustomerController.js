@@ -48,6 +48,7 @@ const customerInfo = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
+        res.redirect("/admin/errorPage");
     }
 };
 
@@ -68,7 +69,7 @@ const customerBlock = async (req, res) => {
 
     } catch (error) {
         console.log('customerBlock function is not working')
-        console.log('/pageNotFound')
+        res.redirect("/admin/errorPage");
     }
 }
 
@@ -83,7 +84,7 @@ const customerUnblock = async (req, res) => {
 
     } catch (error) {
         console.log('customerUnblock function is not working')
-        console.log('/pageNotFound')
+        res.redirect("/admin/errorPage");
     }
 }
 module.exports = { customerInfo, customerBlock, customerUnblock }

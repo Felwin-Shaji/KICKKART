@@ -159,6 +159,9 @@
                                                         <p class="card-text text-muted mb-2">Min Purchase: ₹<%=
                                                                 coupon.minPurchaseAmount %>
                                                         </p>
+                                                        <p class="card-text text-muted mb-2">Max Purchase: ₹<%=
+                                                            coupon.maxPurchaseAmount %>
+                                                    </p>
                                                         <p class="text-muted small">
                                                             Valid: <%= new Date(coupon.startDate).toLocaleDateString()
                                                                 %> -
@@ -270,20 +273,20 @@
                             <div class="form-group">
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input type="radio" name="paymentMethod" value="COD" class="form-check-input"
-                                            required> COD
+                                        <input type="radio" name="paymentMethod" value="COD" class="form-check-input">
+                                        COD
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input type="radio" name="paymentMethod" value="Online" class="form-check-input"
-                                            required> Online
+                                        <input type="radio" name="paymentMethod" value="Online"
+                                            class="form-check-input"> Online
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input type="radio" name="paymentMethod" value="Wallet" class="form-check-input"
-                                            required> Wallet
+                                        <input type="radio" name="paymentMethod" value="Wallet"
+                                            class="form-check-input"> Wallet
                                     </label>
                                 </div>
                             </div>
@@ -368,10 +371,20 @@
                         formData.forEach((value, key) => {
                             data[key] = value;
                         });
+                        if (!data.paymentMethod) {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "Payment Method Required",
+                                text: "Please select an available payment method before proceeding.",
+                                showConfirmButton: true,
+                                allowOutsideClick: false, // Prevent closing without user action
+                            });
+                            return;
+                        }
+
 
 
                         if (data.paymentMethod == "COD") {
-
                             try {
                                 const response = await fetch("/place-order", {
                                     method: "POST",
@@ -448,13 +461,15 @@
 
                                 if (!orderData.success) {
                                     Swal.fire({
-                                        icon: "error",
+                                        icon: "info",
                                         title: "Oops!",
-                                        text: "Unable to create order. Please try again.",
+                                        text: "Error: Please select an address or create a new one.",
                                         showConfirmButton: true,
+
                                     });
                                     return;
                                 }
+
 
                                 const options = {
                                     key: "rzp_test_FgtVyF2A1Al0K2",
@@ -530,7 +545,7 @@
 
                                             try {
                                                 console.log("222222222222222222222222222222222222222222");
-                                                
+
                                                 await fetch("/verify-payment", {
                                                     method: "POST",
                                                     headers: { "Content-Type": "application/json" },
@@ -551,7 +566,7 @@
                                     }
                                 };
 
-                                
+
                                 const rzp1 = new Razorpay(options);
                                 rzp1.open();
 

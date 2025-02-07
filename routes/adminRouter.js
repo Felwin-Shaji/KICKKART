@@ -23,9 +23,11 @@ const couponController = require("../controller/admin/couponController")
 
 
 //admin controller
-router.get('/login', adminController.loadLogin)
-router.post('/login', adminController.Login)
-router.get("/",adminAuth,adminController.loadDashboard)
+
+router.get("/errorPage",adminController.errorPage)
+router.get('/login', adminController.loadLogin);
+router.post('/login', adminController.Login);
+router.get("/",adminAuth,adminController.loadDashboard);
 router.get('/saleReport', adminAuth, adminController.loadSalesReport)
 router.post("/sales-report/pdf",adminAuth,adminController.salceReportPDF)
 router.post("/sales-report/excel",adminAuth,adminController.salceReportEXCL)
@@ -59,7 +61,6 @@ router.get("/editProduct",adminAuth,productController.getEditProduct);
 router.post("/editProduct/:id",adminAuth,uploads.array("images",4),productController.editProduct);
 router.post("/daleteImages",adminAuth,productController.deleteSingleImage);
 router.post("/add-offer/:productId",adminAuth,productController.addOffer)
-router.delete('/remove-offer/:productId', adminAuth,productController.removeOffer);
 router.post("/addCategoryOffer",adminAuth,productController.addCategoryOffer)
 
 //coopen Management

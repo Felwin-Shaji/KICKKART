@@ -209,27 +209,18 @@
                         <%= order.paymentMethod %>
                     </span>
                 </p>
+                <p><strong>Payment Status:</strong>
+                    <span class="order-status">
+                        <%= order.paymentStatus %>
+                    </span>
+                </p>
                 <div class="download-invoice">
                     <a href="/order/invoice/<%= order._id %>" class="btn btn-primary">Download Invoice</a>
                 </div>
                 
             </div>
 
-            <!-- <h2>Order Tracking</h2>
-            <div class="tracking">
-                <% const trackingSteps=['Pending', 'Shipped' , 'Delivered' , 'Cancelled' ]; %>
-                    <% const currentStepIndex=trackingSteps.indexOf(order.status); %>
-                        <% trackingSteps.forEach((step, index)=> { %>
-                            <div class="tracking-step">
-                                <div class="tracking-icon <%= index > currentStepIndex ? 'inactive' : '' %>">
-                                    <%= index + 1 %>
-                                </div>
-                                <div>
-                                    <%= step %>
-                                </div>
-                            </div>
-                            <% }); %>
-            </div> -->
+         
 
             <h2>Items Ordered</h2>
             <table>
@@ -239,7 +230,6 @@
                         <th>Image</th>
                         <th>Quantity</th>
                         <th>Price</th>
-                        <!-- <th>Total</th> -->
                         <th>status</th>
                         <th>Action</th>
                     </tr>

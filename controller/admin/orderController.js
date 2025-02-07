@@ -25,7 +25,7 @@ const getOrder = async (req, res) => {
 
     } catch (error) {
         console.error("Error at getOrder", error);
-        res.redirect("/pageNotFound");
+        res.redirect("/admin/errorPage");
     }
 };
 
@@ -49,7 +49,7 @@ const orderDetails = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching order:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.redirect("/admin/errorPage");
     }
 }
 
@@ -84,7 +84,7 @@ const apdateStatus = async (req, res) => {
         res.redirect(`/admin/orders/${orderId}`);
     } catch (error) {
         console.error("Error updating order status:", error);
-        res.status(500).send("Internal Server Error");
+        res.redirect("/admin/errorPage");
     }
 };
 

@@ -25,7 +25,7 @@ const categoryInfo = async (req, res) => {
         });
     } catch (error) {
         console.error("Error fetching categories:", error);
-        res.redirect("/pageNotFound")
+        res.redirect("/admin/errorPage");
     }
 }
 
@@ -94,7 +94,7 @@ const listCategory = async (req, res) => {
         res.redirect("/admin/category")
     } catch (error) {
         console.error("listCategory error");
-        res.redirect('/pageNotFound')
+        res.redirect("/admin/errorPage");
     }
 }
 
@@ -105,7 +105,7 @@ const unListCategory = async (req, res) => {
         res.redirect("/admin/category")
     } catch (error) {
         console.error("unListCategory error");
-        res.redirect('/pageNotFound')
+        res.redirect("/admin/errorPage");
     }
 }
 

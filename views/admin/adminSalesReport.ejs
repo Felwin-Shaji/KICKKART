@@ -40,14 +40,14 @@
                 <div class="col-md-4">
                     <div class="card p-3">
                         <h5 class="card-title">Overall Sales Amount</h5>
-                        <h3 class="text-success" id="sales-amount">₹<%= overallSalesAmount %>
+                        <h3 class="text-success" id="sales-amount">Rs <%= overallSalesAmount %>
                         </h3>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card p-3">
                         <h5 class="card-title">Overall Discounts</h5>
-                        <h3 class="text-danger" id="sales-discount">₹<%= overallDiscount %>
+                        <h3 class="text-danger" id="sales-discount">Rs <%= overallDiscount %>
                         </h3>
                     </div>
                 </div>
@@ -133,13 +133,13 @@
                                         <% }); %>
                                 </td>
 
-                                <td>₹<%= order.totalAmount %>
+                                <td>Rs <%= order.totalAmount %>
                                 </td>
 
-                                <td><span>₹<%= order.totalregularPrice ? (Math.round((order.totalregularPrice -
+                                <td><span>Rs <%= order.totalregularPrice ? (Math.round((order.totalregularPrice -
                                             order.totalAmount) * 100) / 100).toFixed(2) : 0 %></span>
                                 </td>
-                                <td>₹<%= order.coupenOffer || 0 %>
+                                <td>Rs <%= order.coupenOffer || 0 %>
                                 </td>
                                 <td>
                                     <%= order.paymentMethod %>
@@ -232,6 +232,9 @@
                         },
                     });
 
+                    const salesCount = document.getElementById("sales-count")?.innerText;
+                    const salesAmount = document.getElementById("sales-amount")?.innerText;
+                    const salesDiscount = document.getElementById("sales-discount")?.innerText;
                     const tableData = Array.from(document.querySelectorAll('#order-list tr')).map((row) => {
                         const cells = row.querySelectorAll('td');
                         return {
@@ -251,7 +254,7 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ salesData: tableData }),
+                        body: JSON.stringify({ salesData: tableData,salesCount,salesAmount,salesDiscount }),
                     });
 
                     if (!response.ok) {
@@ -303,6 +306,8 @@
                         },
                     });
 
+
+
                     // Collect data from the table
                     const tableData = Array.from(document.querySelectorAll('#order-list tr')).map((row) => {
                         const cells = row.querySelectorAll('td');
@@ -324,7 +329,8 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ salesData: tableData }),
+                   
+                    body: JSON.stringify({ salesData: tableData}),
                     });
 
                     if (!response.ok) {

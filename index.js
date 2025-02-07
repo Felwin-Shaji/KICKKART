@@ -5,14 +5,12 @@ const path = require('node:path');
 const session = require('express-session');
 const passport =require('./config/passport');
 const nocache = require('nocache');
-
     
 const database = require('./config/database')
 database()
 
 const userRouter = require('./routes/userRouter')
 const adminRouter = require('./routes/adminRouter')
-
 
 app.use(nocache())
 app.use(express.json({ limit: '10mb' }));
@@ -39,10 +37,16 @@ app.set('views', [path.join(__dirname, 'views/user'), path.join(__dirname, 'view
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 app.use('/',userRouter)
 app.use('/admin',adminRouter)
 
+app.use('/admin/*', (req, res) => {
+    res.status(404).render('adminErrorPage', { message: 'Page not found!' });
+});
+
+app.use("/*",(req,res)=>{
+    res.status(404).render("page-404")
+});
 
 app.listen(process.env.PORT,()=>{
     console.log('http://localhost:3003/')

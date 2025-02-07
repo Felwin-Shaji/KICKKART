@@ -1,6 +1,5 @@
 const Coupon = require("../../models/couponSchema");
 
-// Render coupons management page
 const getCouponsPage = async (req, res) => {
     try {
         const coupons = await Coupon.find();
@@ -11,13 +10,12 @@ const getCouponsPage = async (req, res) => {
     }
 };
 
-// Add a new coupon
 const createCoupon = async (req, res) => {
     try {
-        const { code, discountPercentage, minPurchaseAmount, startDate, endDate, quantity } = req.body;
+        const { code, discountPercentage, minPurchaseAmount,maxPurchaseAmount, startDate, endDate, quantity } = req.body;
 
-        // Validate input
-        if (!code || !discountPercentage || !minPurchaseAmount || !startDate || !endDate || !quantity) {
+      
+        if (!code || !discountPercentage || !minPurchaseAmount || !maxPurchaseAmount || !startDate || !endDate || !quantity) {
             return res.status(400).render("error", { message: "All fields are required" });
         }
 
@@ -25,17 +23,17 @@ const createCoupon = async (req, res) => {
             return res.status(400).render("error", { message: "Quantity must be greater than 0" });
         }
 
-        // Check for duplicate coupon codes
+
         const existingCoupon = await Coupon.findOne({ code });
         if (existingCoupon) {
             return res.status(400).render("error", { message: "Coupon code already exists" });
         }
 
-        // Create and save the new coupon
         const newCoupon = new Coupon({
             code,
             discountPercentage,
             minPurchaseAmount,
+            maxPurchaseAmount,
             startDate,
             endDate,
             quantity,
@@ -48,7 +46,6 @@ const createCoupon = async (req, res) => {
     }
 };
 
-// Delete a coupon
 const deleteCoupon = async (req, res) => {
     try {
         const couponId = req.params.id;

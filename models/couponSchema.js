@@ -15,6 +15,10 @@ const couponSchema = new Schema({
         type: Number,
         required: true
     },
+    maxPurchaseAmount:{
+        type: Number,
+        required: true
+    },
     startDate: {
         type: Date,
         required: true

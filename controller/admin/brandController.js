@@ -27,7 +27,7 @@ const getBrandPage = async (req, res) => {
 
     } catch (error) {
         console.log('Error at getBrandPage');
-        res.redirect("/pageNotFound");
+        res.redirect("/admin/errorPage");
     }
 }
 
@@ -87,7 +87,7 @@ const listCategory = async (req, res) => {
 
     } catch (error) {
         console.log(error.message);
-        return res.status(500).redirect('/error');
+        res.redirect("/admin/errorPage");
     }
 };
 
@@ -101,7 +101,7 @@ const deleteBrand = async (req, res) => {
             return res.status(400).json({ success: false, redirectUrl: '/admin/deleteBrand' })
         }
         await Brand.deleteOne({ _id })
-        console.log('zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
+       
 
         return res.json({ success: true, redirectUrl: 'admin/deleteBrand', message: "Brand Deleted successfully" })
 

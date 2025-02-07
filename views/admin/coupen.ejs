@@ -21,44 +21,6 @@
             color: #333;
         }
 
-        /* Form Styles */
-        /* form {
-                background-color: #fff;
-                padding: 20px;
-                margin: 20px auto;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                max-width: 500px;
-            }
-
-            form label {
-                display: block;
-                margin: 10px 0 5px;
-                font-weight: bold;
-            }
-
-            form input {
-                width: calc(100% - 20px);
-                padding: 8px;
-                margin-bottom: 15px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
-
-            form button {
-                background-color: #004cff;
-                color: white;
-                border: none;
-                padding: 10px 15px;
-                cursor: pointer;
-                border-radius: 4px;
-                font-size: 16px;
-            }
-
-            form button:hover {
-                background-color: #0037ff;
-            } */
-
         .modal {
             display: none;
             /* Hidden by default */
@@ -233,6 +195,10 @@
                 <input type="number" id="minPurchaseAmount" name="minPurchaseAmount" min="1" required />
                 <small class="error-message" id="minPurchaseAmountError"></small>
 
+                <label for="minPurchaseAmount">Maximum Purchase Amount:</label>
+                <input type="number" id="maxPurchaseAmount" name="maxPurchaseAmount" required />
+                <small class="error-message" id="maxPurchaseAmountError"></small>
+
                 <label for="startDate">Start Date:</label>
                 <input type="date" id="startDate" name="startDate" required />
                 <small class="error-message" id="startDateError"></small>
@@ -261,6 +227,7 @@
                 <th>Code</th>
                 <th>Discount (%)</th>
                 <th>Min Purchase</th>
+                <th>Max Purchase</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Qty</th>
@@ -276,7 +243,9 @@
                     <td>
                         <%= coupon.discountPercentage %>%
                     </td>
-                    <td>$<%= coupon.minPurchaseAmount %>
+                    <td>₹<%= coupon.minPurchaseAmount %>
+                    </td>
+                    <td>₹<%= coupon.maxPurchaseAmount %>
                     </td>
                     <td>
                         <%= coupon.startDate.toDateString() %>
@@ -288,8 +257,9 @@
                         <%= coupon.quantity %>
                     </td>
                     <td>
-                        <form action="/admin/deleteCoupons/<%= coupon._id %>" method="POST" style="display: inline;">
-                            <button type="submit">Delete</button>
+                        <form id="deleteForm-<%= coupon._id %>" action="/admin/deleteCoupons/<%= coupon._id %>"
+                            method="POST" style="display: inline;">
+                            <button type="button" onclick="confirmDelete('<%= coupon._id %>')">Delete</button>
                         </form>
                     </td>
                 </tr>
@@ -298,6 +268,24 @@
     </table>
 
     <script>
+
+        function confirmDelete(couponId) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`deleteForm-${couponId}`).submit();
+                }
+            });
+        }
+
         const modal = document.getElementById('couponModal');
         const openModalBtn = document.getElementById('openModalBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -323,28 +311,30 @@
                 isValid = false;
             }
 
-            // Validate Discount Percentage
             const discountInput = document.getElementById("discountPercentage");
             if (!discountInput.value || discountInput.value <= 0 || discountInput.value > 100) {
                 displayError(discountInput, "Enter a valid discount percentage (1-100).");
                 isValid = false;
             }
 
-            // Validate Minimum Purchase Amount
             const minPurchaseInput = document.getElementById("minPurchaseAmount");
             if (!minPurchaseInput.value || minPurchaseInput.value <= 0) {
                 displayError(minPurchaseInput, "Enter a valid minimum purchase amount.");
                 isValid = false;
             }
 
-            // Validate Start Date
+            const maxPurchaseInput = document.getElementById("maxPurchaseAmount");
+            if (!maxPurchaseInput.value || maxPurchaseInput.value <= 0) {
+                displayError(maxPurchaseInput, "Enter a valid minimum purchase amount.");
+                isValid = false;
+            }
+
             const startDateInput = document.getElementById("startDate");
             if (!startDateInput.value) {
                 displayError(startDateInput, "Start date is required.");
                 isValid = false;
             }
 
-            // Validate End Date
             const endDateInput = document.getElementById("endDate");
             if (!endDateInput.value) {
                 displayError(endDateInput, "End date is required.");
@@ -354,7 +344,6 @@
                 isValid = false;
             }
 
-            // Validate Quantity
             const quantityInput = document.getElementById("quantity");
             if (!quantityInput.value || quantityInput.value <= 0) {
                 displayError(quantityInput, "Enter a valid coupon quantity.");
@@ -362,11 +351,10 @@
             }
 
             if (!isValid) {
-                event.preventDefault(); // Stop form submission
+                event.preventDefault();
             }
         });
 
-        // Helper function to display error messages
         function displayError(input, message) {
             const errorElement = input.nextElementSibling;
             errorElement.textContent = message;

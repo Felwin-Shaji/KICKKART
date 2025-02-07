@@ -37,7 +37,7 @@ const loadShopPage = async (req, res) => {
         const categories = await Category.find({ isListed: true });
         const categoryIds = categories.map((category) => category._id.toString());
         const page = parseInt(req.query.page) || 1;
-        const limit = 12;
+        const limit = 16;
         const skip = (page - 1) * limit;
 
         const brands = await Brand.find({ isBlocked: false });
@@ -62,8 +62,6 @@ const loadShopPage = async (req, res) => {
 
 
         const totalpages = Math.ceil(totalProducts / limit);
-
-
 
         const categoriesWidthIds = categories.map(category => ({ _id: category._id, name: category.name }));
 
@@ -93,8 +91,6 @@ const loadShopPage = async (req, res) => {
 const filterProduct = async (req, res) => {
     try {
         const user = req.session.user;
-
-
         req.session.category = req.query.category || req.session.category || null;
         req.session.brand = req.query.brand || req.session.brand || null;
         req.session.gt = req.query.gt || req.session.gt || null;
@@ -118,7 +114,6 @@ const filterProduct = async (req, res) => {
                 },
             },
         };
-
 
         if (req.session.category) {
             const findCategory = await Category.findOne({ _id: req.session.category });
@@ -167,7 +162,7 @@ const filterProduct = async (req, res) => {
             }
         }
 
-        const itemsPerPage = 8;
+        const itemsPerPage = 16;
         const currentPage = parseInt(req.query.page) || 1;
         const startIndex = (currentPage - 1) * itemsPerPage;
         const totalPages = Math.ceil(findProducts.length / itemsPerPage);
@@ -231,7 +226,6 @@ const searchProduct = async (req, res) => {
             ? wishlist.products.map(product => product.productId.toString())
             : [];
 
-        // Fetch categories and brands matching the search query
         const categories = await Category.find({
             isListed: true,
             name: { $regex: `.*${searchQuery}.*`, $options: "i" }
@@ -241,25 +235,21 @@ const searchProduct = async (req, res) => {
             brandName: { $regex: `.*${searchQuery}.*`, $options: "i" }
         }).lean();
 
-        // Extract category IDs and brand names
         const matchedCategoryIds = categories.map(category => category._id);
         const matchedBrandNames = brands.map(brand => brand.brandName);
 
-        // Find products under the matched categories or brands
         const searchResult = await Product.find({
             $or: [
                 { productName: { $regex: `.*${searchQuery}.*`, $options: "i" } },
-                { category: { $in: matchedCategoryIds } }, // Products in matched categories
-                { brand: { $in: matchedBrandNames } }     // Products in matched brands
+                { category: { $in: matchedCategoryIds } }, 
+                { brand: { $in: matchedBrandNames } }     
             ],
             isBlocked: false,
             variants: { $elemMatch: { quantity: { $gt: 0 } } }
         }).lean();
 
-        // Sort by creation date
         searchResult.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-        // Pagination logic
         const ipage = 6;
         const currentPage = parseInt(req.query.page) || 1;
         const startIndex = (currentPage - 1) * ipage;
@@ -267,10 +257,8 @@ const searchProduct = async (req, res) => {
         const totalPages = Math.ceil(searchResult.length / ipage);
         const currentProduct = searchResult.slice(startIndex, endIndex);
 
-        // Save filtered products in the session
         req.session.filteredProducts = searchResult;
 
-        // Render the 'shop' view
         res.render('shop', {
             user: userData,
             products: currentProduct,

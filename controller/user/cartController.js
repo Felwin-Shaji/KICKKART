@@ -8,8 +8,8 @@ const path = require("path");
 
 
 const razorpayInstance = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY,//'YOUR_KEY_ID',
-    key_secret: process.env.RAZORPAY_SECRET, //'YOUR_KEY_SECRET',
+    key_id: process.env.RAZORPAY_KEY,
+    key_secret: process.env.RAZORPAY_SECRET,
 });
 
 const Cart = require("../../models/cartSchema")
@@ -222,8 +222,8 @@ const cartQuantity = async (req, res) => {
 
 const remove = async (req, res) => {
     try {
-        const userId = req.session.user; // Assuming you're using authentication
-        const productId = req.params.id; // The ID of the product to be removed
+        const userId = req.session.user;
+        const productId = req.params.id; 
         const size = String(req.params.size);
 
         if (!userId || !productId || !size) {
@@ -317,6 +317,12 @@ const applyCoupen = async (req, res) => {
             });
         }
 
+        if (PriceBrfCoupen >= coupon.maxPurchaseAmount) {
+            return res.status(400).json({
+                message: `Maximum purchase amount should be lesser than ₹${coupon.maxPurchaseAmount}.`,
+            });
+        }
+
         // Successful application
         res.status(200).json({
             message: "Coupon applied successfully!",
@@ -377,6 +383,13 @@ const placeOrder = async (req, res) => {
     try {
         const { selectedAddress, paymentMethod, coupenCode, totalAmount, coupenOffer, totalregularPrice } = req.body;
         console.log("req.body", req.body);
+
+        if (totalAmount < 2000) {
+            return res.status(400).json({ 
+                message: "Cash on Delivery (COD) is only available for orders above ₹2000. Please select a different payment method." 
+            });
+        }
+        
 
         const cart = await Cart.findOne({ user: userId }).populate('items.product');
         if (!cart || !cart.items || cart.items.length === 0) {
@@ -446,7 +459,8 @@ const placeOrder = async (req, res) => {
             paymentMethod,
             coupenOffer: coupenOffer,
             totalAmount: totalAmount,
-            totalregularPrice: totalregularPrice
+            totalregularPrice: totalregularPrice,
+            paymentStatus:"pending"
         };
 
         const order = await Order.create(orderData);
@@ -484,6 +498,9 @@ const razorpayCreatOrder = async (req, res) => {
     const { amount, currency, selectedAddress, paymentMethod, coupenCode, coupenOffer, totalregularPrice } = req.body;
     console.log("totalAmounttotalAmount", req.body)
     console.log("ccccccccccccccccccccccccccccccccccc")
+    if(!selectedAddress){
+        return res.status(400).json({ message: 'Selected address not found' });
+    }
     try {
         const order = await razorpayInstance.orders.create({
             amount: amount * 100, // Convert amount to paise
@@ -534,7 +551,6 @@ const razorpayCreatOrder = async (req, res) => {
         res.status(500).json({ success: false, message: "Unable to create Razorpay order" });
     }
 };
-
 
 const varifyPayment = async (req, res) => {
     console.log("Verify Payment API called...");
@@ -628,8 +644,6 @@ const varifyPayment = async (req, res) => {
     }
 };
 
-
-
 const retryPayment = async (req, res) => {
     const { orderId } = req.body;
     
@@ -661,7 +675,6 @@ const retryPayment = async (req, res) => {
         res.status(500).json({ success: false, message: "Failed to retry payment" });
     }
 };
-
 
 const handleFailedPayment = async (req, res) => {
     // try {
@@ -792,7 +805,8 @@ const walletOrderPayment = async (req, res) => {
             paymentMethod,
             coupenOffer: coupenOffer,
             totalAmount: totalAmount,
-            totalregularPrice: totalregularPrice
+            totalregularPrice: totalregularPrice,
+            paymentStatus:"completed"
         };
 
         const order = await Order.create(orderData);
@@ -825,7 +839,6 @@ const walletOrderPayment = async (req, res) => {
     }
 };
 
-
 const getOrderSuccessPage = async (req, res) => {
     res.render("order-complete-page")
 }
@@ -838,7 +851,7 @@ const viewOrderDetails = async (req, res) => {
     try {
         const { orderId } = req.params;
 
-        // Fetch the full order with all items and product details
+        
         const order = await Order.findById(orderId)
             .sort({ createdAt: -1 })
             .populate("items.productId", "productName productImage salePrice")
@@ -850,7 +863,6 @@ const viewOrderDetails = async (req, res) => {
 
         console.log("Order Details:", order);
 
-        // Render the order details page with the full order details
         res.render("orderDetailsPage", { order });
     } catch (error) {
         console.error("Error fetching order details:", error.message);
@@ -928,7 +940,7 @@ const cancelSingleItem = async (req, res) => {
             let refundAmount = item.price;
 
             if (!isCouponAdjusted && coupenOffer > 0) {
-                refundAmount -= coupenOffer; // Deduct coupon amount only once
+                refundAmount -= coupenOffer; 
                 await Order.updateOne({ _id: orderId }, { $set: { isCouponAdjusted: true } });
             }
 
@@ -960,7 +972,6 @@ const cancelSingleItem = async (req, res) => {
     }
 };
 
-
 const downloadInvoice = async (req, res) => {
     try {
         const orderId = req.params.orderId;
@@ -977,9 +988,8 @@ const downloadInvoice = async (req, res) => {
 
         doc.pipe(res);
 
-        // *Colors and Styling*
-        const primaryColor = "#007BFF"; // Blue
-        const textColor = "#343A40"; // Dark Gray
+        const primaryColor = "#007BFF"; 
+        const textColor = "#343A40"; 
         const statusColors = {
             Pending: "#FFC107",
             Shipped: "#17A2B8",
@@ -988,17 +998,14 @@ const downloadInvoice = async (req, res) => {
             Returned: "#6C757D",
         };
 
-        // *Header Background*
         doc.rect(0, 0, doc.page.width, 80).fill(primaryColor);
         doc.fillColor("#FFFFFF").fontSize(24).font("Helvetica-Bold").text("INVOICE", 50, 30);
 
-        // *Order Details*
         doc.fillColor(textColor).fontSize(12).moveDown(2);
         doc.text(`Order ID: ${order._id}`, 10).moveDown(0.2);
         doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`).moveDown(0.2);
         doc.text(`Payment Method: ${order.paymentMethod}`).moveDown();
 
-        // *Billing Address*
         const billingAddress = order.shippingAddress || {};
         doc.fillColor("#28A745").fontSize(14).text("Billing Address:", { underline: true }).moveDown(0.5);
         doc.fillColor(textColor).fontSize(12);
@@ -1008,17 +1015,14 @@ const downloadInvoice = async (req, res) => {
         doc.text(`Pincode: ${billingAddress.pincode || "N/A"}`);
         doc.text(`Phone: ${billingAddress.phone || "N/A"}`).moveDown();
 
-        // *Table Headers*
         doc.fillColor("#28A745").fontSize(14).text("Order Items:", { underline: true }).moveDown(0.5);
 
-        const colX = { no: 30, name: 90, price: 250, qty: 320, total: 400, status: 500 };
-        const rowHeight = 25;
+        const colX = { no: 20, name: 70, price: 230, qty: 340, total: 400, status: 500 };
+        const rowHeight = 45;
 
-        // *Header Row Styling*
         doc.fillColor("#FFFFFF").rect(20, doc.y - 5, 570, rowHeight).fill(primaryColor);
         doc.fillColor("#FFFFFF").fontSize(12).font("Helvetica-Bold");
 
-        // *Column Headers*
         const headerY = doc.y + 5;
         doc.text("No", colX.no, headerY, { width: 30, align: "center" });
         doc.text("Product Name", colX.name, headerY, { width: 160, align: "left" });
@@ -1033,24 +1037,21 @@ const downloadInvoice = async (req, res) => {
 
         let totalRefundAmount = 0;
 
-        // *Order Items Processing*
         order.items.forEach((item, index) => {
             const bgColor = index % 2 === 0 ? "#F8F9FA" : "#E9ECEF";
             doc.rect(20, positionY - 5, 570, 20).fill(bgColor);
             doc.fillColor(textColor).fontSize(12);
 
             doc.text(`${index + 1}`, colX.no, positionY, { width: 30, align: "center" });
-            doc.text(item.productId?.name || "Unknown Product", colX.name, positionY);
-            doc.text(`Rs ${item.productId?.salePrice}`, colX.price, positionY, { width: 50, align: "right" });
+            doc.text(item.productId?.productName || "Unknown Product", colX.name, positionY);
+            doc.text(`Rs ${item.productId?.salePrice}`, colX.price, positionY, { width: 60, align: "right" });
             doc.text(`${item.quantity}`, colX.qty, positionY, { width: 30, align: "center" });
             doc.text(`Rs ${item.price}`, colX.total, positionY, { width: 70, align: "right" });
 
-            // *Order Status with Color*
             const statusColor = statusColors[item.status] || "#000000";
             doc.fillColor(statusColor).text(item.status, colX.status, positionY, { width: 70, align: "center" });
-            doc.fillColor(textColor); // Reset color
+            doc.fillColor(textColor); 
 
-            // *Refund Calculation*
             if (["Cancelled", "Returned"].includes(item.status)) {
                 totalRefundAmount += item.price;
             }
@@ -1060,12 +1061,10 @@ const downloadInvoice = async (req, res) => {
 
 
 
-        // *Adjust Refund for Coupon*
         if (order.coupenOffer > 0) {
             totalRefundAmount = Math.max(0, totalRefundAmount - order.coupenOffer);
         }
 
-        // *Total Amount - Left Aligned*
         doc.moveDown(1);
         doc.fillColor("#6C757D").lineWidth(1).moveTo(20, doc.y).lineTo(590, doc.y).stroke();
         doc.moveDown(1.5);
@@ -1079,7 +1078,6 @@ const downloadInvoice = async (req, res) => {
             doc.text(`Total Refund: Rs ${totalRefundAmount}`, 20, doc.y);
         }
 
-        // *Footer*
         doc.fillColor(primaryColor).fontSize(10).font("Helvetica-Oblique").text("Thank you for shopping with us!", { align: "center" });
 
         doc.end();
@@ -1097,7 +1095,7 @@ const returnOrder = async (req, res) => {
 
         const orderedItem = await Order.findOne(
             { _id: orderId, userId: userId, "items.productId": productId },
-            { "items.$": 1, paymentMethod: 1, coupenOffer: 1, totalAmount: 1, totalregularPrice: 1 }
+            { "items.$": 1, paymentMethod: 1, coupenOffer: 1, totalAmount: 1, totalregularPrice: 1, isCouponAdjusted: 1 }
         ).lean();
 
         if (!orderedItem || !orderedItem.items || orderedItem.items.length === 0) {
@@ -1105,42 +1103,50 @@ const returnOrder = async (req, res) => {
         }
 
         const item = orderedItem.items[0];
+        const { paymentMethod, coupenOffer, isCouponAdjusted } = orderedItem;
+
         if (item.status !== "Delivered") {
             return res.status(400).json({ message: "Only delivered items can be returned." });
         }
-        const refundAmount = item.price * item.quantity;
 
         const result = await Order.updateOne(
             { _id: orderId, "items.productId": productId },
             { $set: { "items.$.status": "Returned" } }
         );
 
-        if (result.nModified === 0) {
+        if (result.modifiedCount === 0) {
             return res.status(400).json({ message: "Failed to return the item." });
         }
 
-        const user = await User.findById(userId);
-        if (!user.wallet || typeof user.wallet !== "object") {
-            user.wallet = { balance: 0, transactions: [] };
-            await user.save();
+        if (paymentMethod === "Online" || paymentMethod === "Wallet") {
+            let refundAmount = item.price;
+
+            if (!isCouponAdjusted && coupenOffer > 0) {
+                refundAmount -= coupenOffer;
+                await Order.updateOne({ _id: orderId }, { $set: { isCouponAdjusted: true } });
+            }
+
+            await User.updateOne(
+                { _id: userId },
+                {
+                    $inc: { "wallet.balance": refundAmount },
+                    $push: {
+                        "wallet.transactions": {
+                            type: "credit",
+                            amount: refundAmount,
+                            description: `Refund for returned item (Order ID: ${orderId})`,
+                            date: new Date(),
+                        },
+                    },
+                }
+            );
+
+            return res.status(200).json({ message: "Item returned and refund processed successfully." });
         }
 
-        await User.updateOne(
-            { _id: userId },
-            {
-                $inc: { "wallet.balance": refundAmount },
-                $push: {
-                    "wallet.transactions": {
-                        type: "credit",
-                        amount: refundAmount,
-                        description: `Refund for returned item (Order ID: ${orderId})`,
-                        date: new Date(),
-                    },
-                },
-            }
-        );
-
-        return res.status(200).json({ message: "Item returned and refund processed successfully." });
+        if (paymentMethod === "COD") {
+            return res.status(200).json({ message: "Item returned successfully." });
+        }
 
     } catch (error) {
         console.error("Error returning item:", error.message);

@@ -1,7 +1,6 @@
 <%- include("../../views/partials/admin/header") %>
 
   <head>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
   </head>
   <style>
@@ -181,14 +180,6 @@
       opacity: 0.9;
     }
 
-    /* .image-cropper {
-      border: 1px dashed #ced4da;
-      border-radius: 4px;
-      overflow: hidden;
-      text-align: center;
-      background: #f7f7f7;
-      padding: 10px;
-  } */
 
     .thumbnails-container {
       display: flex;
@@ -281,16 +272,16 @@
   </style>
   <section class="content-main">
     <div class="row">
-      <div class="col-9">
+      <div class="col-12">
         <div class="content-header">
           <h2 class="content-title">Edit Product</h2>
         </div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-12">
         <div class="card mb-4">
           <div class="card-body">
             <form method="post" action="/admin/editProduct/<%=product._id %>" enctype="multipart/form-data">
-              
+
               <div class="mb-4">
                 <label for="product_name" class="form-label">Product Name</label>
                 <input type="text" placeholder="Type here" name="productName" class="form-control border"
@@ -301,15 +292,15 @@
                 <label class="form-label">Brand</label>
                 <select class="form-select border" name="brand">
                   <% for(let i=0;i<brand.length;i++){ %>
-                  <% if(product.brand == brand[i].brandName)  {%>
-                    <option selected="<%=product.brand %>">
-                      <%=brand[i].brandName%>
-                    </option>
-                    <% } %>
-                    <option>
-                      <%=brand[i].brandName%>
-                    </option>
-                    <% } %>
+                    <% if(product.brand==brand[i].brandName) {%>
+                      <option selected="<%=product.brand %>">
+                        <%=brand[i].brandName%>
+                      </option>
+                      <% } %>
+                        <option>
+                          <%=brand[i].brandName%>
+                        </option>
+                        <% } %>
                 </select>
                 <div id="brand-error" class="error-message"></div>
               </div>
@@ -327,7 +318,7 @@
                       value="<%=product.regularPrice %>">
                     <div id="regularPrice-error" class="error-message"></div>
                   </div>
-                </div>              
+                </div>
               </div>
               <div>
               </div>
@@ -336,17 +327,17 @@
                   <div class="row gx-2">
                     <div class="col-sm-6 mb-3">
                       <label class="form-label">Category</label>
-                      <select class="form-select border" style="width: 150px;" name="category" value="" >
+                      <select class="form-select border" style="width: 150px;" name="category" value="">
                         <% for(let i=0;i<cat.length;i++){ %>
-                          <% if(product.category.name == cat[i].name ){ %>
-                          <option selected = <%=product.category.name %>>
-                            <% }else{ %>
-                              <option>
+                          <% if(product.category.name==cat[i].name ){ %>
+                            <option selected=<%=product.category.name %>>
+                              <% }else{ %>
+                            <option>
                               <% } %>
-                            <%= cat[i].name %>
-                          </option>
-                          
-                          <% } %>
+                                <%= cat[i].name %>
+                            </option>
+
+                            <% } %>
                       </select>
                       <div id="category-error" class="error-message"></div>
                     </div>
@@ -354,27 +345,29 @@
                 </div>
               </div>
               <div id="variant-section">
-                <% product.variants.forEach((ver, index)=> { %>
+                <% product.variants.forEach((ver, index) => { %>
                   <div class="variant-group mb-3" id="variant-<%= index + 1 %>">
-                    <h4>Variant <%= index + 1 %>
-                    </h4>
+                    <h4>Variant <%= index + 1 %></h4>
                     <div class="row">
                       <div class="col-lg-4">
                         <label class="form-label">Size</label>
                         <input name="variantSize[]" type="text" class="border" value="<%= ver.size %>">
+                        <span class="error-message text-danger" id="variant-size-error-<%= index %>"></span>
                       </div>
                       <div class="col-lg-4">
                         <label class="form-label">Quantity</label>
                         <input name="variantQuantity[]" type="number" class="border" value="<%= ver.quantity %>">
+                        <span class="error-message text-danger" id="variant-quantity-error-<%= index %>"></span>
                       </div>
-                      <div class="col-lg-4">
-                        <button type="button" class="btn btn-danger mt-3"
+                      <div class="col-md-4">
+                        <button type="button" class="btn btn-danger mt-10 "
                           onclick="removeVariant('variant-<%= index + 1 %>')">Remove</button>
                       </div>
                     </div>
                   </div>
-                  <% }) %>
+                <% }) %>
               </div>
+              
 
 
               <!-- Button to Add Variants -->
@@ -384,13 +377,13 @@
               <div class="card mb-2">
                 <div class="card-header">
                   <h4>Choose Images</h4>
+                  <div class="row">
                   <% for (let i=0; i < product.productImage.length; i++) { %>
-                    <div class="col-md-12" id="image-<%= product.productImage[i] %>">
-                      <div class="mb-4">
+                    <div class="col-md-3 col-sm-6 mb-3" id="image-<%= product.productImage[i] %>">
                         <div class="col-12">
                           <td>
                             <!-- Hidden input for the image name -->
-                            <img class="rounded" style="width: 50px; height: 60px;"
+                            <img class="rounded" style="width: 100px; height: 100px;"
                               src="/uploads/product-images/<%= product.productImage[i] %>" alt="">
                             <!-- Delete icon with onclick -->
                             <i onclick="deleteSingleImage('<%= product.productImage[i] %>', '<%= product._id %>')"
@@ -400,9 +393,10 @@
                             </i>
                           </td>
                         </div>
-                      </div>
+                      
                     </div>
                              <% } %>
+                  </div>
                 </div>
                 <div class="row">
                   <div class="col-12 mb-3">
@@ -587,100 +581,96 @@
         renumberVariants(); // Renumber variants after adding
       };
 
-      // Function to remove a variant
       window.removeVariant = function (variantId) {
         const variantToRemove = document.getElementById(variantId);
         if (variantToRemove) {
           variantToRemove.remove();
-          renumberVariants(); // Renumber variants after removing
+          renumberVariants();
         }
       };
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector("form");
 
-
-
-
-    document.querySelector("form").addEventListener("submit", function (event) {
+  form.addEventListener("submit", function (event) {
     let isValid = true;
-    
-    // Validate Product Name
-    const productName = document.getElementById("product_name");
-    if (!productName.value.trim()) {
-        document.getElementById("productName-error").innerText = "Product Name is required.";
-        isValid = false;
-    } else {
-        document.getElementById("productName-error").innerText = "";
-    }
-    
-    // Validate Brand
-    const brandSelect = document.querySelector("select[name='brand']");
-    if (!brandSelect.value) {
-        document.getElementById("brand-error").innerText = "Brand is required.";
-        isValid = false;
-    } else {
-        document.getElementById("brand-error").innerText = "";
+
+    // Clear previous errors
+    document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
+
+    // Validate Product Name, Brand, Category, Description, Price (Existing Code)
+    const productName = document.getElementById("product_name").value.trim();
+    const brand = document.querySelector("select[name='brand']").value;
+    const category = document.querySelector("select[name='category']").value;
+    const description = document.getElementById("descriptionid").value.trim();
+    const regularPrice = document.querySelector("input[name='regularPrice']").value.trim();
+
+    if (productName === "") {
+      displayError("productName-error", "Product Name is required");
+      isValid = false;
     }
 
-    // Validate Description
-    const description = document.getElementById("descriptionid");
-    if (!description.value.trim()) {
-        document.getElementById("description-error").innerText = "Description is required.";
-        isValid = false;
-    } else {
-        document.getElementById("description-error").innerText = "";
+    if (brand === "" || brand === "Select Brand") {
+      displayError("brand-error", "Please select a brand");
+      isValid = false;
     }
 
-    // Validate Regular Price
-    const regularPrice = document.querySelector("input[name='regularPrice']");
-    if (!regularPrice.value.trim() || isNaN(regularPrice.value)) {
-        document.getElementById("regularPrice-error").innerText = "Valid Regular Price is required.";
-        isValid = false;
-    } else {
-        document.getElementById("regularPrice-error").innerText = "";
+    if (category === "" || category === "Select Category") {
+      displayError("category-error", "Please select a category");
+      isValid = false;
     }
 
-    // Validate Category
-    const categorySelect = document.querySelector("select[name='category']");
-    if (!categorySelect.value) {
-        document.getElementById("category-error").innerText = "Category is required.";
-        isValid = false;
-    } else {
-        document.getElementById("category-error").innerText = "";
+    if (description === "") {
+      displayError("description-error", "Description cannot be empty");
+      isValid = false;
     }
 
-    // Validate Variants
-    const variantSizes = document.querySelectorAll("input[name='variantSize[]']");
-    const variantQuantities = document.querySelectorAll("input[name='variantQuantity[]']");
-    variantSizes.forEach((size, index) => {
-        if (!size.value.trim() || !variantQuantities[index].value.trim() || isNaN(variantQuantities[index].value)) {
-            document.getElementById("variant-error").innerText = "Both size and quantity are required for each variant.";
-            isValid = false;
-        }
+    if (regularPrice === "" || isNaN(regularPrice) || parseFloat(regularPrice) <= 0) {
+      displayError("regularPrice-error", "Enter a valid price");
+      isValid = false;
+    }
+
+    // Variant Validation
+    document.querySelectorAll(".variant-group").forEach((variant, index) => {
+      const sizeInput = variant.querySelector("input[name='variantSize[]']").value.trim();
+      const quantityInput = variant.querySelector("input[name='variantQuantity[]']").value.trim();
+
+      if (sizeInput === "") {
+        displayError(`variant-size-error-${index}`, "Size is required");
+        isValid = false;
+      }
+
+      if (quantityInput === "" || isNaN(quantityInput) || parseInt(quantityInput) <= 0) {
+        displayError(`variant-quantity-error-${index}`, "Enter a valid quantity");
+        isValid = false;
+      }
     });
-
-    // Validate Images
-    const imageInputs = document.querySelectorAll("input[type='file']");
-    let imageUploaded = false;
-    imageInputs.forEach(input => {
-        if (input.files.length > 0) {
-            imageUploaded = true;
-        }
-    });
-    // if (!imageUploaded) {
-    //     document.getElementById("images-error").innerText = "At least one image is required.";
-    //     isValid = false;
-    // } else {
-    //     document.getElementById("images-error").innerText = "";
-    // }
 
     // Prevent form submission if validation fails
     if (!isValid) {
-        event.preventDefault();
+      event.preventDefault();
+    } else {
+      // If valid, show success message with Swal
+      event.preventDefault(); // Prevent actual submission for demo
+      Swal.fire({
+        title: "Success!",
+        text: "Product added successfully!",
+        icon: "success"
+      }).then(() => {
+        form.submit(); // Submit after alert confirmation
+      });
     }
+  });
+
+  // Function to display errors
+  function displayError(id, message) {
+    const errorElement = document.getElementById(id);
+    if (errorElement) {
+      errorElement.innerText = message;
+    }
+  }
 });
-
-
 
     function viewImage1(event) {
       document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0])
@@ -785,26 +775,37 @@
       }
     }
 
-
-
-
     async function deleteSingleImage(imageId, productId) {
+      console.log("response");
       try {
-        const response = await fetch('/admin/daleteImages', {
+
+        const response = await fetch('/admin/daleteImages', { // Fixed typo
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ imageId, productId })
         });
-        const result = await response.json();
 
-        if (result.success) {
-          window.location.reload()
+        console.log("response", response);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
+        const result = await response.json();
+        console.log("result", result);
+
+        if (result.success) {
+
+          window.location.reload();
+        } else {
+          console.error('Failed to delete image:', result.message);
+          alert('Failed to delete image. Please try again.');
+        }
       } catch (error) {
 
       }
     }
+
 
 
   </script>
