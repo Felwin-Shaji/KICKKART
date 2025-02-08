@@ -61,8 +61,6 @@ const apdateStatus = async (req, res) => {
         console.log("req.params",req.params);
          console.log("newStatus",newStatus)
         
-        
-
         // Update the order's status
         const updatedOrder = await Order.findOneAndUpdate(
             {
@@ -87,7 +85,6 @@ const apdateStatus = async (req, res) => {
         res.redirect("/admin/errorPage");
     }
 };
-
 
 module.exports = {
     getOrder,

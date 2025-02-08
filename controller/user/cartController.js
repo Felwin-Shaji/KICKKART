@@ -927,6 +927,7 @@ const cancelSingleItem = async (req, res) => {
             });
         }
 
+        // Update order status
         const result = await Order.updateOne(
             { _id: orderId, "items.productId": productId },
             { $set: { "items.$.status": "Cancelled" } }
@@ -936,11 +937,18 @@ const cancelSingleItem = async (req, res) => {
             return res.status(400).json({ message: "Failed to cancel the item." });
         }
 
+        // **Update product quantity back to inventory**
+        await Product.updateOne(
+            { _id: productId, "variants.size": item.size },
+            { $inc: { "variants.$.quantity": item.quantity } }
+        );
+
+        // **Process refund if payment was online or wallet**
         if (paymentMethod === "Online" || paymentMethod === "Wallet") {
             let refundAmount = item.price;
 
             if (!isCouponAdjusted && coupenOffer > 0) {
-                refundAmount -= coupenOffer; 
+                refundAmount -= coupenOffer;
                 await Order.updateOne({ _id: orderId }, { $set: { isCouponAdjusted: true } });
             }
 
@@ -971,6 +979,7 @@ const cancelSingleItem = async (req, res) => {
         res.status(500).json({ message: "An error occurred while cancelling the item." });
     }
 };
+
 
 const downloadInvoice = async (req, res) => {
     try {
@@ -1117,6 +1126,12 @@ const returnOrder = async (req, res) => {
         if (result.modifiedCount === 0) {
             return res.status(400).json({ message: "Failed to return the item." });
         }
+
+        await Product.updateOne(
+            { _id: productId, "variants.size": item.size },
+            { $inc: { "variants.$.quantity": item.quantity } }
+        );
+
 
         if (paymentMethod === "Online" || paymentMethod === "Wallet") {
             let refundAmount = item.price;

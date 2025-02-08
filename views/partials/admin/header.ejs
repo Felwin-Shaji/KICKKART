@@ -284,13 +284,14 @@
                             Admin
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="/admin/logout"><i
-                                        class="bi bi-box-arrow-right me-2"></i>Log out</a></li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="confirmLogout(event)">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Log out
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>

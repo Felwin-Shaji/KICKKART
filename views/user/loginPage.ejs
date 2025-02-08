@@ -3,12 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsive Login Page</title>
+  <title>KICKKART Login Page</title>
   <!-- <link rel="stylesheet" href="styles.css"> -->
   <link rel="stylesheet" href="/css/userSignUp.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
+<style>
+  .error-message {
+      color: red;
+      font-size: 14px;
+      display: block;
+      margin-top: 5px;
+  }
+</style>
 <body>
   <div class="container">
     <div class="login-box">
@@ -16,15 +24,17 @@
 
       <form action="/login" method="POST" id="loginForm">
         <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email">
+            <small id="emailError" class="error-message"></small>
         </div>
         <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+            <small id="passwordError" class="error-message"></small>
         </div>
         <button type="submit">Log In</button>
-      </form>
+    </form>
 
       <a href="/auth/google">
         <button type="button">
@@ -43,38 +53,56 @@
 </body>
 
 <script>
-  document.getElementById('loginForm').addEventListener('submit',async function (e) {
+ document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
 
-    // Validate email format
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    let isValid = true;
+
+    // Reset error messages
+    emailError.textContent = "";
+    passwordError.textContent = "";
+
+    // Email Validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert('Please enter a valid email address.');
-      e.preventDefault();
-      return;
+    if (!email) {
+        emailError.textContent = "Email is required.";
+        isValid = false;
+    } else if (!emailRegex.test(email)) {
+        emailError.textContent = "Invalid email format.";
+        isValid = false;
     }
 
-    // Check if password is entered
+    // Password Validation
     if (!password) {
-      alert('Please enter your password.');
-      e.preventDefault();
-      return;
+        passwordError.textContent = "Password is required.";
+        isValid = false;
+    } else if (password.length < 6) {
+        passwordError.textContent = "Password must be at least 6 characters.";
+        isValid = false;
     }
+
+    // Stop form submission if validation fails
+    if (!isValid) return;
 
     try {
-      const response = await fetch('/login',{
-        method:'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({email,password})
-      })
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if(result.success){
-                    await Swal.fire({
+        if (result.success) {
+            await Swal.fire({
                 icon: 'success',
                 title: 'Login Successful!',
                 text: result.message,
@@ -82,22 +110,23 @@
                 showConfirmButton: false
             });
             window.location.href = result.redirectUrl;
-      }else{
-        await Swal.fire({
-          icon: 'error',
+
+        } else {  
+            await Swal.fire({
+                icon: 'error',
                 title: 'Login Failed',
-                text: result.message
-        });
-      }
+                text: result.message || 'Invalid credentials. Please try again.'
+            });
+        }
     } catch (error) {
-      console.error('Error:', error);
+        console.error('Error:', error);
         await Swal.fire({
             icon: 'error',
             title: 'Oops!',
             text: 'Something went wrong. Please try again later.'
         });
     }
-  });
+});
 </script>
 
 </html>
